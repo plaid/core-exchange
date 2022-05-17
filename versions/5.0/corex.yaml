@@ -27,21 +27,19 @@ info:
 
     Secure the Core Exchange API using OpenID Connect (OIDC), the preferred method. Plaid recommends enabling App2App.
     Implement the Core Exchange API to accept the access token as a bearer token, for example so that Plaid can send a query like: 
-    `curl https://api.<your-organization>.com/fdx/v5/accounts -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+    `curl https://api.<your-organization>.com/fdx/v5/accounts -H 'Authorization: Bearer <ACCESS_TOKEN>'`. For details about implementing security, reach out to the Plaid team.
+
 
     ## Plaid integration and interoperability
 
     **NOTE:** This specification describes the subset of FDX endpoints required by Plaid, as well as the subset of FDX information Plaid consumes from each endpoint.  
     Plaid takes the following approach to documenting the subsets:
 
-    - ENUMS: In cases where an endpoint describes enums that Plaid doesn't consume, this specification notes the enums Plaid consumes, but refrains from removing unused enums.
+    - ENUMS: In cases where an endpoint describes FDX enums that Plaid doesn't consume, this specification notes the enums Plaid consumes, but refrains from removing unused enums.
     This documentation approach enables your organization to more easily integrate your Core Exchange implementation with other data networks.
     For example, this specification defines many account types, so the `GET \accounts\{id}` endpoint notes which ones Plaid consumes. For a summary, see [FDX data subsets](/fdx-data-subsets).
     
-    - SCHEMAS: In cases where an endpoint describes schemas that Plaid doesn't consume, this specification *omits* the schema. 
-
-    If you choose to implement only the response information that Plaid consumes, bear in mind that if you integrate with other data networks, 
-    they may request you to implement more of the FDX-compliant response information documented in this FDX specification.
+    - SCHEMAS: In cases where an endpoint describes FDX schemas that Plaid doesn't consume, this specification *omits* the schema. 
 
     ## Mock server
   
@@ -146,7 +144,7 @@ paths:
         - Account Information
       summary: Get account balances and liabilities
       description: |
-        Get account balances, liabilities and other information. Plaid uses this endpoint to:
+        Get account balances, liabilities, and other information. Plaid uses this endpoint to:
         - Get account balances for deposit accounts, for example, `CHECKING` or `SAVINGS`. For more information about how Plaid uses this information, see [Plaid Balance API](https://plaid.com/docs/api/products/balance/).
         - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
 
@@ -835,7 +833,6 @@ components:
       required:
         - accountId
         - accountType
-        - accountNumberDisplay
         - productName
         - status
         - currency
@@ -1059,11 +1056,13 @@ components:
               type: number
               description: >-
                 The total amount of money in the account (sum of all posted/cleared transactions, not including pending transactions).
+                Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
                 For Plaid's full definition, see the [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-current).
             availableBalance:
               type: number
               description:  >-
                 The money in the account available to spend (sum of all transactions, plus or minus pending transactions).
+                Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
                 For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available).
           required:
             - currentBalance
@@ -1135,10 +1134,10 @@ components:
           properties:
             principalBalance:
               type: number
-              description: Principal balance of loan
+              description: Principal balance of loan. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             escrowBalance:
               type: number
-              description: Escrow balance of loan
+              description: Escrow balance of loan. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             originalPrincipal:
               type: number
               description: Original principal of loan
@@ -1150,13 +1149,13 @@ components:
               description: Term of loan in months
             nextPaymentAmount:
               type: number
-              description: Amount of next payment
+              description: Amount of next payment. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Date of next payment
             lastPaymentAmount:
               type: number
-              description: Last payment amount
+              description: Last payment amount. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             lastPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Last payment date
@@ -1226,31 +1225,31 @@ components:
               description: Available credit
             nextPaymentAmount:
               type: number
-              description: Amount of next payment
+              description: Amount of next payment. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Due date of next payment
             principalBalance:
               type: number
-              description: Principal balance
+              description: Principal balance. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             currentBalance:
               type: number
-              description: Current balance of the line of credit
+              description: Current balance of the line of credit. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             minimumPaymentAmount:
               type: number
-              description: Minimum payment amount
+              description: Minimum payment amount. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             lastPaymentAmount:
               type: number
-              description: Last payment amount
+              description: Last payment amount. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             lastPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Last payment date
             pastDueAmount:
               type: number
-              description: Amount owed that the account holder failed to pay on the due date.
+              description: Amount owed that the account holder failed to pay on the due date. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             lastStmtBalance:
               type: number
-              description: Last Statement Balance
+              description: Last Statement Balance. Plaid expects this amount to be a dollar value with two decimal places for cents, for example, `101.99`. 
             lastStmtDate:
               $ref: '#/components/schemas/DateString'
               description: Last Statement Date
@@ -1344,7 +1343,7 @@ components:
         foreignAmount:
           type: number
           description: >-
-            The amount of money in the foreign currency.
+            The amount of money in the foreign currency. Plaid expects an decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
             If this amount is specified, then Plaid expects that the `foregnCurrency` property is also set. 
         foreignCurrency:
           $ref: '#/components/schemas/Iso4217Code'
