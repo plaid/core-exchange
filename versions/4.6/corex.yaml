@@ -737,7 +737,6 @@ components:
       required:
         - accountId
         - accountType
-        - accountNumberDisplay
         - productName
         - status
         - currency
