@@ -1,0 +1,40 @@
+{
+  "name": "nextra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "start": "next start",
+    "build": "next build",
+    "deploy": "rm -rf node_modules/.cache && rimraf out && next build && next export && touch out/.nojekyll && gh-pages -d out -t true"
+  },
+  "author": "Shu Ding",
+  "license": "MIT",
+  "dependencies": {
+    "@svgr/webpack": "^6.2.1",
+    "fs": "^0.0.1-security",
+    "gh-pages": "^4.0.0",
+    "js-yaml": "^4.1.0",
+    "mobx": "^6.5.0",
+    "next": "^12.1.0",
+    "nextra": "^1.1.0",
+    "nextra-theme-docs": "^1.2.2",
+    "plaid-threads": "^11.5.0",
+    "prop-types": "^15.8.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-scroll": "^1.8.7",
+    "redoc": "^2.0.0-rc.67",
+    "rimraf": "^3.0.2",
+    "styled-components": "^5.3.5",
+    "yaml-loader": "^0.8.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}

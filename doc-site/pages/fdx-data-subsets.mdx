@@ -1,0 +1,54 @@
+---
+title: FDX data subsets
+---
+
+# FDX data subsets
+
+This topic highlights subsets of FDX-defined enums and fields that Plaid consumes. For information that Plaid doesn't consume, Plaid accepts the information and usually either passes it through, or handles it the same as it does an analogous enum.
+
+You can also find this information in the [Core Exchange API reference](/api-versions/50) and in the [mock server](/example). The specification also lists other, less prominent, subsets of enums not highlighted here.
+
+## `/accounts`
+
+| FDX field     | subset of enums consumed by Plaid                            | call for example response                                             |
+| ------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `accountType` | Plaid consumes the limited information returned by this endpoint for all account types. | `curl --request GET https://api.firstplaidypusbank.com/fdx/v5/accounts` |
+
+
+
+## `/accounts/{account-id}`
+
+Plaid consumes this endpoint only for deposit accounts, loan accounts, and line-of-credit (LOC) accounts.
+
+Deposit accounts:
+
+| `accountType` enum         | subset of FDX fields consumed by Plaid       | call for example response |
+| -------------------------- | -------------------------------------------- | ---- |
+| All deposit account types, for example, `MONEYMARKET`, `CD`, `SAVINGS`, `CHECKINGS` | `availableBalance`<br/>`currentBalance`<br/> | `curl --request GET https://api.firstplaidypusbank.com/fdx/v5/accounts/deposit_01_checking` |
+
+Loan accounts:
+
+| `accountType` enum                                           | subset of FDX fields consumed by Plaid                       | call for example response                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| All loan type accounts (for example, `AUTOLOAN`, `MILITARYLOAN`, `LOAN`, etc) | `accountNumber`<br/>`principalBalance`<br/>`originatingDate`<br/>`interestRate`<br/>`interestRateType` | `curl --location --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loan_03_autoloan'  --header 'Authorization: Bearer 000000000001'` |
+| `STUDENTLOAN`                                                | Plaid additionally consumes: <br/>        `interestPaidYearToDate`<br/>         `interestRate`<br/>         `lastPaymentAmount`    <br/>         `lastPaymentDate`<br/>         `maturityDate`<br/>         `nextPaymentDate`<br/>         `originalPrincipal`<br/>         `originatingDate` | `curl --location --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loan_01_studentloan' --header 'Authorization: Bearer 000000000001'` |
+| `MORTGAGE`                                                   | Plaid additionally consumes:<br/>         `accountNumber`<br/>         `escrowBalance`<br/>         `interestPaidYearToDate`<br/>         `interestRate`<br/>         `interestRateType`<br/>         `lastPaymentAmount`<br/>         `lastPaymentDate`<br/>         `loanTerm`<br/>         `maturityDate`<br/>         `nextPaymentAmount`<br/>         `nextPaymentDate`<br/>         `originalPrincipal`<br/>         `originatingDate` | `curl --location --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loan_02_mortgage' --header 'Authorization: Bearer 000000000001'` |
+
+Line-of-credit (LOC) accounts:
+
+| `accountType` enum                                           | subset of FDX fields consumed by Plaid                       | call for example response                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| All LOC type accounts (for example, `CREDIT`, `HOMELINEOFCREDIT`) | `availableCredit`<br/>         `creditLine`<br/>         `currentBalance` | `curl --location --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loc_02_homelineofcredit' --header 'Authorization: Bearer 000000000001'` |
+| `CREDITCARD`                                                 | Plaid additionally consumes:<br/>         `advancesApr`<br/>         `lastPaymentAmount`<br/>         `lastPaymentDate`<br/>         `lastStmtBalance`<br/>         `lastStmtDate`<br/>         `minimumPaymentAmount`<br/>         `nextPaymentDate`<br/>         `purchasesApr` | `curl --location --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loc_01_creditcard' --header 'Authorization: Bearer 000000000001'` |
+
+
+
+## `/accounts/{account-id}/transactions`
+
+Plaid consumes solely `LoanTransactionType`, `DepositTransaction`, `LoanTransaction`, and `LocTransaction` for this endpoint.
+
+| FDX field         | subset of enums consumed by Plaid                            | Plaid consumes for  transaction types:                       | notes                                                        | call for example response                                             |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `debitCreditMemo` | `DEBIT`<br/>`CREDIT`                                         | `depositTransaction`<br/>`loanTransaction`<br/>`locTransaction` | Plaid expects `MEMO` on the `status` field, not this field, and treats it as pending. |                                                              |
+| `status`          | `PENDING`<br/>`POSTED`                                       | `depositTransaction`<br/>`loanTransaction`<br/>`locTransaction` | The status of a transaction. Plaid consumes solely the `PENDING` and `POSTED` enums, and treats `MEMO` and `AUTHORIZATION` as if they were `PENDING`. Plaid expects that pending and posted transactions have different `transactionIds`. |                                                              |
+

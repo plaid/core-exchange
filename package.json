@@ -1,0 +1,19 @@
+{
+  "name": "Core-Exchange-Spec",
+  "version": "5.0.0",
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.5.1",
+    "@stoplight/spectral-cli": "^6.3.0",
+    "handlebars": "^4.7.7",
+    "husky": "^7.0.0",
+    "yaml": "^2.1.1"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "clean": "rm -rf ./openapi-build",
+    "build": "sh ./scripts/build-codegen.sh"
+  },
+  "dependencies": {
+    "ts-node": "^10.8.1"
+  }
+}

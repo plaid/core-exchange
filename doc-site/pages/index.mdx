@@ -1,0 +1,60 @@
+---
+title: Introduction
+---
+
+# Introduction
+
+Thank you for partnering with Plaid to build to the Core Exchange Specification (Core Exchange).  This documentation describes how to implement the Core Exchange API to enable data access for your end users.
+
+If you have questions, please reach out to the Plaid team at [dataconnectivity@plaid.com](mailto:dataconnectivity@plaid.com).
+
+Core Exchange enables your organization to build a Financial Data Exchange (FDX)-aligned API that is supported on the Plaid network, which can enable your users to grant access to their account data with the 6,000+ applications powered by Plaid. Core Exchange helps data partners support the most popular use cases (including money movement, personal financial management, and investing) and build in alignment with an industry-aligned technical standard.
+
+When you build Core Exchange, you implement an API that can handle GET HTTP requests that the Plaid network sends to it. The Core Exchange API specification describes the required functionality of the API service. For more information, see the [Core Exchange API reference documentation](/api-versions/50).
+
+
+This documentation briefly describes an ideal implementation flow for the minimum Core Exchange build. For implementation considerations not addressed by this documentation, reach out to the Plaid team.
+## Data Connectivity Benefits
+
+
+### Plaid network
+
+When you implement the Core Exchange API and Plaid starts making requests to your API, your end users will be able to search for and connect their accounts within your organization 
+to other financial services they use - such as a payment service, a budgeting app, or other financial application:
+
+![Plaid Link bank selection](/core-exchange/images/plaid_link.png "Plaid Link bank selection")
+
+For a demo of Plaid Link, see [Plaid Link Demo](https://plaid.com/demo/).
+
+### Interoperability
+
+Core Exchange is a subset of the Financial Data Exchange (“FDX”) API standard, which is intended as a common standard for data networks (including the Plaid network).
+By implementing Core Exchange, your organization can connect to Plaid’s extensive ecosystem of fintech apps, as well as execute an industry-standard data access integration that is interoperable and can be used with other data aggregators and organizations.
+
+### Simplified FDX Implementation
+
+The Core Exchange API allows you to streamline and validate the implementation of a successful FDX API integration.
+With one dedicated engineer in your organization, building the Core Exchange API can typically be completed in six weeks to eight weeks from the date all approvals and resources are in place for your organization.
+This estimated timeline covers the time period for build, testing, and deployment. It doesn't cover additional time required for your institution’s internal review and approval process, for migrating any existing integrations between Plaid and your institution, or for other considerations addressed by this documentation.
+
+## API Workflow Overview
+
+At a high level, the Plaid network sends data aggregation requests at periodic intervals for your customers accounts balances and transactions. 
+
+**Plaid uses Core Exchange for the following:**
+
+- Plaid uses the OIDC security flow you implement for the Core Exchange API to empower your users to connect their financial accounts to the other financial applications they use.
+
+After connecting the user's account, the bulk of Plaid requests are as follows:
+
+- Periodic requests for detailed account information, including current and available balances and liabilities, for these account types:
+  - Deposit accounts.
+  - Loan accounts. The account types for which Plaid consumes the most information are `STUDENTLOAN` and `MORTGAGE`.
+  - Line-of-credit accounts. The account type for which Plaid consumes the most information is `CREDITCARD`.  
+
+- Periodic requests for transaction history for the preceding account types. The first time a user connects their account to the Plaid network, Plaid sends a request for transaction history for a longer time period (two years) to your Core Exchange API, and thereafter polls for smaller time periods of transaction history (14 days).
+
+**Plaid doesn't use Core Exchange for the following:**
+
+- Plaid doesn't initiate money movement through Core Exchange V5.0.
+- Plaid doesn't allow Plaid partners access to your organization's Core Exchange API implementation directly.

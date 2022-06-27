@@ -1,0 +1,25 @@
+---
+title: Example API mock server
+---
+
+# Example API mock server
+
+Use sample responses from a mock bank server to understand the subset of FDX information that Plaid consumes. 
+ This mock server uses hardcoded public bearer tokens. Remember that in production, bearer tokens must be secure.
+
+See the following Postman collection:
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://god.gw.postman.com/run-collection/20285790-77110c23-da75-448b-8bf2-2c09bf560d6d?action=collection%2Ffork&collection-url=entityId%3D20285790-77110c23-da75-448b-8bf2-2c09bf560d6d%26entityType%3Dcollection%26workspaceId%3Dfbafb5a2-25a1-482a-a65b-1f637a19ed49)
+
+Or, skip Postman and make a few example CURL calls directly to the mock server in a command line:
+
+| account type                   | endpoint         | example call                                                 |
+| ------------------------------ | ---------------- | ------------------------------------------------------------ |
+| all accounts for the test user | list accounts    | `curl --request GET https://api.firstplaidypusbank.com/fdx/v5/accounts --header Authorization: Bearer 000000000001` |
+| checking account               | balances         | `curl --request GET https://api.firstplaidypusbank.com/fdx/v5/accounts/deposit_01_checking --header Authorization: Bearer 000000000001` |
+| checking account               | transactions     | `curl --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/deposit_01_checking/transactions?startTime=2022-01-30&endTime=2022-05-30' --header 'Authorization: Bearer 000000000001'` |
+| savings account                | payment networks | `curl --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/deposit_02_savings/payment-networks' --header 'Authorization: Bearer 000000000001'` |
+| savings account                | contact info     | `curl --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/deposit_02_savings/contact' --header 'Authorization: Bearer 000000000001'` |
+| mortgage account               | balances         | `curl --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loan_02_mortgage' --header 'Authorization: Bearer 000000000001'` |
+| credit card                    | balances         | `curl --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loc_01_creditcard' --header 'Authorization: Bearer 000000000001'` |
+| credit card                    | transactions     | `curl --request GET 'https://api.firstplaidypusbank.com/fdx/v5/accounts/loc_01_creditcard/transactions?startTime=2022-01-30&endTime=2022-05-30' --header 'Authorization: Bearer 000000000001'` |

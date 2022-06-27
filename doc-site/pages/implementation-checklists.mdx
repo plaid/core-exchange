@@ -1,0 +1,92 @@
+---
+title: Implementation checklists
+---
+
+
+# Implementation checklists
+
+## Pre-implementation checklist
+
+
+- Scope technical work:
+
+
+  - Identify components of your infrastructure that handle authentication. Plaid expects that you secure the Core Exchange API using an OIDC authorization server.
+    Reach out to the Plaid team for detailed documentation, including the security requirements for Core Exchange implementation and the Business Requirements Document (BRD).
+
+
+
+  - Review the [Core Exchange API Reference documentation](/api-versions/50). To see the API specification in action, try out our [Postman collection](/example), which provides example Core Exchange responses from a mock bank server. Review a highlight of the [subsets of FDX information](/fdx-data-subsets) Plaid consumes. 
+
+
+- Review infrastructure to determine readiness:
+
+  - Identify components of your infrastructure that handle account, owner, and transaction data elements. 
+
+  - Ensure infrastructure can support Plaid request volume (to be provided by Plaid team).
+
+
+- Reach out to the Plaid team to complete setup:
+
+  - Email your contact at Plaid to create a Slack channel for your team to use as a real-time communication conduit during design, build and deployment. 
+
+  - Provide the following information to Plaid:
+
+    - Your organization's name, logo and URL. Plaid uses this information to populate your organization's details in Plaid Link. Your logo file must be vector format (svg, eps, ai, or sketch).  
+
+    - Planned Core Exchange server URL, for example `https://api.<your-organization>.com/fdx/v5`.
+
+    - The location of your authorization server. Plaid expects this to be an OAuth2 server that implements OIDC, and expects to be able to make a request to the standard OIDC relative URL `/.well-known/openid-configuration.json`.
+      For more information see the [OIDC specification](https://openid.net/specs/openid-connect-discovery-1_0.html).
+      If your OAuth identity provider doesn't implement OIDC, discuss your security flow with Plaid in as much detail as possible.
+
+    - Your client ID, and your client secret. Share your public key and test credentials either via email or Slack channel.
+
+    - Create test users and provide their credentials for [API validation](/implementation-checklists#validation-checklist) and production.
+
+- Reach out to the Plaid team to schedule a call to address outstanding technical questions. The Plaid team will review your organization’s infrastructure components, for example, 
+  middleware, API proxies, identity providers, firewalls, or any other enterprise infrastructure that requires configuration prior to API validation.  
+
+
+## Implementation checklist
+
+- Set up the OIDC security you planned in the pre-implementation phase.
+
+- Get a jumpstart on implementing the Core Exchange API by generating code from the API specification in the language of your choice. For more information, see the [Core Exchange Github repository](https://github.com/plaid/core-exchange#code-generation-from-the-api-specification).
+  The specification contains the following endpoints: 
+
+  - [`/customer/current`](/api-versions/50#tag/Personal-Information/operation/getCustomerId) (implement this only if you can't implement OIDC)
+
+  - [`/accounts`](/api-versions/50#tag/Account-Transactions/operation/listAccounts)
+
+  - [`/accounts/{accountId}`](api-versions/50#tag/Account-Information/operation/listAccounts)
+
+  - [`/accounts/{accountId}/payment-networks`](/api-versions/50#tag/Payment-Networks-Information/operation/getAccountPaymentNetworks)
+
+  - [`/accounts/{accountId}/contacts`](/api-versions/50#tag/Personal-Information/operation/getAccountContact)
+
+  - [`/accounts/{accountId}/transactions`](/api-versions/50#tag/Account-Transactions/operation/listAccountTransactions)
+
+- Restrict access to the planned Core Exchange server implementation to Plaid IPs. Reach out to the Plaid team for the lists of these IPs.
+
+- For mTLS connectivity, share specifications for the Client intermediary certification requirements (Plaid can provide a self-signed or third party certificate depending on requirement) 
+
+
+
+## Validation checklist
+
+- Validate your Core Exchange implementation using a validator tool provided by Plaid.  If you need help, reach out to the Plaid team via email or Slack. 
+- The validator checks, among other things:
+  - field names are in `dromedaryCamelCase`
+  - all fields are spelled and named correctly
+  - all field values are of the correct type as outlined in the specification
+  - the correct HTTP status code are used per each scenario  
+
+
+## Product launch checklist
+
+- When your Core Exchange implementation is live, request production access.
+- Optionally, if you want to make an external launch announcement, reach out to our Plaid team to discuss your announcement and materials at [dataconnectivity@plaid.com](mailto:dataconnectivity@plaid.com).
+
+
+

@@ -1,0 +1,1733 @@
+openapi: 3.0.4
+##########################################################################################################
+#                                                                                                        #
+#  Core Exchange is a subset of the Financial Data Exchange (“FDX”) API specification, the usage thereof #
+#  (or any part thereof) constitutes acceptance of the FDX API License Agreement, which can be found     #
+#  at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX.   #
+#  Modifications to eliminate required or conditional elements prescribed in the FDX API Certification   #
+#  Use Cases will render any implementations using said modifications non-conformant with the FDX API    #
+#  Certification Use Cases.                                                                              #
+#                                                                                                        #
+##########################################################################################################
+info:
+  version: '4.6.0'
+  title: FDX V4.6
+  description: "The Core Exchange API documents endpoints that are compliant with the Financial Data Exchange (FDX) v5.0 Core API. Your organization can use these endpoints to support Plaid's \n(or other data networks') requests for your customers' account details, balances, and other information. \nPlease note that this specification is subject to change as we make improvements to the product. If you have questions, please reach out to the Plaid team at dataconnectivity@plaid.com.\n\n## FDX compliance\n\nThe Core Exchange API Specifications are a subset of the Financial Data Exchange (FDX) API specification, the usage thereof (or any part thereof) constitutes acceptance of the FDX API \nLicense Agreement, which can be found at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX. Modifications to eliminate required or \nconditional elements prescribed in the FDX API Certification Use Cases will render any implementations using said modifications non-conformant with the FDX API Certification Use Cases.\nPlease note that building the FDX-compliant Core Exchange API and permitting Plaid to call your build constitutes acceptance of \nthe FDX end user license agreement, which can be found at https://financialdataexchange.org/. \nThe full FDX API standard specification is distributed exclusively by FDX.\n\n## Security\n\nSecure the Core Exchange API using OpenID Connect (OIDC), the preferred method. Plaid recommends enabling App2App.\nImplement the Core Exchange API to accept the access token as a bearer token, for example so that Plaid can send a query like: \n`curl https://api.<your-organization>.com/fdx/v5/accounts -H 'Authorization: Bearer <ACCESS_TOKEN>'`. For details about implementing security, reach out to the Plaid team.\n\n\n## Plaid integration and interoperability\n\n**NOTE:** This specification describes the subset of FDX endpoints required by Plaid, as well as the subset of FDX information Plaid consumes from each endpoint.  \nPlaid takes the following approach to documenting the subsets:\n\n- ENUMS: In cases where an endpoint describes FDX enums that Plaid doesn't consume, this specification notes the enums Plaid consumes, but refrains from removing unused enums.\nThis documentation approach enables your organization to more easily integrate your Core Exchange implementation with other data networks.\nFor example, this specification defines many account types, so the `GET \\accounts\\{id}` endpoint notes which ones Plaid consumes. For a summary, see [FDX data subsets](/core-exchange/fdx-data-subsets).\n\n- SCHEMAS: In cases where an endpoint describes FDX schemas that Plaid doesn't consume, this specification *omits* the schema. \n\n## Mock server\n\nSee the [mock server postman collection](/core-exchange/example). \n\n## Download the specification\n\nTo view this specification and documentation as an openapi yaml file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/versions/5.0/corex.yaml).\n"
+servers:
+  - url: 'https://api.fi.com/fdx/v4'
+    description: Financial Data Exchange V4.6 Core API
+paths:
+  ############################################################
+  #
+  # Core paths
+  #
+  ############################################################
+  /accounts:
+    get:
+      operationId: listAccounts
+      tags:
+        - Account Information
+      summary: List all accounts
+      description: List all accounts
+      security:
+        - openIdConnect:
+            - Account
+        - oauth2:
+            - Account
+      parameters:
+        - name: offset
+          in: query
+          description: >-
+            Opaque cursor used by the provider to send the next set of records
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: >-
+            Number of elements that the consumer wishes to receive. Providers should implement reasonable default and maximum values
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: >-
+            Array of accounts (DepositAccount, LoanAccount, or LocAccount)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Accounts'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /accounts/{accountId}:
+    get:
+      operationId: getAccount
+      tags:
+        - Account Information
+      description: Get a specific account
+      summary: Get detailed information for a specific account
+      security:
+        - openIdConnect:
+            - Account
+        - oauth2:
+            - Account
+      parameters:
+        - name: accountId
+          in: path
+          description: Account Identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >-
+            This can be one of LoanAccount, DepositAccount, or LocAccount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountWithDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /accounts/{accountId}/contact:
+    get:
+      operationId: getAccountContact
+      tags:
+        - Personal Information
+      description: Get contact information on the account
+      summary: Get an account's contact information
+      parameters:
+        - name: accountId
+          in: path
+          description: Account Identifier
+          required: true
+          schema:
+            type: string
+      security:
+        - openIdConnect:
+            - Customer
+        - oauth2:
+            - Customer
+      responses:
+        '200':
+          description: >-
+            Details used to verify an account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountContact'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /accounts/{accountId}/payment-networks:
+    get:
+      operationId: getAccountPaymentNetworks
+      tags:
+        - Money Movement
+      description: Get payment networks supported by the account
+      summary: Get payment networks supported by the account
+      security:
+        - openIdConnect:
+            - Account
+        - oauth2:
+            - Account
+      parameters:
+        - name: accountId
+          in: path
+          description: Account Identifier
+          required: true
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: >-
+            Opaque cursor used by the provider to send the next set of records
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: >-
+            Number of elements that the consumer wishes to receive - Providers should implement reasonable defaults and maximum
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Information required to execute a payment transaction against this account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountPaymentNetworkList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /accounts/{accountId}/transactions:
+    get:
+      operationId: searchForAccountTransactions
+      tags:
+        - Account Transactions
+      description: >-
+        Search for account transactions. Example: /accounts/{accountId}/transactions?startTime=value1&endTime=value2
+      summary: Search for account transactions
+      security:
+        - openIdConnect:
+            - Transactions
+        - oauth2:
+            - Transactions
+      parameters:
+        - name: accountId
+          in: path
+          description: Account Identifier
+          required: true
+          schema:
+            type: string
+        - name: startTime
+          in: query
+          description: Start time for use in retrieval of transactions (ISO 8601)
+          schema:
+            type: string
+        - name: endTime
+          in: query
+          description: End time for use in retrieval of transactions (ISO 8601)
+          schema:
+            type: string
+        - name: offset
+          in: query
+          description: >-
+            Opaque cursor used by the provider to send the next set of records
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: >-
+            Number of elements that the consumer wishes to receive. Providers should implement reasonable default and maximum values
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: >-
+            Paginated collection of transactions, which can be one of DepositTransaction, LoanTransaction, or LocTransaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transactions'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /customers/current:
+    get:
+      operationId: getCustomerId
+      tags:
+        - Personal Information
+      description: Get the id of the customer within the authorization scope
+      summary: Get current authenticated customer id
+      security:
+        - openIdConnect: []
+        - oauth2: []
+      responses:
+        '200':
+          description: Data describing current authenticated customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerWithId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+components:
+  ############################################################
+  #
+  # Security schema
+  #
+  ############################################################
+  securitySchemes:
+    openIdConnect:
+      type: openIdConnect
+      description: This API uses openId with the authorization code flow
+      openIdConnectUrl: /.well-known/openid-configuration
+    oauth2:
+      type: oauth2
+      description: This API uses OAuth2.0 with the authorization code flow
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth/authorize
+          tokenUrl: /oauth/token
+          scopes:
+            Account: Read account data
+            Customer: Read customer data
+            Transactions: Read transaction data
+            ############################################################
+            #
+            # Common request parameters (usable by core and all extensions)
+            #
+            ############################################################
+
+            # None at this time
+
+            ############################################################
+            #
+            # Core request parameters
+            #
+            ############################################################
+
+            # none at this time
+  responses:
+    ############################################################
+    #
+    # Core request responses
+    #
+    ############################################################
+    BadRequest:
+      description: The request included invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InvalidInputErrors'
+    Unauthorized:
+      description: The request is not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CustomerNotAuthorized'
+    NotFound:
+      description: The requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountNotFound'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerError'
+    UnexpectedError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    ############################################################
+    #
+    # Path-related entities (usable by core and all extensions)
+    #
+    ############################################################
+    Error:
+      title: Error
+      description: >-
+        An error entity which can be used at the API level for error responses
+      type: object
+      properties:
+        code:
+          type: string
+          description: >-
+            Long term persistent identifier which can be used to trace error condition back to log information
+        message:
+          type: string
+          description: >-
+            End user displayable information which might help the customer diagnose an error
+    InvalidInputError:
+      title: Invalid Input
+      type: object
+      description: Input sent by client does not satisfy API specification
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              type: string
+              enum: ['401']
+            message:
+              type: string
+              enum: ['Invalid Input']
+          required:
+            - code
+            - message
+    InternalServerError:
+      title: Internal server error
+      type: object
+      description: >-
+        Catch all exception where request was not processed due to an internal outage/issue. Consider other more specific errors before using this error.
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              type: string
+              enum: ['500']
+            message:
+              type: string
+              enum: ['Internal server error']
+          required:
+            - code
+            - message
+    CustomerNotAuthorized:
+      title: Customer not authorized
+      type: object
+      description: Authenticated customer does not have the authorization to perform this action
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              type: string
+              enum: ['602']
+            message:
+              type: string
+              enum: ['Customer not authorized']
+          required:
+            - code
+            - message
+    AccountNotFound:
+      title: Account not found
+      type: object
+      description: Account with id not found
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              type: string
+              enum: ['701']
+            message:
+              type: string
+              enum: ['Account not found']
+          required:
+            - code
+            - message
+    InvalidStartOrEndDate:
+      title: Invalid start or end date
+      type: object
+      description: Start or end date value is not in the ISO 8601 format
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              type: string
+              enum: ['702']
+            message:
+              type: string
+              enum: ['Invalid start or end date']
+          required:
+            - code
+            - message
+    InvalidDateRange:
+      title: Invalid date range
+      type: object
+      description: >-
+        If the start date is not earlier than the end date or if the date range is beyond what the system supports
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            code:
+              type: string
+              enum: ['703']
+            message:
+              type: string
+              enum: ['Invalid date range']
+          required:
+            - code
+            - message
+    InvalidInputErrors:
+      title: Invalid input errors
+      description: Any invalid input error
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/InvalidInputError'
+        - $ref: '#/components/schemas/InvalidStartOrEndDate'
+        - $ref: '#/components/schemas/InvalidDateRange'
+    PageMetadata:
+      type: object
+      title: Page Metadata
+      description: Offset IDs for paginated result sets
+      properties:
+        nextOffset:
+          type: string
+          example: "2"
+          description: Opaque identifier. Does not need to be numeric or have any specific pattern. Implementation specific. The presence of this field indicates that there is at least one more page of data available. The absense of this field indicates that there are no more pages of data left in this paginated array.
+    PaginatedArray:
+      type: object
+      title: Paginated Array
+      description: Base class for results that may be paginated
+      properties:
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+          description: Offset IDs for navigating result sets
+          ############################################################
+          #
+          # Common data entities (usable by core and all extensions)
+          #
+          ############################################################
+    Address:
+      title: Address
+      description: Postal address
+      properties:
+        line1:
+          $ref: '#/components/schemas/String64'
+          description: Address line 1
+        line2:
+          $ref: '#/components/schemas/String64'
+          description: Address line 2
+        line3:
+          $ref: '#/components/schemas/String64'
+          description: Address line 3
+        city:
+          $ref: '#/components/schemas/String64'
+          description: City
+        state:
+          $ref: '#/components/schemas/String64'
+          description: State or province
+        postalCode:
+          type: string
+          maxLength: 10
+          description: Postal code
+        country:
+          $ref: '#/components/schemas/Iso3166CountryCode'
+          description: Country code
+      required:
+        - line1
+        - city
+        - country
+      type: object
+    CustomerWithId:
+      title: Customer entity
+      description: Represents a customer with an id
+      type: object
+      properties:
+        customerId:
+          $ref: '#/components/schemas/Identifier'
+          description: >-
+            Long-term persistent identity of the customer. This identity must be unique to the owning institution
+      required:
+        - customerId
+    CustomerWithName:
+      title: Customer entity
+      description: Represents a customer with a name
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/CustomerName'
+          description: The customer's name
+      required:
+        - name
+    CustomerName:
+      title: Customer Name entity
+      description: The name of an individual in their role as a customer
+      allOf:
+        - $ref: '#/components/schemas/IndividualName'
+        - type: object
+          properties:
+            prefix:
+              description: Name prefix, e.g. Mr.
+              type: string
+      type: object
+    DeliveryAddress:
+      title: Delivery Address
+      description: A delivery address and its location type
+      allOf:
+        - $ref: '#/components/schemas/Address'
+      type: object
+    IndividualName:
+      title: Individual name
+      description: First name, middle initial, last name, suffix fields
+      properties:
+        first:
+          description: First name
+          type: string
+        middle:
+          description: Middle initial
+          type: string
+        last:
+          description: Last name
+          type: string
+        suffix:
+          description: Generational or academic suffix
+          type: string
+      required:
+        - first
+        - last
+      type: object
+    TelephoneNumber:
+      title: Telephone Number
+      description: Standard for international phone numbers
+      properties:
+        type:
+          $ref: '#/components/schemas/TelephoneNumberType'
+          description: 'Type of phone number: HOME, BUSINESS, CELL, FAX'
+        country:
+          type: string
+          maxLength: 3
+          description: Country calling codes defined by ITU-T recommendations E.123 and E.164
+        number:
+          type: string
+          maxLength: 15
+          pattern: '\d+'
+          description: Telephone subscriber number defined by ITU-T recommendation E.164
+      type: object
+      required:
+        - number
+        - type
+        ############################################################
+        #
+        # Core data entities
+        #
+        ############################################################
+    AccountContact:
+      title: Account Contact entity
+      description: Contact information for the account
+      type: object
+      properties:
+        holders:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountHolder'
+          minItems: 1
+          description: Owners of the account
+        emails:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          description: Email addresses associated with the account
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeliveryAddress'
+          minItems: 1
+          description: Physical mail addresses associated with the account
+        telephones:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelephoneNumber'
+          minItems: 1
+          description: Telephone numbers associated with the account
+      required:
+        - holders
+        - emails
+        - addresses
+        - telephones
+    AccountDescriptor:
+      title: Account Descriptor entity
+      description: This descriptor provides minimal information about the account for use in lightweight arrays
+      properties:
+        accountId:
+          description: >-
+            Long-term persistent identity of the account, though not an account number. This identity must be unique to the owning institution
+          $ref: '#/components/schemas/Identifier'
+        accountType:
+          $ref: '#/components/schemas/AccountType'
+          description: Account type
+        accountNumberDisplay:
+          description: >-
+            Account display number for the end user's handle at the owning institution. This is to be displayed by the Interface Provider
+          type: string
+        productName:
+          type: string
+          description: Marketed product name for this account. Used in UIs to assist in account selection
+        nickname:
+          description: Name given by the user. Used in UIs to assist in account selection
+          type: string
+        status:
+          type: string
+          description: Account status
+          enum:
+            - OPEN
+            - CLOSED
+            - PENDINGOPEN
+            - PENDINGCLOSE
+            - DELINQUENT
+            - PAID
+            - NEGATIVECURRENTBALANCE
+        currency:
+          $ref: '#/components/schemas/Currency'
+          description: Account currency
+      required:
+        - accountId
+        - accountType
+        - productName
+        - status
+        - currency
+      type: object
+    AccountHolder:
+      title: Account Holder entity
+      description: >-
+        The Customer who owns the account
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/CustomerWithName'
+        - type: object
+          properties:
+            relationship:
+              $ref: '#/components/schemas/AccountHolderRelationship'
+              description: "Customer's relationship to the account"
+    Accounts:
+      title: Accounts entity
+      description: An optionally paginated array of accounts
+      allOf:
+        - $ref: '#/components/schemas/PaginatedArray'
+        - type: object
+          properties:
+            accounts:
+              type: array
+              description: >-
+                An array of accounts with entity types dependent on the account type (deposit, investment, loan, line of credit, annuity or insurance)
+              items:
+                $ref: '#/components/schemas/AccountWithDescriptor'
+              minItems: 1
+          required:
+            - accounts
+    AccountPaymentNetwork:
+      title: Payment Network Supported by Account
+      description: This provides details required to execute a transaction against the account within the payment network
+      type: object
+      properties:
+        bankId:
+          type: string
+          description: Bank identifier used by the payment network ie. Routing Number
+        identifier:
+          type: string
+          description: >-
+            The number used to identify the account within the payment network.
+        type:
+          $ref: '#/components/schemas/PaymentNetworkType'
+          description: Type of payment network
+        transferIn:
+          type: boolean
+          description: Can transfer funds to the account using this information
+        transferOut:
+          type: boolean
+          description: Can transfer funds from the account using this information
+      required:
+        - bankId
+        - identifier
+        - type
+        - transferIn
+        - transferOut
+    AccountPaymentNetworkList:
+      title: Array of account payment networks
+      description: An optionally paginated array of payment networks supported by the account
+      allOf:
+        - $ref: '#/components/schemas/PaginatedArray'
+        - type: object
+          properties:
+            paymentNetworks:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountPaymentNetwork'
+              minItems: 1
+              description: Array of payment networks
+          required:
+            - paymentNetworks
+    AccountWithDescriptor:
+      title: Account With Descriptor entity
+      description: This provides an instance of an account without full details
+      type: object
+      oneOf:
+        - type: object
+          properties:
+            depositAccount:
+              $ref: '#/components/schemas/AccountDescriptor'
+              description: A deposit account
+          required:
+            - depositAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            loanAccount:
+              $ref: '#/components/schemas/AccountDescriptor'
+              description: A loan account
+          required:
+            - loanAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            locAccount:
+              $ref: '#/components/schemas/AccountDescriptor'
+              description: A line-of-credit account
+          required:
+            - locAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            investmentAccount:
+              $ref: '#/components/schemas/AccountDescriptor'
+              description: An investment account
+          required:
+            - investmentAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            insuranceAccount:
+              $ref: '#/components/schemas/AccountDescriptor'
+              description: A insurance account
+          required:
+            - insuranceAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            annuityAccount:
+              $ref: '#/components/schemas/AccountDescriptor'
+              description: An annuity account
+          required:
+            - annuityAccount
+          additionalProperties: false
+    AccountWithDetails:
+      title: Account With Details entity
+      description: This provides an instance of an account with full details
+      type: object
+      oneOf:
+        - type: object
+          properties:
+            depositAccount:
+              $ref: '#/components/schemas/DepositAccount'
+              description: A deposit account
+          required:
+            - depositAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            loanAccount:
+              $ref: '#/components/schemas/LoanAccount'
+              description: A loan account
+          required:
+            - loanAccount
+          additionalProperties: false
+        - type: object
+          properties:
+            locAccount:
+              $ref: '#/components/schemas/LocAccount'
+              description: A line-of-credit account
+          required:
+            - locAccount
+          additionalProperties: false
+    Currency:
+      title: Currency entity
+      description: Represents an international currency
+      properties:
+        currencyCode:
+          $ref: '#/components/schemas/Iso4217Code'
+          description: ISO 4217 currency code
+      required:
+        - currencyCode
+      type: object
+    DepositAccount:
+      title: Deposit Account entity
+      description: Information for a deposit account type
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            currentBalance:
+              type: number
+              description: Balance of funds in account
+            availableBalance:
+              type: number
+              description: Balance of funds available for use
+          required:
+            - currentBalance
+            - availableBalance
+    DepositTransaction:
+      title: Deposit Transaction entity
+      description: A transaction on a deposit account type
+      allOf:
+        - $ref: '#/components/schemas/Transaction'
+        - properties:
+            transactionType:
+              $ref: '#/components/schemas/DepositTransactionType'
+              description: >-
+                CHECK, WITHDRAWAL, TRANSFER, POSDEBIT, ATMWITHDRAWAL, BILLPAYMENT, FEE, DEPOSIT, ADJUSTMENT, INTEREST, DIVIDEND, DIRECTDEPOSIT, ATMDEPOSIT, POSCREDIT
+            payee:
+              $ref: '#/components/schemas/String255'
+              description: Payee name
+            checkNumber:
+              type: integer
+              description: Check number
+          type: object
+    LoanAccount:
+      title: Loan Account entity
+      description: A loan account type
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - properties:
+            accountNumber:
+              type: string
+              description: >-
+                Full account number for the end user's handle for the account at the owning institution
+            principalBalance:
+              type: number
+              description: Principal balance of loan
+            escrowBalance:
+              type: number
+              description: Escrow balance of loan
+            originalPrincipal:
+              type: number
+              description: Original principal of loan
+            originatingDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Loan origination date
+            loanTerm:
+              type: integer
+              description: Term of loan in months
+            nextPaymentAmount:
+              type: number
+              description: Amount of next payment
+            nextPaymentDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Date of next payment
+            lastPaymentAmount:
+              type: number
+              description: Last payment amount
+            lastPaymentDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Last payment date
+            maturityDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Maturity date
+            interestPaidYearToDate:
+              type: number
+              description: Interest paid year to date
+            interestRate:
+              type: number
+              description: Interest Rate of Account
+            interestRateType:
+              $ref: '#/components/schemas/InterestRateType'
+              description: FIXED or VARIABLE
+          required:
+            - accountNumber
+            - principalBalance
+            - originatingDate
+            - interestRate
+            - interestRateType
+          type: object
+    LoanTransaction:
+      title: Loan Transaction entity
+      description: A transaction on a loan account
+      allOf:
+        - $ref: '#/components/schemas/Transaction'
+        - properties:
+            transactionType:
+              $ref: '#/components/schemas/LoanTransactionType'
+              description: PAYMENT, FEE, ADJUSTMENT, INTEREST
+          type: object
+    LocAccount:
+      title: Line-Of-Credit Account entity
+      description: A line-of-credit account
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            creditLine:
+              type: number
+              description: Credit limit
+            availableCredit:
+              type: number
+              description: Available credit
+            nextPaymentAmount:
+              type: number
+              description: Amount of next payment
+            nextPaymentDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Due date of next payment
+            principalBalance:
+              type: number
+              description: Principal balance
+            currentBalance:
+              type: number
+              description: Current balance of the line of credit
+            minimumPaymentAmount:
+              type: number
+              description: Minimum payment amount
+            lastPaymentAmount:
+              type: number
+              description: Last payment amount
+            lastPaymentDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Last payment date
+            pastDueAmount:
+              type: number
+              description: Past Due Amount
+            lastStmtBalance:
+              type: number
+              description: Last Statement Balance
+            lastStmtDate:
+              $ref: '#/components/schemas/Timestamp'
+              description: Last Statement Date
+            purchasesApr:
+              type: number
+              description: Purchases APR
+            advancesApr:
+              type: number
+              description: Advances APR
+          required:
+            - currentBalance
+            - availableCredit
+    LocTransaction:
+      title: Line-Of-Credit Transaction entity
+      description: A line-of-credit transaction
+      allOf:
+        - $ref: '#/components/schemas/Transaction'
+        - properties:
+            transactionType:
+              $ref: '#/components/schemas/LocTransactionType'
+              description: CHECK, WITHDRAWAL, PAYMENT, FEE, ADJUSTMENT, INTEREST
+            checkNumber:
+              type: integer
+              description: Check number
+          type: object
+    Transaction:
+      title: Transaction
+      description: Base entity for financial transactions
+      properties:
+        transactionId:
+          description: Long term persistent identity of the transaction (unique to account)
+          $ref: '#/components/schemas/Identifier'
+        referenceTransactionId:
+          description: >-
+            For reverse postings, the identity of the transaction being reversed. For the correction transaction, the identity of the reversing post. For credit card posting transactions, the identity of the authorization transaction
+          $ref: '#/components/schemas/Identifier'
+        postedTimestamp:
+          description: >-
+            The date and time that the transaction was posted to the account. If not provided then TransactionTimestamp can be used as PostedTimeStamp
+          $ref: '#/components/schemas/Timestamp'
+        transactionTimestamp:
+          description: >-
+            The date and time that the transaction was added to the server backend systems
+          $ref: '#/components/schemas/Timestamp'
+        description:
+          type: string
+          description: The description of the transaction
+        debitCreditMemo:
+          $ref: '#/components/schemas/DebitCreditMemo'
+          description: DEBIT, CREDIT, MEMO
+        category:
+          type: string
+          description: 'Transaction category, preferably MCC or SIC.'
+        subCategory:
+          type: string
+          description: Transaction category detail
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
+          description: PENDING, MEMO, POSTED, AUTHORIZATION
+        amount:
+          type: number
+          description: The amount of money in the account currency
+        foreignAmount:
+          type: number
+          description: The amount of money in the foreign currency
+        foreignCurrency:
+          $ref: '#/components/schemas/Iso4217Code'
+          description: The ISO 4217 code of the foreign currency
+      required:
+        - debitCreditMemo
+        - description
+        - transactionId
+        - transactionTimestamp
+        - status
+        - amount
+      type: object
+    Transactions:
+      title: Transactions entity
+      description: Optionally paginated array of transactions
+      allOf:
+        - $ref: '#/components/schemas/PaginatedArray'
+        - type: object
+          properties:
+            transactions:
+              description: >-
+                An array of transactions with entity type dependent on the account type (deposit, loan, or line of credit)
+              type: array
+              items:
+                oneOf:
+                  - type: object
+                    properties:
+                      depositTransaction:
+                        $ref: '#/components/schemas/DepositTransaction'
+                        description: A deposit transaction
+                    required:
+                      - depositTransaction
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      loanTransaction:
+                        $ref: '#/components/schemas/LoanTransaction'
+                        description: A loan transaction
+                    required:
+                      - loanTransaction
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      locTransaction:
+                        $ref: '#/components/schemas/LocTransaction'
+                        description: A line-of-credit transaction
+                    required:
+                      - locTransaction
+                    additionalProperties: false
+          required:
+            - transactions
+            ############################################################
+            #
+            # Common data types (usable by core and all extensions)
+            #
+            ############################################################
+    Identifier:
+      title: Identifier
+      description: Value for a unique identifier
+      type: string
+      maxLength: 256
+    Iso3166CountryCode:
+      title: ISO 3166 Country Code
+      description: ISO 3166 Codes for the representation of names of countries and their subdivisions
+      type: string
+      enum:
+        - AD
+        - AE
+        - AF
+        - AG
+        - AI
+        - AL
+        - AM
+        - AN
+        - AO
+        - AQ
+        - AR
+        - AS
+        - AT
+        - AU
+        - AW
+        - AX
+        - AZ
+        - BA
+        - BB
+        - BD
+        - BE
+        - BF
+        - BG
+        - BH
+        - BI
+        - BJ
+        - BM
+        - BN
+        - BO
+        - BR
+        - BS
+        - BT
+        - BV
+        - BW
+        - BY
+        - BZ
+        - CA
+        - CC
+        - CD
+        - CF
+        - CG
+        - CH
+        - CI
+        - CK
+        - CL
+        - CM
+        - CN
+        - CO
+        - CR
+        - CS
+        - CU
+        - CV
+        - CX
+        - CY
+        - CZ
+        - DE
+        - DJ
+        - DK
+        - DM
+        - DO
+        - DZ
+        - EC
+        - EE
+        - EG
+        - EH
+        - ER
+        - ES
+        - ET
+        - FI
+        - FJ
+        - FK
+        - FM
+        - FO
+        - FR
+        - GA
+        - GB
+        - GD
+        - GE
+        - GF
+        - GG
+        - GH
+        - GI
+        - GL
+        - GM
+        - GN
+        - GP
+        - GQ
+        - GR
+        - GS
+        - GT
+        - GU
+        - GW
+        - GY
+        - HK
+        - HM
+        - HN
+        - HR
+        - HT
+        - HU
+        - ID
+        - IE
+        - IL
+        - IM
+        - IN
+        - IO
+        - IQ
+        - IR
+        - IS
+        - IT
+        - JE
+        - JM
+        - JO
+        - JP
+        - KE
+        - KG
+        - KH
+        - KI
+        - KM
+        - KN
+        - KP
+        - KR
+        - KW
+        - KY
+        - KZ
+        - LA
+        - LB
+        - LC
+        - LI
+        - LK
+        - LR
+        - LS
+        - LT
+        - LU
+        - LV
+        - LY
+        - MA
+        - MC
+        - MD
+        - MG
+        - MH
+        - MK
+        - ML
+        - MM
+        - MN
+        - MO
+        - MP
+        - MQ
+        - MR
+        - MS
+        - MT
+        - MU
+        - MV
+        - MW
+        - MX
+        - MY
+        - MZ
+        - NA
+        - NC
+        - NE
+        - NF
+        - NG
+        - NI
+        - NL
+        - NO
+        - NP
+        - NR
+        - NU
+        - NZ
+        - OM
+        - PA
+        - PE
+        - PF
+        - PG
+        - PH
+        - PK
+        - PL
+        - PM
+        - PN
+        - PR
+        - PS
+        - PT
+        - PW
+        - PY
+        - QA
+        - RE
+        - RO
+        - RU
+        - RW
+        - SA
+        - SB
+        - SC
+        - SD
+        - SE
+        - SG
+        - SH
+        - SI
+        - SJ
+        - SK
+        - SL
+        - SM
+        - SN
+        - SO
+        - SR
+        - ST
+        - SV
+        - SY
+        - SZ
+        - TC
+        - TD
+        - TF
+        - TG
+        - TH
+        - TJ
+        - TK
+        - TL
+        - TM
+        - TN
+        - TO
+        - TR
+        - TT
+        - TV
+        - TW
+        - TZ
+        - UA
+        - UG
+        - UM
+        - US
+        - UY
+        - UZ
+        - VA
+        - VC
+        - VE
+        - VG
+        - VI
+        - VN
+        - VU
+        - WF
+        - WS
+        - YE
+        - YT
+        - ZA
+        - ZM
+        - ZW
+    Iso4217Code:
+      title: ISO 4217 Code
+      description: ISO 4217 Currency codes
+      type: string
+      enum:
+        - AED
+        - AFN
+        - ALL
+        - AMD
+        - ANG
+        - AOA
+        - ARS
+        - AUD
+        - AWG
+        - AZN
+        - BAM
+        - BBD
+        - BDT
+        - BGN
+        - BHD
+        - BIF
+        - BMD
+        - BND
+        - BOB
+        - BOV
+        - BRL
+        - BSD
+        - BTN
+        - BWP
+        - BZD
+        - CAD
+        - CDF
+        - CHE
+        - CHF
+        - CHW
+        - CLF
+        - CLP
+        - CNY
+        - COP
+        - COU
+        - CRC
+        - CUC
+        - CUP
+        - CVE
+        - CZK
+        - DJF
+        - DKK
+        - DOP
+        - DZD
+        - EGP
+        - ERN
+        - ETB
+        - EUR
+        - FJD
+        - FKP
+        - GBP
+        - GEL
+        - GHS
+        - GIP
+        - GMD
+        - GNF
+        - GTQ
+        - GYD
+        - HKD
+        - HNL
+        - HRK
+        - HTG
+        - HUF
+        - IDR
+        - ILS
+        - INR
+        - IQD
+        - IRR
+        - ISK
+        - JMD
+        - JOD
+        - JPY
+        - KES
+        - KGS
+        - KHR
+        - KMF
+        - KPW
+        - KRW
+        - KWD
+        - KYD
+        - KZT
+        - LAK
+        - LBP
+        - LKR
+        - LRD
+        - LSL
+        - LYD
+        - MAD
+        - MDL
+        - MGA
+        - MKD
+        - MMK
+        - MNT
+        - MOP
+        - MUR
+        - MVR
+        - MWK
+        - MXN
+        - MXV
+        - MYR
+        - MZN
+        - NAD
+        - NGN
+        - NIO
+        - NOK
+        - NPR
+        - NZD
+        - OMR
+        - PAB
+        - PEN
+        - PGK
+        - PHP
+        - PKR
+        - PLN
+        - PYG
+        - QAR
+        - RON
+        - RSD
+        - RUB
+        - RWF
+        - SAR
+        - SBD
+        - SCR
+        - SDG
+        - SEK
+        - SGD
+        - SHP
+        - SLL
+        - SOS
+        - SRD
+        - SSP
+        - SVC
+        - SYP
+        - SZL
+        - THB
+        - TJS
+        - TMT
+        - TND
+        - TOP
+        - TRY
+        - TTD
+        - TWD
+        - TZS
+        - UAH
+        - UGX
+        - USD
+        - USN
+        - UYI
+        - UYU
+        - UZS
+        - VND
+        - VUV
+        - WST
+        - XAF
+        - XAG
+        - XAU
+        - XBA
+        - XBB
+        - XBC
+        - XBD
+        - XCD
+        - XDR
+        - XOF
+        - XPD
+        - XPF
+        - XPT
+        - XSU
+        - XTS
+        - XUA
+        - XXX
+        - YER
+        - ZAR
+        - ZMW
+        - ZWL
+    String255:
+      title: String 255
+      description: String of maximum length 255
+      type: string
+      maxLength: 255
+    String64:
+      title: String 64
+      description: String of maximum length 64
+      type: string
+      maxLength: 64
+    TelephoneNumberType:
+      title: Telephone Number Type
+      description: Purpose or type of telephone number
+      type: string
+      enum:
+        - HOME
+        - BUSINESS
+        - CELL
+        - FAX
+    Timestamp:
+      title: Timestamp
+      description: ISO 8601 date time with milliseconds in UTC time zone
+      type: string
+      format: date-time
+      ############################################################
+      #
+      # Core data types
+      #
+      ############################################################
+    AccountHolderRelationship:
+      title: Account Holder Relationship
+      description: Types of relationships between accounts and holders. Suggested values
+      type: string
+      enum:
+        - BUSINESS
+        - FOR_BENEFIT_OF
+        - FOR_BENEFIT_OF_PRIMARY
+        - FOR_BENEFIT_OF_PRIMARY_JOINT_RESTRICTED
+        - FOR_BENEFIT_OF_SECONDARY
+        - FOR_BENEFIT_OF_SECONDARY_JOINT_RESTRICTED
+        - FOR_BENEFIT_OF_SOLE_OWNER_RESTRICTED
+        - POWER_OF_ATTORNEY
+        - PRIMARY_JOINT_TENANTS
+        - PRIMARY
+        - PRIMARY_BORROWER
+        - PRIMARY_JOINT
+        - SECONDARY
+        - SECONDARY_JOINT_TENANTS
+        - SECONDARY_BORROWER
+        - SECONDARY_JOINT
+        - SOLE_OWNER
+        - TRUSTEE
+        - UNIFORM_TRANSFER_TO_MINOR
+    AccountType:
+      title: Account Type
+      description: >-
+        The type of an account.<br/> <br/> | Value | Description |<br/> |-----|-----|<br/> | 401A | An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both |<br/> | 401K | An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code |<br/> | 403B | A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States |<br/> | '529' | A tax-advantaged savings plan designed to help pay for education |<br/> | ANNUITY | A form of insurance or investment entitling the investor to a series of annual sums |<br/> | AUTOLOAN | A type of loan used to finance a car purchase |<br/> | BROKERAGEPRODUCT | Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options |<br/> | CD | A certificate of deposit (CD) is a product offered by banks and credit unions that provides an interest rate premium in exchange for the customer agreeing to leave a lump-sum deposit untouched for a predetermined period of time |<br/> | CHARGE | An account to which goods and services may be charged on credit |<br/> | CHECKING | A deposit account held at a financial institution that allows withdrawals and deposits |<br/> | COMMERCIALDEPOSIT | Deposit Account for Commercial Customers e.g. Business Trust Account |<br/> | COMMERCIALINVESTMENT | Investment Account for Commercial Customers. e.g. Commercial Brokerage Account |<br/> | COMMERCIALINEOFCREDIT | A preset borrowing limit that can be used at any time |<br/> | COMMERCIALLOAN | A preset borrowing limit that can be used at any time |<br/> | COVERDELL | A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account |<br/> | CREDITCARD | Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment |<br/> | DEFINEDBENEFIT | An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history |<br/> | ESCROW | A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties |<br/> | ESOP | An employee stock ownership plan (ESOP) is an employee benefit plan that gives workers ownership interest in the company |<br/> | FIXEDANNUITY | A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account |<br/> | GUARDIAN | An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent |<br/> | HOMEEQUITYLOAN | A type of loan in which the borrower uses the equity of his or her home as collateral |<br/> | HOMELINEOFCREDIT | A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house |<br/> | INSTALLMENT | A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments |<br/> | INSTITUTIONALTRUST | |<br/> | IRA | An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement |<br/> | KEOGH | A tax-deferred pension plan available to self-employed individuals or unincorporated businesses for retirement purposes |<br/> | LINEOFCREDIT | A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds |<br/> | LOAN | The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc |<br/> | LONGTERMDISABILITY | Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year |<br/> | MILITARYLOAN | |<br/> | MONEYMARKET | A deposit account that pays interest based on current interest rates in the money markets |<br/> | MORTGAGE | A type of loan you can use to buy or refinance a home |<br/> | NONQUALIFEDPLAN | A type of tax-deferred employer-sponsored retirement plan that falls outside of ERISA guidelines |<br/> | OTHERDEPOSIT | Use when none of the listed enums apply |<br/> | OTHERINVESTMENT | Use when none of the listed enums apply |<br/> | PERSONALLOAN | A type of debt that is not protected by a guarantor, or collateralized by a lien on specific assets of the borrower |<br/> | ROLLOVER | |<br/> | ROTH | An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement |<br/> | SARSEP | A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement |<br/> | SAVINGS | An interest-bearing deposit account held at a bank or other financial institution |<br/> | SMBLOAN | |<br/> | SHORTTERMDISABILITY | Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year |<br/> | STUDENTLOAN | A type of loan designed to help students pay for post-secondary education and the associated fees, such as tuition, books and supplies, and living expenses |<br/> | TAXABLE | |<br/> | TDA | |<br/> | TERM | Life insurance that provides coverage at a fixed rate of payments for a limited period of time |<br/> | TRUST | A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms |<br/> | UGMA | |<br/> | UNIVERSALLIFE | A type of a cash value life insurance where the excess of premium payments above the current cost of insurance is credited to the cash value of the policy, which in turn is credited each month with interest |<br/> | UTMA | |<br/> | VARIABLEANNUITY | A type of insurance contract that promises to pay back the buyer based on the performance of an underlying portfolio of mutual funds selected by the buyer |<br/> | WHOLELIFE | Life insurance which is guaranteed to remain in force for the insured's entire lifetime, provided required premiums are paid, or to the maturity date |
+      type: string
+      enum:
+        - 401A
+        - 401K
+        - 403B
+        - '529'
+        - ANNUITY
+        - AUTOLOAN
+        - BROKERAGEPRODUCT
+        - CD
+        - CHARGE
+        - CHECKING
+        - COMMERCIALDEPOSIT
+        - COMMERCIALINVESTMENT
+        - COMMERCIALLINEOFCREDIT
+        - COMMERCIALLOAN
+        - COVERDELL
+        - CREDITCARD
+        - DEFINEDBENEFIT
+        - ESCROW
+        - ESOP
+        - FIXEDANNUITY
+        - GUARDIAN
+        - HOMEEQUITYLOAN
+        - HOMELINEOFCREDIT
+        - INSTALLMENT
+        - INSTITUTIONALTRUST
+        - IRA
+        - KEOGH
+        - LINEOFCREDIT
+        - LOAN
+        - LONGTERMDISABILITY
+        - MILITARYLOAN
+        - MONEYMARKET
+        - MORTGAGE
+        - NONQUALIFIEDPLAN
+        - OTHERDEPOSIT
+        - OTHERINVESTMENT
+        - PERSONALLOAN
+        - ROLLOVER
+        - ROTH
+        - SARSEP
+        - SAVINGS
+        - SMBLOAN
+        - SHORTTERMDISABILITY
+        - STUDENTLOAN
+        - TAXABLE
+        - TDA
+        - TERM
+        - TRUST
+        - UGMA
+        - UNIVERSALLIFE
+        - UTMA
+        - VARIABLEANNUITY
+        - WHOLELIFE
+    DebitCreditMemo:
+      title: DebitCreditMemo
+      description: The posting type of a transaction
+      type: string
+      enum:
+        - CREDIT
+        - DEBIT
+        - MEMO
+    DepositTransactionType:
+      title: Deposit Transaction Type
+      description: The type of a deposit transaction. "FEE" and "INTEREST" values are replacing "FEE INTEREST" value which is now deprecated and will be removed in v5.0
+      type: string
+      enum:
+        - ADJUSTMENT
+        - ATMDEPOSIT
+        - ATMWITHDRAWAL
+        - BILLPAYMENT
+        - CHECK
+        - DEPOSIT
+        - DIRECTDEPOSIT
+        - DIVIDEND
+        - FEE INTEREST
+        - FEE
+        - INTEREST
+        - POSCREDIT
+        - POSDEBIT
+        - TRANSFER
+        - WITHDRAWAL
+    InterestRateType:
+      title: Interest Rate Type
+      description: The type of interest rate
+      type: string
+      enum:
+        - FIXED
+        - VARIABLE
+    LoanTransactionType:
+      title: Loan Transaction Type
+      description: The type of a loan transaction
+      type: string
+      enum:
+        - ADJUSTMENT
+        - FEE
+        - INTEREST
+        - PAYMENT
+    LocTransactionType:
+      title: Line-Of-Credit Transaction Type
+      description: The type of a line-of-credit transaction
+      type: string
+      enum:
+        - ADJUSTMENT
+        - CHECK
+        - FEE
+        - INTEREST
+        - PAYMENT
+        - WITHDRAWAL
+    PaymentNetworkType:
+      title: Payment Network Type
+      description: >-
+        Suggested values for Payment Network Type<br/> <br/> | Value | Description |<br/> |-----|-----|<br/> | US_ACH | Automated Clearing House |<br/> | US_FEDWIRE | Fedwire Funds Service |<br/> | US_CHIPS | Clearinghouse Interbank Payments System |<br/> | CA_ACSS | Automated Clearing House Settlement System |<br/> | CA_LVTS | Large-Value Transfer System |
+      type: string
+      enum:
+        - US_ACH
+        - US_FEDWIRE
+        - US_CHIPS
+        - CA_ACSS
+        - CA_LVTS
+    TransactionStatus:
+      title: Transaction Status
+      description: The status of a transaction
+      type: string
+      enum:
+        - AUTHORIZATION
+        - MEMO
+        - PENDING
+        - POSTED
