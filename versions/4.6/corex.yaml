@@ -1,18 +1,57 @@
 openapi: 3.0.0
-#########################################################################################################
-#                                                                                                       #
-#  Core Exchange is a subset of the Financial Data Exchange (“FDX”) API specification, the usage thereof        #
-#  (or any part thereof) constitutes acceptance of the FDX API License Agreement, which can be found    #
-#  at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX.  #
-#  Modifications to eliminate required or conditional elements prescribed in the FDX API Certification  #
-#  Use Cases will render any implementations using said modifications non-conformant with the FDX API   #
-#  Certification Use Cases.                                                                             #
-#                                                                                                       #
-#########################################################################################################
+##########################################################################################################
+#                                                                                                        #
+#  Core Exchange is a subset of the Financial Data Exchange (“FDX”) API specification, the usage thereof #
+#  (or any part thereof) constitutes acceptance of the FDX API License Agreement, which can be found     #
+#  at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX.   #
+#  Modifications to eliminate required or conditional elements prescribed in the FDX API Certification   #
+#  Use Cases will render any implementations using said modifications non-conformant with the FDX API    #
+#  Certification Use Cases.                                                                              #
+#                                                                                                        #
+##########################################################################################################
 info:
   version: '4.6.0'
   title: FDX V4.6
-  description: Financial Data Exchange V4.6 Core API
+  description: |
+    The Core Exchange API documents endpoints that are compliant with the Financial Data Exchange (FDX) v5.0 Core API. Your organization can use these endpoints to support Plaid's 
+    (or other data networks') requests for your customers' account details, balances, and other information. 
+    Please note that this specification is subject to change as we make improvements to the product. If you have questions, please reach out to the Plaid team at dataconnectivity@plaid.com.
+    
+    ## FDX compliance
+    
+    The Core Exchange API Specifications are a subset of the Financial Data Exchange (FDX) API specification, the usage thereof (or any part thereof) constitutes acceptance of the FDX API 
+    License Agreement, which can be found at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX. Modifications to eliminate required or 
+    conditional elements prescribed in the FDX API Certification Use Cases will render any implementations using said modifications non-conformant with the FDX API Certification Use Cases.
+    Please note that building the FDX-compliant Core Exchange API and permitting Plaid to call your build constitutes acceptance of 
+    the FDX end user license agreement, which can be found at https://financialdataexchange.org/. 
+    The full FDX API standard specification is distributed exclusively by FDX.
+    
+    ## Security
+    
+    Secure the Core Exchange API using OpenID Connect (OIDC), the preferred method. Plaid recommends enabling App2App.
+    Implement the Core Exchange API to accept the access token as a bearer token, for example so that Plaid can send a query like: 
+    `curl https://api.<your-organization>.com/fdx/v5/accounts -H 'Authorization: Bearer <ACCESS_TOKEN>'`. For details about implementing security, reach out to the Plaid team.
+    
+    
+    ## Plaid integration and interoperability
+    
+    **NOTE:** This specification describes the subset of FDX endpoints required by Plaid, as well as the subset of FDX information Plaid consumes from each endpoint.  
+    Plaid takes the following approach to documenting the subsets:
+    
+    - ENUMS: In cases where an endpoint describes FDX enums that Plaid doesn't consume, this specification notes the enums Plaid consumes, but refrains from removing unused enums.
+    This documentation approach enables your organization to more easily integrate your Core Exchange implementation with other data networks.
+    For example, this specification defines many account types, so the `GET \accounts\{id}` endpoint notes which ones Plaid consumes. For a summary, see [FDX data subsets](/core-exchange/fdx-data-subsets).
+    
+    - SCHEMAS: In cases where an endpoint describes FDX schemas that Plaid doesn't consume, this specification *omits* the schema. 
+    
+    ## Mock server
+    
+    See the [mock server postman collection](/core-exchange/example). 
+    
+    ## Download the specification
+    
+    To view this specification and documentation as an openapi yaml file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/versions/5.0/corex.yaml).
+
 servers:
   - url: 'https://api.fi.com/fdx/v4'
     description: Financial Data Exchange V4.6 Core API
@@ -675,21 +714,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountHolder'
+          minItems: 1
           description: Owners of the account
         emails:
             type: array
             items:
               type: string
+            minItems: 1
             description: Email addresses associated with the account
         addresses:
             type: array
             items:
               $ref: '#/components/schemas/DeliveryAddress'
+            minItems: 1
             description: Physical mail addresses associated with the account
         telephones:
             type: array
             items:
               $ref: '#/components/schemas/TelephoneNumber'
+            minItems: 1
             description: Telephone numbers associated with the account
       required:
         - holders
@@ -770,6 +813,7 @@ components:
                 annuity or insurance)
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
+              minItems: 1
           required:
             - accounts
 
@@ -813,6 +857,7 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/AccountPaymentNetwork'
+              minItems: 1
               description: Array of payment networks
           required:
             - paymentNetworks

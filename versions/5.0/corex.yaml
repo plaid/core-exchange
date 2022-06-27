@@ -1,11 +1,14 @@
 openapi: 3.1.0
-################################################################################################################
-#                                                                                                              #
-#  Core Exchange is based upon the Financial Data Exchange (“FDX”) API standard, the usage thereof constitutes         #
-#  acceptance of the FDX end user license agreement, which can be found at https://financialdataexchange.org/. #
-#  The FDX API standard specification is distributed exclusively by FDX.                                       #
-#                                                                                                              #
-################################################################################################################
+##########################################################################################################
+#                                                                                                        #
+#  Core Exchange is a subset of the Financial Data Exchange (“FDX”) API specification, the usage thereof #
+#  (or any part thereof) constitutes acceptance of the FDX API License Agreement, which can be found     #
+#  at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX.   #
+#  Modifications to eliminate required or conditional elements prescribed in the FDX API Certification   #
+#  Use Cases will render any implementations using said modifications non-conformant with the FDX API    #
+#  Certification Use Cases.                                                                              #
+#                                                                                                        #
+##########################################################################################################
 info:
   version: '5.0.0'
   title: FDX V5.0
@@ -13,38 +16,42 @@ info:
     The Core Exchange API documents endpoints that are compliant with the Financial Data Exchange (FDX) v5.0 Core API. Your organization can use these endpoints to support Plaid's 
     (or other data networks') requests for your customers' account details, balances, and other information. 
     Please note that this specification is subject to change as we make improvements to the product. If you have questions, please reach out to the Plaid team at dataconnectivity@plaid.com.
-
+    
     ## FDX compliance
-
+    
     The Core Exchange API Specifications are a subset of the Financial Data Exchange (FDX) API specification, the usage thereof (or any part thereof) constitutes acceptance of the FDX API 
     License Agreement, which can be found at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX. Modifications to eliminate required or 
     conditional elements prescribed in the FDX API Certification Use Cases will render any implementations using said modifications non-conformant with the FDX API Certification Use Cases.
     Please note that building the FDX-compliant Core Exchange API and permitting Plaid to call your build constitutes acceptance of 
     the FDX end user license agreement, which can be found at https://financialdataexchange.org/. 
     The full FDX API standard specification is distributed exclusively by FDX.
-
+    
     ## Security
-
+    
     Secure the Core Exchange API using OpenID Connect (OIDC), the preferred method. Plaid recommends enabling App2App.
     Implement the Core Exchange API to accept the access token as a bearer token, for example so that Plaid can send a query like: 
     `curl https://api.<your-organization>.com/fdx/v5/accounts -H 'Authorization: Bearer <ACCESS_TOKEN>'`. For details about implementing security, reach out to the Plaid team.
-
-
+    
+    
     ## Plaid integration and interoperability
-
+    
     **NOTE:** This specification describes the subset of FDX endpoints required by Plaid, as well as the subset of FDX information Plaid consumes from each endpoint.  
     Plaid takes the following approach to documenting the subsets:
-
+    
     - ENUMS: In cases where an endpoint describes FDX enums that Plaid doesn't consume, this specification notes the enums Plaid consumes, but refrains from removing unused enums.
     This documentation approach enables your organization to more easily integrate your Core Exchange implementation with other data networks.
     For example, this specification defines many account types, so the `GET \accounts\{id}` endpoint notes which ones Plaid consumes. For a summary, see [FDX data subsets](/core-exchange/fdx-data-subsets).
     
     - SCHEMAS: In cases where an endpoint describes FDX schemas that Plaid doesn't consume, this specification *omits* the schema. 
-
+    
     ## Mock server
-  
+    
     See the [mock server postman collection](/core-exchange/example). 
- 
+    
+    ## Download the specification
+    
+    To view this specification and documentation as an openapi yaml file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/versions/5.0/corex.yaml).
+
   contact: 
     name: Plaid support
     url: 'https://plaid.com/data-connectivity-core-exchange/'
@@ -97,7 +104,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  
+
   ############################################################
   #
   # Core paths
@@ -339,7 +346,7 @@ components:
     OffsetQuery:
       name: offset
       in: query
-      description: >-
+      description: |
         Plaid receives this value from your organization's latest response in a paginated response, and returns it to in a new request to get the next page.
         Your organization omits `nextOffset` in the response to indicate the last page.
       schema:
@@ -482,7 +489,7 @@ components:
       properties:
         name:
           $ref: '#/components/schemas/CustomerName'
-          description: The customer's name
+          description: The customer's name. Plaid expects at least one populated name field. If any field is missing (for example, no first name), then respond with an empty string for that field.
       required:
         - name
 
@@ -505,6 +512,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/Address'
         - type: object
+    
     Error:
       title: Error
       description: >-
@@ -522,7 +530,7 @@ components:
             End user displayable information which might help the customer
             diagnose an error  
       required:
-        - code
+        - code  
 
     InvalidInputError:
       title: Invalid Input
@@ -650,12 +658,11 @@ components:
     IndividualName:
       title: Individual name
       description: >-
-        First name, middle initial, last name, suffix fields. 
-        Plaid expects at least one of these fields. If any field is missing (for example, no first name), then respond with an empty string for that field. 
+        First name, middle initial, last name, suffix fields.  
       type: object
       properties:
         first:
-          description: First name
+          description: First name. 
           type: string
         middle:
           description: Middle initial
@@ -673,8 +680,7 @@ components:
     PageMetadata:
       title: Page Metadata
       description:  >-
-            Contains opaque identifier, `nextoffset`, for paginated result sets. The `nextOffset` ID does not need to be numeric or have any specific pattern.
-            In other words, your organization can implement this however they wish.
+            Contains opaque identifier, `nextoffset`, for paginated result sets. The `nextOffset` ID does not need to be numeric or have any specific pattern. In other words, your organization can implement this however they wish.
             The presence of this offset indicates that there is at least one more page of data available. 
             The absence of this offset indicates that there are no more pages of data left in this paginated array. 
             The API consumer returns this in the `offset` parameter in a new request to get the next page in the response array.
@@ -733,10 +739,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AccountHolder'
+          minItems: 1
           description: >-
-            Owners of the account. Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their contact information in the full `AccountHolder` schema,
+            Owners of the account. Plaid expects your organization to return an empty array if this information isn't available.  
+            Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their contact information in the full `AccountHolder` schema,
             Plaid doesn't consume these associations. Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails, addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
+            
           example:      
             - customerId: customer0000001
               relationship: SECONDARY
@@ -755,7 +764,8 @@ components:
           type: array
           items:
             type: string
-          description: Email addresses associated with the account. If there are none, Plaid expects an empty array for this field.
+          minItems: 1
+          description: Email addresses associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
           example:                   
             - "ernest.m.hemingway@domain.tld"
             - "m.angelou@domain.tld"
@@ -763,7 +773,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DeliveryAddress'
-          description: Physical mail addresses associated with the account. If there are none, Plaid expects an empty array for this field.
+          minItems: 1
+          description: Physical mail addresses associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
           example:
             - type: HOME
               line1:  1850 N Clark St
@@ -782,7 +793,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TelephoneNumber'
-          description: Telephone numbers associated with the account. If there are none, Plaid expects an empty array for this field. 
+          minItems: 1
+          description: Telephone numbers associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
           example:
           - type: HOME
             country: '1'
@@ -891,8 +903,10 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/AccountPaymentNetwork'
+              minItems: 1
               description: >-
-                Array of payment networks. Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH. 
+                Array of payment networks. Plaid expects your organization to return an empty array if this information isn't available. 
+                Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH.                 
               example:                
                 - bankId: '010088889'
                   identifier: '1111222233335820'
@@ -996,10 +1010,11 @@ components:
               type: array
               description: >-
                 An array of accounts with entity types dependent on the
-                account type (deposit, investment, loan, or line of credit).
+                account type (deposit, investment, loan, or line of credit). Plaid expects your organization to return an empty array if this information isn't available.
                 Plaid accepts all account types for this endpoint but consumes account details though `GET accounts/{accountID}` solely for deposit, loan, and line-of-credit accounts.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
+              minItems: 1
               example:
                   - depositAccount:
                       accountId: depositAccount0000001
@@ -1366,7 +1381,9 @@ components:
             transactions:
               description: >-
                 An array of transactions with entity type dependent on the
-                account type. Plaid consumes solely deposit, loan, or line-of-credit transactions.
+                account type.  Plaid expects your organization to return an empty array if this information isn't available. 
+                Plaid consumes solely deposit, loan, or line-of-credit transactions.
+
               type: array
               items:
                 oneOf:
