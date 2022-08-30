@@ -28,7 +28,7 @@ info:
 
     ## Endpoints
 
-    This specification contains the following endpoints: 
+    This specification contains the following endpoints:
 
       - `/customer/current`
 
@@ -41,17 +41,17 @@ info:
       - `/accounts/{accountId}/contacts`
 
       - `/accounts/{accountId}/transactions`
-    
-    ## Mock server
-    
-    See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.0. 
 
-  contact: 
+    ## Mock server
+
+    See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.0.
+
+  contact:
     name: Plaid support
     url: 'https://plaid.com/data-connectivity-core-exchange/'
     email: dataconnectivity@plaid.com
 servers:
-  - url: 'https://api.your-organization.com/fdx/v5'  
+  - url: 'https://api.your-organization.com/fdx/v5'
     description: Financial Data Exchange V5.0 Core API
 tags:
   - name: Personal Information
@@ -60,6 +60,9 @@ tags:
     description: Search and view customer accounts
   - name: Account Transactions
     description: Search and view account transactions
+  - name: Payment Networks Information
+
+    description: Search and view account payment networks
 paths:
 
   ############################################################
@@ -107,7 +110,7 @@ paths:
 
   /accounts:
     get:
-      operationId: listAccounts 
+      operationId: listAccounts
       tags:
         - Account Information
       summary: List all accounts
@@ -123,7 +126,7 @@ paths:
       responses:
         '200':
           description: >-
-            Array of accounts 
+            Array of accounts
           content:
             application/json:
               schema:
@@ -159,7 +162,7 @@ paths:
       responses:
         '200':
           description: >-
-            This can be one of LoanAccount, DepositAccount, or LocAccount     
+            This can be one of LoanAccount, DepositAccount, or LocAccount
           content:
             application/json:
               schema:
@@ -173,7 +176,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
         default:
-          $ref: '#/components/responses/UnexpectedError'                
+          $ref: '#/components/responses/UnexpectedError'
   /accounts/{accountId}/contact:
     get:
       operationId: getAccountContact
@@ -215,6 +218,7 @@ paths:
       operationId: getAccountPaymentNetworks
       tags:
         - Payment Networks Information
+
       description: |
         Get payment networks supported by an account, for example ACH (Automated Clearing House).
         For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
@@ -250,9 +254,10 @@ paths:
       operationId: listAccountTransactions
       tags:
         - Account Transactions
-      description: | 
+      description: |
         List all account transactions.
-        Plaid always queries this endpoint using an `startTime` and `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`, and expects the time filters to be based on the `postedTimestamp`.
+        Plaid always queries this endpoint using an `startTime` and `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`,
+        and expects the time filters to be based on the `postedTimestamp`.
         Plaid consumes information from this endpoint solely for loan, deposit, or line-of-credit (LOC) account types.
 
       summary: List all account transactions
@@ -270,7 +275,7 @@ paths:
       responses:
         '200':
           description: >-
-            Paginated collection of transactions. Plaid consumes the following transaction types: 
+            Paginated collection of transactions. Plaid consumes the following transaction types:
             DepositTransaction, LoanTransaction, or LocTransaction
           content:
             application/json:
@@ -353,7 +358,8 @@ components:
     AccountIdPath:
       name: accountId
       in: path
-      description: Account identifier, found in the `GET /accounts` endpoint response
+      description:  |
+        Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID is a different value from the account number.
       required: true
       schema:
         type: string
@@ -365,12 +371,13 @@ components:
         End time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`.
       schema:
         $ref: '#/components/schemas/DateString'
-    
+
     StartTimeQuery:
       name: startTime
       in: query
       description: >-
         Start time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`.
+
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -426,6 +433,7 @@ components:
     #
     ############################################################
 
+
     Address:
       title: Address
       description: Postal address
@@ -466,17 +474,18 @@ components:
       properties:
         customerId:
           $ref: '#/components/schemas/Identifier'
-          description: >-
+          description: |
             Long-term persistent identity of the customer.
             This identity must be unique within your organization.
             Plaid consumes this customer ID if your organization uses Oauth2 instead of OIDC to secure the API.
-            Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user.
+            Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user
       required:
         - customerId
 
     CustomerWithName:
       title: Customer entity
-      description: Represents a customer. This object uses solely the `name` property of the FDX `Customer` schema.
+      description: |
+        Represents a customer. This object uses solely the `name` property of the FDX `Customer` schema.
       type: object
       properties:
         name:
@@ -487,7 +496,9 @@ components:
 
     CustomerName:
       title: Customer Name entity
-      description: The name of an individual in their role as a customer. If any field is missing (for example, no first name), then respond with an empty string for that field.
+      description: |
+        The name of an individual in their role as a customer. Plaid expects that if any field is missing (for example, no first name),
+        then you respond with an empty string for that field.
       type: object
       allOf:
         - $ref: '#/components/schemas/IndividualName'
@@ -503,7 +514,7 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/Address'
-    
+
     Error:
       title: Error
       description: >-
@@ -612,7 +623,7 @@ components:
           required:
             - code
             - message
-    
+
     InvalidDateRange:
       title: Invalid date range
       type: object
@@ -665,15 +676,15 @@ components:
       required:
         - first
         - last
- 
+
     PageMetadata:
       title: Page Metadata
-      description:  >-
-            Contains opaque identifier, `nextoffset`, for paginated result sets. The `nextOffset` ID does not need to be numeric or have any specific pattern.
-            In other words, your organization can implement this however they wish.
-            The presence of this offset indicates that there is at least one more page of data available.
-            The absence of this offset indicates that there are no more pages of data left in this paginated array.
-            The API consumer returns this in the `offset` parameter in a new request to get the next page in the response array.
+      description:  |
+        Contains opaque identifier, `nextoffset`, for paginated result sets. The `nextOffset` ID doesn't need to be numeric or have any specific pattern.
+        In other words, your organization can implement this however you prefer.
+        The presence of this offset indicates that there's at least one more page of data available.
+        The absence of this offset indicates that there are no more pages of data left in this paginated array.
+        The API consumer returns this in the `offset` parameter in a new request to get the next page in the response array.
       type: object
       properties:
         nextOffset:
@@ -727,12 +738,11 @@ components:
           items:
             $ref: '#/components/schemas/AccountHolder'
           minItems: 1
-          description: >-
+          description: |
             Owners of the account. Plaid expects your organization to return an empty array if this information isn't available.
             Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their contact information in the full `AccountHolder` schema,
             Plaid doesn't consume these associations. Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails, addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
-    
           example:
             - customerId: customer0000001
               relationship: SECONDARY
@@ -752,7 +762,8 @@ components:
           items:
             type: string
           minItems: 1
-          description: Email addresses associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
+          description:  |
+            Email addresses associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
           example:
             - "ernest.m.hemingway@domain.tld"
             - "m.angelou@domain.tld"
@@ -761,7 +772,8 @@ components:
           items:
             $ref: '#/components/schemas/DeliveryAddress'
           minItems: 1
-          description: Physical mail addresses associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
+          description:  |
+            Physical mail addresses associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
           example:
             - type: HOME
               line1:  1850 N Clark St
@@ -781,7 +793,8 @@ components:
           items:
             $ref: '#/components/schemas/TelephoneNumber'
           minItems: 1
-          description: Telephone numbers associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
+          description: |
+            Telephone numbers associated with the account. Plaid expects your organization to return an empty array if this information isn't available.
           example:
           - type: HOME
             country: '1'
@@ -804,15 +817,15 @@ components:
       type: object
       properties:
         accountId:
-          description: >-
+          description: |
             Long-term persistent identity of the account, though not an account number.
-            This identity must be unique within your organization
+            This identity must be unique within your organization.
           $ref: '#/components/schemas/Identifier'
         accountType:
           $ref: '#/components/schemas/AccountType'
           description: Account type
         accountNumberDisplay:
-          description: >-
+          description: |
             Account display number for the end user's handle at the owning financial
             institution.
             Plaid expects that the last 4 digits of this masked number correspond to the last 4 digits of the account number.
@@ -822,7 +835,9 @@ components:
           type: string
           description: Marketed product name for this account. Used in UIs to assist in account selection
         nickname:
-          description: Name given by the user. Used in UIs to assist in account selection. Plaid recommends returning this only if the account permits user renaming.
+          description: |
+            Name given by the user. Used in UIs to assist in account selection.
+            Plaid recommends returning this only if the account permits user renaming.
           type: string
         status:
           $ref: '#/components/schemas/AccountStatus'
@@ -863,14 +878,14 @@ components:
           $ref: '#/components/schemas/PaymentNetworkType'
         transferIn:
           type: boolean
-          description: >-
-            Can transfer funds to the account using this information.
-            Plaid expect that this is a static value representing the account's ability to be credited through a payment network.
+          description: |
+            Can transfer funds to the account using this information. Plaid expect that this value represents the account's current ability to be credited through a payment network.
+            Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
         transferOut:
           type: boolean
-          description: >-
-            Can transfer funds from the account using this information.
-            Plaid expect that this is a static value representing the account's ability to be debited through a payment network.
+          description: |
+            Can transfer funds from the account using this information. Plaid expect that this value represents the account's current ability to be debited through a payment network.
+            Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
       required:
         - bankId
         - identifier
@@ -891,7 +906,7 @@ components:
               items:
                 $ref: '#/components/schemas/AccountPaymentNetwork'
               minItems: 1
-              description: >-
+              description: |
                 Array of payment networks. Plaid expects your organization to return an empty array if this information isn't available.
                 Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH.
               example:
@@ -994,7 +1009,7 @@ components:
           properties:
             accounts:
               type: array
-              description: >-
+              description: |
                 An array of accounts with entity types dependent on the
                 account type (deposit, investment, loan, or line of credit). Plaid expects your organization to return an empty array if this information isn't available.
                 Plaid accepts all account types for this endpoint but consumes account details though `GET accounts/{accountID}` solely for deposit, loan, and line-of-credit accounts.
@@ -1056,12 +1071,12 @@ components:
           properties:
             currentBalance:
               type: number
-              description: >-
+              description: |
                 The total amount of money in the account (sum of all posted/cleared transactions, not including pending transactions).
                 For Plaid's full definition, see the [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-current).
             availableBalance:
               type: number
-              description:  >-
+              description:  |
                 The money in the account available to spend (sum of all transactions, plus or minus pending transactions).
                 For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available).
           required:
@@ -1083,7 +1098,8 @@ components:
               description: Payee name
             checkNumber:
               type: integer
-              description: Check number. Plaid expects this solely if the transaction involves a check.
+              description: |
+                Check number. Plaid expects this solely if the transaction involves a check.
 
     LoanAccount:
       title: Loan Account entity
@@ -1200,7 +1216,7 @@ components:
         * `nextPaymentDate`
         * `purchasesApr`
         For all monetary amounts, for example for `currentBalance`, Plaid expects an decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
-        
+
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1268,7 +1284,7 @@ components:
         lastStmtDate: "2022-03-25"
         purchasesApr: 10.25
         advancesApr: 15.75
-    
+
     LocTransaction:
       title: Line-Of-Credit Transaction entity
       description: A line-of-credit transaction
@@ -1301,14 +1317,13 @@ components:
             of the authorization transaction
           $ref: '#/components/schemas/Identifier'
         postedTimestamp:
-          description: >-
+          description: |
             The date and time that the transaction was posted to the account. If
             not provided then TransactionTimestamp can be used as
             PostedTimeStamp.
             Plaid expects that your organization doesn't pass this property for `PENDING` transactions,
             and validates that your organization passes this property for `POSTED` transactions.
-            If not provided then TransactionTimestamp can be used as
-            PostedTimeStamp.
+            If not provided then TransactionTimestamp can be used as PostedTimeStamp.
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: >-
@@ -1322,7 +1337,8 @@ components:
           $ref: '#/components/schemas/DebitCreditMemo'
         category:
           type: string
-          description: Transaction category, preferably MCC or SIC. Plaid expects your organization to provide MCC, if available.
+          description: |
+            Transaction category, preferably MCC or SIC. Plaid expects your organization to provide MCC, if available.
         subCategory:
           type: string
           description: Transaction category detail
@@ -1355,7 +1371,7 @@ components:
         - type: object
           properties:
             transactions:
-              description: >-
+              description: |
                 An array of transactions with entity type dependent on the
                 account type.  Plaid expects your organization to return an empty array if this information isn't available.
                 Plaid consumes solely deposit, loan, or line-of-credit transactions.
@@ -1470,7 +1486,7 @@ components:
       type: string
       maxLength: 256
       example: someLongTermUniqueIDString
-    
+
     Iso3166CountryCode:
       title: ISO 3166 Country Code
       description: ISO 3166 Codes for the representation of names of countries and their subdivisions
@@ -1719,7 +1735,7 @@ components:
         - ZA
         - ZM
         - ZW
-    
+
     Iso4217Code:
       title: ISO 4217 Code
       description: ISO 4217 Currency codes
@@ -1936,7 +1952,6 @@ components:
     # Core data types
     #
     ############################################################
-
     AccountStatus:
       title: Account Status
       description: The status of an account.
@@ -1954,26 +1969,25 @@ components:
     AccountType:
       title: Account Type
       description: |
-    
+        
         The type of an account.
         Plaid consumes basic balance account information from the `accounts/{id}` endpoint for a subset of the possible account types described in the FDX specification.
         These account types are in the following categories: deposit, line-of-credit, and loan accounts.
         In addition, Plaid consumes more detailed account information for the following account types:
-    
-        Deposit accounts
-        ====
-        CHECKING
-        SAVINGS
-    
-        Loan accounts
-        ===
-        MORTGAGE
-        STUDENTLOAN
-        Line-of-credit accounts
-        ===
-        CREDITCARD
-    
-    
+        
+        For Deposit accounts, Plaid consumes:
+        
+        - `CHECKING`
+        - `SAVINGS`
+        
+        For Loan accounts, Plaid consumes:
+        
+        - `MORTGAGE`
+        - `STUDENTLOAN`
+        
+        For Line-of-credit accounts, Plaid consumes:
+        
+        - `CREDITCARD`
       type: string
       enum:
         - 401A
@@ -2041,7 +2055,6 @@ components:
         * `DEBIT`: An amount leaves the account
         * `CREDIT`: An amount enters the account
         * `MEMO`: A pending transaction to be completed at the end of this day.
-    
       type: string
       enum:
         - CREDIT
@@ -2101,9 +2114,10 @@ components:
         - DOUBLE_UP_PAYMENT
         - PAYOFF
 
+
     LocTransactionType:
       title: Line-Of-Credit Transaction Type
-      description: >-
+      description: |
         The type of a line-of-credit transaction. Plaid passes through all transaction types.
       type: string
       enum:
@@ -2116,7 +2130,7 @@ components:
 
     PaymentNetworkType:
       title: Payment Network Type
-      description: >-
+      description: |
         Suggested values for Payment Network Type. `US_` refers to the USA, and `CA_` refers to Canada.
         <table>
         <thead>
