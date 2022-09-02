@@ -204,7 +204,9 @@ paths:
       tags:
         - Payment Networks Information
 
-      description: Get payment networks supported by the account
+      description: |
+        Get payment networks supported by an account, for example ACH (Automated Clearing House).
+        For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
       summary: Get payment networks supported by the account
       security:
       - openIdConnect:
@@ -311,8 +313,8 @@ paths:
             type: integer
       responses:
         '200':
-          description: >-
-            Paginated collection of transactions, which can be one of
+          description: |
+            Paginated collection of transactions. Plaid consumes the following transaction types:
             DepositTransaction, LoanTransaction, or LocTransaction
           content:
             application/json:
@@ -658,8 +660,8 @@ components:
 
     CustomerWithId:
       title: Customer entity.
-      description: >-
-        Represents a customer. This object uses solely the `customerId` property of the FDX `Customer` schema.
+      description: |
+        Represents a customer. Plaid-specific schema created to hold one property, the `customerId` property of the FDX `Customer` schema.
       type: object
       properties:
         customerId:
@@ -674,20 +676,20 @@ components:
 
     CustomerWithName:
       title: Customer entity
-      description: Represents a customer. This object uses solely the `name` property of the FDX `Customer` schema.
+      description: |
+        Represents a customer. Plaid-specific schema created to hold one property, the `name` property of the FDX `Customer` schema.
       type: object
       properties:
         name:
           $ref: '#/components/schemas/CustomerName'
-          description: The customer's name. Plaid expects at least one populated name field. If any field is missing (for example, no first name), then respond with an empty string for that field.
       required:
         - name
 
     CustomerName:
       title: Customer Name entity
       description: |
-        The name of an individual in their role as a customer. Plaid expects that if any field is missing (for example, no first name),
-        then you respond with an empty string for that field.
+        The name of an individual in their role as a customer. Plaid expects at least one populated name field.
+        If any field is missing (for example, no first name), then you respond with an empty string for that field.
       type: object
       allOf:
         - $ref: '#/components/schemas/IndividualName'
@@ -733,7 +735,6 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/TelephoneNumberType'
-          description: 'Type of phone number: HOME, BUSINESS, CELL, FAX'
         country:
           type: string
           maxLength: 3
@@ -849,7 +850,6 @@ components:
           $ref: '#/components/schemas/Identifier'
         accountType:
           $ref: '#/components/schemas/AccountType'
-          description: Account type
         accountNumberDisplay:
           description: |
             Account display number for the end user's handle at the owning financial
@@ -1984,7 +1984,6 @@ components:
     AccountType:
       title: Account Type
       description: |
-       
        The type of an account.
        Plaid consumes basic balance account information from the `accounts/{id}` endpoint for a subset of the possible account types described in the FDX specification.
        These account types are in the following categories: deposit, line-of-credit, and loan accounts.
@@ -1992,17 +1991,17 @@ components:
        
        For Deposit accounts, Plaid consumes:
        
-       - `CHECKING`
-       - `SAVINGS`
+       * `CHECKING`
+       * `SAVINGS`
        
        For Loan accounts, Plaid consumes:
        
-       - `MORTGAGE`
-       - `STUDENTLOAN`
+       * `MORTGAGE`
+       * `STUDENTLOAN`
        
        For Line-of-credit accounts, Plaid consumes:
        
-       - `CREDITCARD`
+       * `CREDITCARD`
       type: string
       enum:
         - 401A
@@ -2062,7 +2061,7 @@ components:
     DebitCreditMemo:
       title: DebitCreditMemo
       description:  |
-        The posting type of a transaction. The transaction amount is always positive, and this parameter indicates the direction of the transaction.
+        The posting type of a transaction. The transaction amount is an absolute value, and this parameter indicates the direction of the transaction.
         Plaid expects `DEBIT` or `CREDIT` for this enum. Plaid expects that your organization indicates
         the `MEMO` (i.e., pending) status using the `status` field in the transaction response rather than this field.
         If your organization sends `MEMO` in this `DebitCreditMemo` enum, Plaid
@@ -2078,7 +2077,9 @@ components:
 
     DepositTransactionType:
       title: Deposit Transaction Type
-      description: The type of a deposit transaction. "FEE" and "INTEREST" values are
+      description:  |
+        The type of a deposit transaction. Plaid passes through all deposit transaction types.
+        "FEE" and "INTEREST" values are
         replacing "FEE INTEREST" value which is now deprecated and will be removed in v5.0
       type: string
       enum:
@@ -2108,7 +2109,8 @@ components:
 
     LoanTransactionType:
       title: Loan Transaction Type
-      description: The type of a loan transaction
+      description: |
+        The type of a loan transaction. Plaid passes through all loan transaction types.
       type: string
       enum:
         - ADJUSTMENT
@@ -2119,7 +2121,7 @@ components:
     LocTransactionType:
       title: Line-Of-Credit Transaction Type
       description: |
-        The type of a line-of-credit transaction. Plaid passes through all transaction types.
+        The type of a line-of-credit (LOC) transaction. Plaid passes through all LOC transaction types.
       type: string
       enum:
         - ADJUSTMENT
