@@ -1137,6 +1137,11 @@ components:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
           properties:
+            accountNumber:
+              type: string
+              description: >-
+                Full account number for the end user's handle for
+                the account at the owning institution
             principalBalance:
               type: number
               description: Principal balance of loan.
