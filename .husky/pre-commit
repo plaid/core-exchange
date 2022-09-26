@@ -1,0 +1,22 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+echo "If you run into issues while running this task make sure you have dev dependencies installed by running 'npm install'"
+echo "Running pre commit tasks: "
+if [ $(git diff --cached -- src | wc -l) -gt "0" ]; then
+    echo "Changes Detected"
+    echo "Compiling"
+    ts-node ./scripts/run-template.ts
+    git add dist/
+    echo "Validating"
+    npx spectral lint --ruleset=.spectral.yaml ./dist/versions/**/corex.yaml
+    echo "Backward compatible OAS versions"
+    make downgrade-oas-version
+    git add .backward-compatible-versions
+    echo "Updating doc Markdown"
+    for path in src/versions/* ; do
+      version=$(echo $path| sed -E 's/src\/versions\/(..)/\1/')
+      bcv=$(echo $version| sed 's/\.//')
+      npx openapi-generator-cli generate -g markdown -o docs/"$version"/markdown -i .backward-compatible-versions/corex-$bcv-304.yaml
+    done
+    git add docs/
+fi

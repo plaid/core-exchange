@@ -1,0 +1,11 @@
+.api-container {
+    all: initial !important;
+}
+
+.no-top-margin {
+    margin-top: -2.5rem !important;
+}
+
+div[class^='react-tabs'] code{
+    color: rgb(255, 255, 255) !important
+}
