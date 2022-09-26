@@ -1069,7 +1069,7 @@ components:
       title: Deposit Account entity
       description: |
         Information for a deposit account type. Plaid consumes the same information for the `GET /accounts/{accountID}` for all deposit accounts.
-        For all monetary amounts, for example for `currentBalance`, Plaid expects an decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        For all monetary amounts, for example for `currentBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1199,7 +1199,7 @@ components:
       description: |
         Plaid consumes all `InvestmentAccount` FDX fields for all investment account types.
         In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information.
-        For all monetary amounts, for example for `currentValue`, Plaid expects an dec
+        For all monetary amounts, for example for `currentBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1365,7 +1365,7 @@ components:
         * `originalPrincipal`
         * `originatingDate`
         
-        For all monetary amounts, for example for `escrowBalance`, Plaid expects an decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        For all monetary amounts, for example for `escrowBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1452,7 +1452,7 @@ components:
         * `minimumPaymentAmount`
         * `nextPaymentDate`
         * `purchasesApr`
-        For all monetary amounts, for example for `currentBalance`, Plaid expects an decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        For all monetary amounts, for example for `currentBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
 
       type: object
       allOf:
@@ -1539,7 +1539,7 @@ components:
     Transaction:
       title: Transaction
       description: |
-        Base entity for financial transactions. For monetary amounts, Plaid expects an decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        Base entity for financial transactions. For monetary amounts, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
       type: object
       properties:
         transactionId:
