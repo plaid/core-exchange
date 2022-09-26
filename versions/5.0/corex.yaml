@@ -151,6 +151,7 @@ paths:
         Get account balances, liabilities, and other information. Plaid uses this endpoint to:
         - Get account balances for deposit accounts, for example, `CHECKING` or `SAVINGS`. For more information about how Plaid uses this information, see [Plaid Balance API](https://plaid.com/docs/api/products/balance/).
         - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
+        - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
         For more information, see the example response descriptions.
       security:
       - openIdConnect:
@@ -162,7 +163,7 @@ paths:
       responses:
         '200':
           description: >-
-            This can be one of LoanAccount, DepositAccount, or LocAccount
+            This can be one of InvestmentAccount, LoanAccount, DepositAccount, or LocAccount
           content:
             application/json:
               schema:
@@ -258,7 +259,7 @@ paths:
         List all account transactions.
         Plaid always queries this endpoint using an `startTime` and `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`,
         and expects the time filters to be based on the `postedTimestamp`.
-        Plaid consumes information from this endpoint solely for loan, deposit, or line-of-credit (LOC) account types.
+        Plaid consumes information from this endpoint solely for deposit, investment, loan, or line-of-credit (LOC) account types.
 
       summary: List all account transactions
       security:
@@ -276,7 +277,7 @@ paths:
         '200':
           description: |
             Paginated collection of transactions. Plaid consumes the following transaction types:
-            DepositTransaction, LoanTransaction, or LocTransaction
+            InvestmentTransaction, DepositTransaction, LoanTransaction, or LocTransaction
           content:
             application/json:
               schema:
@@ -929,6 +930,13 @@ components:
           additionalProperties: false
         - type: object
           properties:
+            investmentAccount:
+              $ref: '#/components/schemas/InvestmentAccount'
+          required:
+            - investmentAccount
+          additionalProperties: false
+        - type: object
+          properties:
             loanAccount:
               $ref: '#/components/schemas/LoanAccount'
           required:
@@ -1009,7 +1017,8 @@ components:
               description: |
                 An array of accounts with entity types dependent on the
                 account type (deposit, investment, loan, or line of credit). Plaid expects your organization to return an empty array if this information isn't available.
-                Plaid accepts all account types for this endpoint but consumes account details though `GET accounts/{accountID}` solely for deposit, loan, and line-of-credit accounts.
+                Plaid accepts all account types for this endpoint but consumes account details
+                through `GET accounts/{accountID}` solely for  deposit, investment, loan, and line-of-credit accounts.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1098,12 +1107,237 @@ components:
               description: |
                 Check number. Plaid expects this solely if the transaction involves a check.
 
+    Holding:
+      title: Holding entity
+      description: |
+        A holding in an investment account.
+        Plaid maps the `holding` and the `investmentAccount` FDX models to its
+        securities models, which hold universal information like the ticker symbol, and to its holdings models, which hold account-specific information like balances.
+        For more information, see [Plaid investments](https://plaid.com/docs/investments/#securities-and-holdings).
+      allOf:
+        - type: object
+          properties:
+            securityId:
+              description: |
+                Plaid requires this field and `securityIdType` for:
+                - holding types that use security IDs, such as stocks and options.
+                - transactions involving such holding types.
+                If you return this for a holding, Plaid looks up the close price from NYSE Group Security Master using the security ID.
+                If you don't return this for a holding that uses security IDs (not recommended), Plaid uses the `currentUnitPrice` you return as the close price.
+              type: string
+            securityIdType:
+              $ref: '#/components/schemas/SecurityIdType'
+            holdingName:
+              type: string
+              description: Holding name or security name
+            holdingType:
+              $ref: '#/components/schemas/HoldingType'
+            holdingSubType:
+              $ref: '#/components/schemas/HoldingSubType'
+              description: MONEYMARKET, CASH
+            symbol:
+              type: string
+              description: Ticker / Market symbol
+            purchasedPrice:
+              type: number
+              description: |
+                Price of holding at the time of purchase.
+                Plaid determines an approximate [cost basis](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-cost-basis)
+                using the purchase price and the number of units. Plaid cannot take fees into account to determine the cost basis
+                because the FDX holding schema doesn't include fees.
+            currentUnitPrice:
+              type: number
+              description:  |
+                Current unit price. Plaid uses this as the [institution_price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-institution-price).
+                Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-close-price)
+                if you don't return `securityId` for a security holding.
+            currentUnitPriceDate:
+              $ref: '#/components/schemas/DateString'
+              description: Current unit price as of date
+            units:
+              type: number
+              description: For security-based actions other than stock splits, quantity.
+                Shares for stocks, mutual funds, and others. Face value for bonds.
+                Contracts for options.
+            marketValue:
+              type: number
+              description: Market value at the time of data retrieved
+            faceValue:
+              type: number
+              description: |
+                Required for bonds. Face value at the time of data retrieved. If this isn't present,
+                Plaid assumes the holding  isn't a bond and falls back to `marketValue`.
+            cashAccount:
+              type: boolean
+              description: |
+                If true, indicates that this holding is used to maintain proceeds
+                from sales, dividends, and other cash postings to the investment account.
+                If you don't set a value for `isCashEquivalent` in the `fiAttributes` array,
+                then Plaid uses `cashAccount` in determining the [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
+                status.
+            currency:
+              $ref: '#/components/schemas/Currency'
+              description: Currency information if it is different from Account entity.
+            fiAttributes:
+              type: array
+              description: |
+                Array of financial institution-specific attributes.
+                Plaid recommends including a value for [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
+                property in this array.
+                Plaid accepts `isCashEquivalent` as the name and a string `true` or `false` as the value.
+                If you return a value for `isCashEquivalent`, then return the same value for `cashAccount` as a boolean.
+              items:
+                $ref: '#/components/schemas/FiAttribute'
+          required:
+            - cashAccount
+            - currentUnitPrice
+            - marketValue
+            - units
+
+    InvestmentAccount:
+      title: Investment Account entity
+      description: |
+        Plaid consumes all `InvestmentAccount` FDX fields for all investment account types.
+        In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information.
+        For all monetary amounts, for example for `currentValue`, Plaid expects an dec
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            availableCashBalance:
+              type: number
+              description: >-
+                Cash balance across all sub-accounts. Plaid expects that this includes sweep funds.
+            balanceAsOf:
+              description: |
+                As-of date of balances.
+              $ref: '#/components/schemas/Timestamp'
+            currentValue:
+              type: number
+              description:  >-
+                Total current value of all investments.
+            holdings:
+              type: array
+              description: |
+                Holdings in the investment account.
+                Plaid maps the `holding` and the `investmentAccount` FDX models to its
+                securities models, which hold universal information like the ticker symbol, and to its holdings models, which hold account-specific information like balances.
+                For more information, see [Plaid investments](https://plaid.com/docs/investments/#securities-and-holdings).
+              items:
+                $ref: '#/components/schemas/Holding'
+          required:
+            - availableCashBalance
+            - currentValue
+
+    InvestmentTransaction:
+      title: Investment Transaction entity
+      description: Specific transaction information
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/InvestmentNonSecurityTransaction'
+        - $ref: '#/components/schemas/InvestmentSecurityTransaction'
+
+    InvestmentNonSecurityTransaction:
+      title: Non-security Investment Transaction entity
+      description: |
+        Plaid-specific schema created to document which FDX fields Plaid requires for investment transactions that don't involve securities.
+        For these transactions, Plaid requires all the fields in the base `Transaction` model in addition to the following fields:
+        
+        * `fees`
+        * `transactionType`
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Transaction'
+        - type: object
+          properties:
+            transactionType:
+              $ref: '#/components/schemas/InvestmentTransactionType'
+            commission:
+              type: number
+              description: |
+                Plaid expects that your organization includes a value for commission if the commission isn't included in `fees`.
+            fees:
+              type: number
+              description: |
+                Fees applied to the trade. Plaid expects that the `fees` include the commission, unless your organization separately provides a value for `commission`.
+          required:
+            - fees
+            - transactionType
+
+    InvestmentSecurityTransaction:
+      title: Security Investment Transaction entity
+      description: An investment transaction involving a security
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Transaction'
+        - type: object
+          properties:
+            transactionType:
+              $ref: '#/components/schemas/InvestmentTransactionType'
+            securityId:
+              type: string
+              description: |
+                Plaid requires this field and `securityIdType` for:
+                - holding types that use security IDs, such as stocks and options.
+                - transactions involving such holding types.
+                If you return this for a holding, Plaid looks up the close price from NYSE Group Security Master using the security ID.
+                If you don't return this for a holding that uses security IDs (not recommended), Plaid uses the `currentUnitPrice` you return as the close price.
+            securityIdType:
+              $ref: '#/components/schemas/SecurityIdType'
+            securityType:
+              $ref: '#/components/schemas/SecurityType'
+              description: STOCK, MUTUALFUND, DEBT, OPTION, SWEEP, OTHER, BOND
+            symbol:
+              type: string
+              description: Ticker symbol
+            commission:
+              type: number
+              description: |
+                Plaid expects that your organization includes a value for commission if the commission isn't included in `fees`.
+            fees:
+              type: number
+              description: |
+                Fees applied to the trade. Plaid expects that the `fees` include the commission, unless your organization separately provides a value for `commission`.
+            unitPrice:
+              type: number
+              description: >-
+                Price per commonly-quoted unit. Does not include
+                markup/markdown, unitprice. Share price for stocks, mutual
+                funds, and others. Percentage of par for bonds. Per share (not
+                contract) for options
+            units:
+              type: number
+              description: >-
+                For security-based actions other than stock splits, quantity.
+                Shares for stocks, mutual funds, and others. Face value for bonds.
+                Contracts for options
+            unitType:
+              $ref: '#/components/schemas/UnitType'
+              description: SHARES, CURRENCY
+            fiAttributes:
+              type: array
+              description: |
+                Array of financial institution-specific attributes.
+                Plaid recommends including a value for [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-is-cash-equivalent)
+                property in this array.
+                Plaid accepts `isCashEquivalent` as the name and a string `true` or `false` as the value.
+              items:
+                $ref: '#/components/schemas/FiAttribute'
+          required:
+            - fees
+            - transactionType
+            - unitPrice
+            - units
+
     LoanAccount:
       title: Loan Account entity
       description: |
         A loan account type. Plaid consumes solely the MORTGAGE and STUDENTLOAN types for its Liabilities product, and for other loan account types, consumes account details and transactions.
         Plaid consumes the following in addition the information returned by the  `GET \accounts` endpoint:
+        
         For all loan account types, Plaid consumes:
+        
         * `principalBalance`
         
         For `STUDENTLOAN`, Plaid additionally consumes:
@@ -1202,7 +1436,8 @@ components:
     LocAccount:
       title: Line-Of-Credit Account entity
       description:  |
-        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the  `GET \accounts` endpoint:
+        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the  `GET \accounts` endpoint.
+        
         * `availableCredit`
         * `creditLine`
         * `currentBalance`
@@ -1309,7 +1544,7 @@ components:
       properties:
         transactionId:
           description: >-
-            Long term persistent identity of the transaction (unique to account). Plaid expects that `status: PENDING` and and `status: POSTED` transactions have different IDs.
+            Long term persistent identity of the transaction (unique to account). Plaid expects that `status: PENDING` and `status: POSTED` transactions have different IDs.
           $ref: '#/components/schemas/Identifier'
         referenceTransactionId:
           description: >-
@@ -1328,9 +1563,9 @@ components:
             If not provided then TransactionTimestamp can be used as PostedTimeStamp.
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
-          description: >-
+          description: |
             The date and time that the transaction was added to the server
-            backend systems.
+            backend systems. This acts as postedTimestamp when postedTimestamp is not present (pending transaction).
           $ref: '#/components/schemas/Timestamp'
         description:
           type: string
@@ -1340,7 +1575,7 @@ components:
         category:
           type: string
           description: |
-            Transaction category, preferably MCC or SIC. Plaid expects your organization to provide MCC, if available.
+            Transaction category, preferably MCC or SIC. Plaid expects your organization to provide MCC, if available and applicable.
         subCategory:
           type: string
           description: Transaction category detail
@@ -1376,7 +1611,10 @@ components:
               description: |
                 An array of transactions with entity type dependent on the
                 account type.  Plaid expects your organization to return an empty array if this information isn't available.
-                Plaid consumes solely deposit, loan, or line-of-credit transactions.
+                Plaid consumes solely investment, deposit, loan, and line-of-credit transactions.
+                For investment transactions, Plaid uses Plaid-specific schemas (`investmentSecurityTransaction` and
+                `investmentNonSecurityTransaction`) to document which FDX fields Plaid requires for investment transactions
+                involving securities versus transactions that don't involve securities.
               type: array
               items:
                 oneOf:
@@ -1386,6 +1624,14 @@ components:
                         $ref: '#/components/schemas/DepositTransaction'
                     required:
                       - depositTransaction
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      investmentTransaction:
+                        $ref: '#/components/schemas/InvestmentTransaction'
+                        description: An investment transaction
+                    required:
+                      - investmentTransaction
                     additionalProperties: false
                   - type: object
                     properties:
@@ -1968,24 +2214,27 @@ components:
     AccountType:
       title: Account Type
       description: |
+        
         The type of an account.
         Plaid consumes basic balance account information from the `accounts/{id}` endpoint for a subset of the possible account types described in the FDX specification.
         These account types are in the following categories: deposit, line-of-credit, and loan accounts.
         In addition, Plaid consumes more detailed account information for the following account types:
         
-        For Deposit accounts, Plaid consumes:
+        For Deposit accounts, Plaid consumes more detailed information for:
         
         * `CHECKING`
         * `SAVINGS`
         
-        For Loan accounts, Plaid consumes:
+        For Loan accounts, Plaid consumes more detailed information for:
         
         * `MORTGAGE`
         * `STUDENTLOAN`
         
-        For Line-of-credit accounts, Plaid consumes:
+        For Line-of-credit accounts, Plaid consumes more detailed information for:
         
         * `CREDITCARD`
+        
+        For Investment accounts, Plaid consumes the same level of detail for all account types.
       type: string
       enum:
         - 401A
@@ -2080,6 +2329,41 @@ components:
         - TRANSFER
         - WITHDRAWAL
 
+    FiAttribute:
+      title: FI Attribute entity
+      description: Financial Institution provider-specific attribute
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of attribute
+        value:
+          type: string
+          description: Value of attribute
+
+    HoldingSubType:
+      title: Holding SubType
+      description:
+      type: string
+      enum:
+        - CASH
+        - MONEYMARKET
+
+    HoldingType:
+      title: Holding Type
+      description: |
+        Plaid maps the holding type to the Plaid [security type](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-type).
+        Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (CASH, MONEYMARKET).
+      type: string
+      enum:
+        - ANNUITY
+        - BOND
+        - CD
+        - MUTUALFUND
+        - OPTION
+        - OTHER
+        - STOCK
+
     InterestRateType:
       title: Interest Rate Type
       description: The type of interest rate
@@ -2087,6 +2371,99 @@ components:
       enum:
         - FIXED
         - VARIABLE
+
+    InvestmentTransactionType:
+      title: Investment Transaction Type
+      description: |
+        The type of an investment transaction.
+        Plaid maps these enums to Plaid [investment transaction types](https://plaid.com/docs/api/accounts/#investment-transaction-types-schema).
+        Plaid doesn't map these enums to Plaid-specific transaction subtypes.
+        Plaid maps these enums as follows:
+        
+        * ADJUSTMENT - fee
+        * ATM - cash
+        * CASH - cash
+        * CHECK - cash
+        * CLOSURE - Plaid suggests using SOLDTOCLOSE, PURCHASETOCLOSE, OPTIONEXERCISE or OPTIONEXPIRATION to indicate the specific type of closure, instead of using this enum.
+        * CLOSUREOPT - Plaid suggests using SOLDTOCLOSE, PURCHASETOCLOSE, OPTIONEXERCISE or OPTIONEXPIRATION to indicate the specific type of closure, instead of using this enum.
+        * CONTRIBUTION - buy (if transaction involves a security) or cash
+        * DEP - cash
+        * DEPOSIT - cash
+        * DIRECTDEBIT - cash
+        * DIRECTDEP - cash
+        * DIV - cash
+        * DIVIDEND - cash
+        * DIVIDENDREINVEST - buy
+        * EXPENSE - cash
+        * FEE - fee
+        * INCOME - cash
+        * INTEREST - cash
+        * INVEXPENSE - cash
+        * JRNLFUND - transfer
+        * JRNLSEC - transfer
+        * MARGININTEREST - cash
+        * OPTIONEXERCISE - transfer
+        * OPTIONEXPIRATION - transfer
+        * OTHER - cash - (unclassified)
+        * PAYMENT - cash
+        * POS - cash
+        * PURCHASED - buy
+        * PURCHASEDTOCOVER - buy
+        * PURCHASETOCLOSE - buy
+        * PURCHASETOOPEN - buy
+        * REINVESTOFINCOME - buy
+        * REPEATPMT - cash
+        * RETURNOFCAPITAL - cash
+        * SOLD - sell
+        * SOLDTOCLOSE - sell
+        * SOLDTOOPEN - sell
+        * SPLIT - transfer
+        * SRVCHG - fee
+        * TRANSFER - transfer
+        * XFER - transfer
+      type: string
+      enum:
+        - ADJUSTMENT
+        - ATM
+        - CASH
+        - CHECK
+        - CLOSURE
+        - CLOSUREOPT
+        - CONTRIBUTION
+        - DEP
+        - DEPOSIT
+        - DIRECTDEBIT
+        - DIRECTDEP
+        - DIV
+        - DIVIDEND
+        - DIVIDENDREINVEST
+        - EXPENSE
+        - FEE
+        - INCOME
+        - INTEREST
+        - INVEXPENSE
+        - JRNLFUND
+        - JRNLSEC
+        - MARGININTEREST
+        - OPTIONEXERCISE
+        - OPTIONEXPIRATION
+        - OTHER
+        - PAYMENT
+        - POS
+        - PURCHASED
+        - PURCHASEDTOCOVER
+        - PURCHASETOCLOSE
+        - PURCHASETOOPEN
+        - REINVESTOFINCOME
+        - REPEATPMT
+        - RETURNOFCAPITAL
+        - SOLD
+        - SOLDTOCLOSE
+        - SOLDTOOPEN
+        - SPLIT
+        - SRVCHG
+        - TRANSFER
+        - XFER
 
     LoanTransactionType:
       title: Loan Transaction Type
@@ -2167,6 +2544,29 @@ components:
         - CA_ACSS
         - CA_LVTS
 
+    SecurityIdType:
+      title: Security Id Type
+      description: |
+        Plaid consumes solely CUSIP, ISIN, and SEDOL.
+      type: string
+      enum:
+        - CUSIP
+        - ISIN
+        - SEDOL
+
+    SecurityType:
+      title: Security Type
+      description: The type of a security
+      type: string
+      enum:
+        - BOND
+        - DEBT
+        - MUTUALFUND
+        - OPTION
+        - OTHER
+        - STOCK
+        - SWEEP
+
     TransactionStatus:
       title: Transaction Status
       description:  |
@@ -2183,3 +2583,11 @@ components:
         - MEMO
         - PENDING
         - POSTED
+
+    UnitType:
+      title: Unit Type
+      description: The units of an investment transaction
+      type: string
+      enum:
+        - CURRENCY
+        - SHARES

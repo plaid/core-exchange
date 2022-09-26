@@ -910,7 +910,8 @@ components:
               description: |
                 An array of accounts with entity types dependent on the
                 account type (deposit, investment, loan, or line of credit). Plaid expects your organization to return an empty array if this information isn't available.
-                Plaid accepts all account types for this endpoint but consumes account details though `GET accounts/{accountID}` solely for deposit, loan, and line-of-credit accounts.
+                Plaid accepts all account types for this endpoint but consumes account details
+                through `GET accounts/{accountID}` solely for deposit, loan, and line-of-credit accounts.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1117,7 +1118,7 @@ components:
                 For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available).
           required:
             - currentBalance
-            - availableBalance}
+            - availableBalance
 
     DepositTransaction:
       title: Deposit Transaction entity
@@ -1142,7 +1143,9 @@ components:
       description: |
         A loan account type. Plaid consumes solely the MORTGAGE and STUDENTLOAN types for its Liabilities product, and for other loan account types, consumes account details and transactions.
         Plaid consumes the following in addition the information returned by the  `GET \accounts` endpoint:
+        
         For all loan account types, Plaid consumes:
+        
         * `principalBalance`
         
         For `STUDENTLOAN`, Plaid additionally consumes:
@@ -1240,7 +1243,8 @@ components:
     LocAccount:
       title: Line-Of-Credit Account entity
       description:  |
-        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the  `GET \accounts` endpoint:
+        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the  `GET \accounts` endpoint.
+        
         * `availableCredit`
         * `creditLine`
         * `currentBalance`
@@ -1345,7 +1349,7 @@ components:
       properties:
         transactionId:
           description: >-
-            Long term persistent identity of the transaction (unique to account). Plaid expects that `status: PENDING` and and `status: POSTED` transactions have different IDs.
+            Long term persistent identity of the transaction (unique to account). Plaid expects that `status: PENDING` and `status: POSTED` transactions have different IDs.
           $ref: '#/components/schemas/Identifier'
         referenceTransactionId:
           description: >-
@@ -1376,7 +1380,7 @@ components:
         category:
           type: string
           description: |
-            Transaction category, preferably MCC or SIC. Plaid expects your organization to provide MCC, if available.
+            Transaction category, preferably MCC or SIC. Plaid expects your organization to provide MCC, if available and applicable.
         subCategory:
           type: string
           description: Transaction category detail
@@ -1412,7 +1416,7 @@ components:
               description: |
                 An array of transactions with entity type dependent on the
                 account type.  Plaid expects your organization to return an empty array if this information isn't available.
-                Plaid consumes solely deposit, loan, or line-of-credit transactions.
+                Plaid consumes solely deposit, loan, and line-of-credit transactions.
               type: array
               items:
                 oneOf:
@@ -1989,17 +1993,17 @@ components:
        These account types are in the following categories: deposit, line-of-credit, and loan accounts.
        In addition, Plaid consumes more detailed account information for the following account types:
        
-       For Deposit accounts, Plaid consumes:
+       For Deposit accounts, Plaid consumes more detailed information for:
        
        * `CHECKING`
        * `SAVINGS`
        
-       For Loan accounts, Plaid consumes:
+       For Loan accounts, Plaid consumes more detailed information for:
        
        * `MORTGAGE`
        * `STUDENTLOAN`
        
-       For Line-of-credit accounts, Plaid consumes:
+       For Line-of-credit accounts, Plaid consumes more detailed information for:
        
        * `CREDITCARD`
       type: string
