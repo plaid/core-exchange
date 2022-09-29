@@ -1147,16 +1147,18 @@ components:
                 because the FDX holding schema doesn't include fees.
             currentUnitPrice:
               type: number
-              description:  |
+              description: |
                 Current unit price. Plaid uses this as the [institution_price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-institution-price).
                 Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-close-price)
-                if you don't return `securityId` for a security holding.
+                if you don't return `securityId` for holdings involving securities.
             currentUnitPriceDate:
               $ref: '#/components/schemas/DateString'
               description: Current unit price as of date
             units:
               type: number
-              description: For security-based actions other than stock splits, quantity.
+              description: |
+                Plaid requires this field for holdings and transactions involving securities.
+                For security-based actions other than stock splits, quantity.
                 Shares for stocks, mutual funds, and others. Face value for bonds.
                 Contracts for options.
             marketValue:
@@ -1190,9 +1192,7 @@ components:
                 $ref: '#/components/schemas/FiAttribute'
           required:
             - cashAccount
-            - currentUnitPrice
             - marketValue
-            - units
 
     InvestmentAccount:
       title: Investment Account entity
@@ -1232,42 +1232,18 @@ components:
 
     InvestmentTransaction:
       title: Investment Transaction entity
-      description: Specific transaction information
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/InvestmentNonSecurityTransaction'
-        - $ref: '#/components/schemas/InvestmentSecurityTransaction'
-
-    InvestmentNonSecurityTransaction:
-      title: Non-security Investment Transaction entity
       description: |
-        Plaid-specific schema created to document which FDX fields Plaid requires for investment transactions that don't involve securities.
-        For these transactions, Plaid requires all the fields in the base `Transaction` model in addition to the following fields:
+        A transaction on an investment account.
+        In addition to the required fields in the base `Transaction` model, Plaid requires the following fields
+        for all transactions on an investment account:
         
         * `fees`
         * `transactionType`
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/Transaction'
-        - type: object
-          properties:
-            transactionType:
-              $ref: '#/components/schemas/InvestmentTransactionType'
-            commission:
-              type: number
-              description: |
-                Plaid expects that your organization includes a value for commission if the commission isn't included in `fees`.
-            fees:
-              type: number
-              description: |
-                Fees applied to the trade. Plaid expects that the `fees` include the commission, unless your organization separately provides a value for `commission`.
-          required:
-            - fees
-            - transactionType
-
-    InvestmentSecurityTransaction:
-      title: Security Investment Transaction entity
-      description: An investment transaction involving a security
+        
+        If the transaction involves a security, Plaid additionally requires the following fields:
+        
+        * `unitPrice`
+        * `units`
       type: object
       allOf:
         - $ref: '#/components/schemas/Transaction'
@@ -1301,17 +1277,17 @@ components:
                 Fees applied to the trade. Plaid expects that the `fees` include the commission, unless your organization separately provides a value for `commission`.
             unitPrice:
               type: number
-              description: >-
-                Price per commonly-quoted unit. Does not include
-                markup/markdown, unitprice. Share price for stocks, mutual
-                funds, and others. Percentage of par for bonds. Per share (not
-                contract) for options
+              description: |
+                Unit price. Plaid uses this as the [price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-investment-transactions-price).
+                Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-close-price)
+                if you don't return `securityId` for transactions involving securities.
             units:
               type: number
-              description: >-
+              description: |
+                Plaid requires this field for holdings and transactions involving securities.
                 For security-based actions other than stock splits, quantity.
                 Shares for stocks, mutual funds, and others. Face value for bonds.
-                Contracts for options
+                Contracts for options.
             unitType:
               $ref: '#/components/schemas/UnitType'
               description: SHARES, CURRENCY
@@ -1327,8 +1303,6 @@ components:
           required:
             - fees
             - transactionType
-            - unitPrice
-            - units
 
     LoanAccount:
       title: Loan Account entity
@@ -1612,9 +1586,6 @@ components:
                 An array of transactions with entity type dependent on the
                 account type.  Plaid expects your organization to return an empty array if this information isn't available.
                 Plaid consumes solely investment, deposit, loan, and line-of-credit transactions.
-                For investment transactions, Plaid uses Plaid-specific schemas (`investmentSecurityTransaction` and
-                `investmentNonSecurityTransaction`) to document which FDX fields Plaid requires for investment transactions
-                involving securities versus transactions that don't involve securities.
               type: array
               items:
                 oneOf:
@@ -1629,7 +1600,18 @@ components:
                     properties:
                       investmentTransaction:
                         $ref: '#/components/schemas/InvestmentTransaction'
-                        description: An investment transaction
+                        description: |
+                          A transaction on an investment account.
+                          In addition to the required fields in the base `Transaction` model, Plaid requires the following fields
+                          for all transactions on an investment account:
+                          
+                          * `fees`
+                          * `transactionType`
+                          
+                          If the transaction involves a security, Plaid additionally requires the following fields:
+                          
+                          * `unitPrice`
+                          * `units`
                     required:
                       - investmentTransaction
                     additionalProperties: false
