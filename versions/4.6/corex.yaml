@@ -767,8 +767,10 @@ components:
           minItems: 1
           description: |
             Owners of the account. Plaid expects your organization to return an empty array if this information isn't available.
-            Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their contact information in the full `AccountHolder` schema,
-            Plaid doesn't consume these associations. Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails, addresses, or telephone numbers to account holders.
+            Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their
+            contact information in the full `AccountHolder` schema, Plaid doesn't consume these associations.
+            Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails,
+            addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
           example:
             - customerId: customer0000001
@@ -1243,7 +1245,7 @@ components:
     LocAccount:
       title: Line-Of-Credit Account entity
       description:  |
-        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the  `GET \accounts` endpoint.
+        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the `GET \accounts` endpoint:
         
         * `availableCredit`
         * `creditLine`
@@ -1361,8 +1363,7 @@ components:
         postedTimestamp:
           description: |
             The date and time that the transaction was posted to the account. If
-            not provided then TransactionTimestamp can be used as
-            PostedTimeStamp.
+            not provided then TransactionTimestamp can be used as PostedTimeStamp.
             Plaid expects that your organization doesn't pass this property for `PENDING` transactions,
             and validates that your organization passes this property for `POSTED` transactions.
             If not provided then TransactionTimestamp can be used as PostedTimeStamp.
@@ -1392,7 +1393,7 @@ components:
         foreignAmount:
           type: number
           description: >-
-            The amount of money in the foreign currency. If this amount is specified, then Plaid expects that the `foregnCurrency` property is also set.
+            The amount of money in the foreign currency. If this amount is specified, then Plaid expects that the `foreignCurrency` property is also set.
         foreignCurrency:
           $ref: '#/components/schemas/Iso4217Code'
           description: The ISO 4217 code of the foreign currency
