@@ -2534,6 +2534,9 @@ components:
         - CUSIP
         - ISIN
         - SEDOL
+        - SICC
+        - VALOR
+        - WKN
 
     SecurityType:
       title: Security Type
