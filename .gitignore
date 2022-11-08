@@ -1,0 +1,7 @@
+node_modules
+redoc-static.html
+.next
+openapi-build
+*.jar
+.DS_Store
+doc-site/out

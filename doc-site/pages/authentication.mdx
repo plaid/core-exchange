@@ -1,0 +1,208 @@
+---
+title: Authentication
+---
+
+# Authentication
+
+Core Exchange uses the [OpenID Connect (OIDC)](https://openid.net/connect/) protocol to authenticate your customers. OIDC is an extension to OAuth2. This topic describes how Plaid acts as the client of your OIDC server.
+
+Plaid uses the OAuth2 authorization code flow to acquire authorization from the end user, so Plaid can access your Core Exchange API on their behalf. Plaid redirects the end user to a web page your organization hosts for all authentication steps. At the end of the authorization code flow, Plaid receives an access token, which identifies the user and authenticates Plaid's access to your organization's Core Exchange API.
+
+While it is possible to build a compliant OIDC server from scratch, Plaid recommends using a vendor or starting from an open-source implementation. If you already have an identity provider such as Okta, Auth0, Ping Identity, Azure Active Directory, or AWS Cognito, you likely already have an integrated OIDC solution available from them. There are also many [OIDC certified open source and commercial implementations](https://openid.net/developers/certified/) available for many different programming languages.
+
+Plaid intends for this described authentication flow to conform to commonly implemented patterns for the [OIDC spec](https://openid.net/specs/), and welcomes partner feedback.
+
+## OIDC server basic requirements
+---
+
+| configuration            | notes                                                        |
+| ------------------------ | ------------------------------------------------------------ |
+| OIDC server domain       | Communicate the fully qualified domain name of your OIDC server to Plaid. Your organization can choose the domain.  For example, you can host the server on a subdomain of your primary domain (e.g. `auth.firstplatypusbank.com`) or a different domain entirely (e.g. `firstplatypusbank.okta.com`). This domain will likely be different from the subdomain hosting your API server (e.g. `fdx.firstplaidypusbank.com`). This server must support HTTPS. |
+| well-known configuration | Plaid expects to read the rest of your server configuration from the well-known path `/.well-known/openid-configuration` (for example, `https://auth.firstplatypusbank.com/.well-known/openid-configuration`).   See the following table for the information Plaid expects to receive. |
+
+## OIDC well-known configuration
+
+The `/.well-known/openid-configuration` endpoint of the OIDC server returns a JSON object containing at a minimum the following values. This public endpoint accepts HTTP GET requests without authentication.
+
+### Response properties
+
+| property                                | description                                                  |
+| --------------------------------------- | ------------------------------------------------------------ |
+| `authorization_endpoint`                | The endpoint hosting the user authentication page.           |
+| `token_endpoint`                        | The endpoint Plaid calls to exchange the authorization code for an access token. |
+| `userinfo_endpoint`                     | The endpoint Plaid calls to retrieve the subject identifier for the user. |
+| `token_endpoint_auth_methods_supported` | An optional array of supported client authentication methods. See [Client Authentication](#client-authentication) for details. |
+| `response_types_supported`              | An array of supported response types. Plaid expects this to include `code`. |
+| `scopes_supported`                      | An array that must include at minimum `openid` and `offline_access`: <br/><br/>`openid` -- allows Plaid to access the subject identifier from the id token, which Plaid uses to uniquely identify users across different application connections. This allows Plaid to optimize traffic and list all active connections for a given user in `my.plaid.com`. (If your organization can't provide this, Plaid instead queries `/customers/current` for identity information.)<br/><br/>`offline_access` -- grants Plaid a refresh token Plaid can use to refresh user data in the background. This is required for several important use cases, such as Plaid partners performing balance checks before ACH transfers, and for transaction data subscriptions.  For more information about the specification, see the [OIDC specification](https://openid.net/specs/openid-connect-core-1_0.html#OfflineAccess).<br/><br/> |
+
+### Example
+
+Plaid request:
+
+```shell
+curl GET 'https://auth.firstplatypusbank.com/.well-known/openid-configuration'
+```
+
+Your response:
+
+```json
+{
+  "authorization_endpoint": "https://auth.firstplatypusbank.com/oauth2/v1/authorize",
+  "token_endpoint": "https://auth.firstplatypusbank.com/oauth2/v1/token",
+  "userinfo_endpoint": "https://auth.firstplatypusbank.com/oauth2/v1/userinfo",
+  "token_endpoint_auth_methods_supported": ["client_secret_basic"],
+  "response_types_supported": ["code"],
+  "scopes_supported": ["openid", "offline_access"]
+}
+```
+
+## Authorization code flow
+
+### 1. Plaid's `authorization_endpoint` redirect
+
+When your user initiates the process of linking their account, Plaid first redirects the user's browser to the endpoint specified in your well-known configuration as the `authorization_endpoint`. Plaid's redirect includes these query parameters:
+
+| query parameter | value                                             | description                                                  |
+| --------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| `response_type` | `code`                                            | Specifies the type of response Plaid expects.                |
+| `redirect_uri`  | `https://cdn.plaid.com/link/v2/stable/oauth.html` | Specifies where Plaid expects your organization to redirect back to once the user completed all authentication steps. |
+| `scope`         | at a minimum `openid` and `offline_access`        | Specifies the set of scopes Plaid requests access to.        |
+| `client_id`     | The client id you issued to Plaid                 |                                                              |
+| `state`         | An opaque string                                  | Plaid generates this. Your organization returns the same string when redirecting back to the given redirect URL. |
+
+
+### Example
+
+Plaid redirect:
+
+```
+https://auth.firstplatypus.com/oauth2/v1/authorize?response_type=code&redirect_uri=https%3A%2F%2Fcdn.plaid.com%2Flink%2Fv2%2Fstable%2Foauth.html&scope=openid%20offline_access&client_id=plaid&state=eyJvYXV0aF9zdGF0ZV
+```
+
+This page will be requested directly by the user's device. Your authorization endpoint must support TLS and be publicly accessible. Control of user authentication has now been handed off to you. A typical authentication flow will include a username and password submission form and a 2FA step. For partners with native mobile applications, Plaid strongly recommends enabling support for [App2App](https://openid.net/tag/app2app/) and using biometric authentication to improve the user's authentication experience.
+
+### 2. `authorization_endpoint` redirect response
+
+After the user completes all required authentication steps, your organization generates a temporary authorization code and redirects the user's browser back to the `redirect_uri`. Your organization includes the following query parameters with the request.
+
+| query parameter | description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| `code`          | The temporary authorization code. Plaid exchanges this for the access token in the next step. |
+| `state`         | The opaque string Plaid passed as the `state` parameter in the previous `authorization_endpoint` redirect. Plaid verifies this matches. |
+
+### Example
+
+Your response:
+
+```
+https://cdn.plaid.com/link/v2/stable/oauth.html?code=1284918391&state=eyJvYXV0aF9zdGF0ZV
+```
+
+### 3. Plaid's `token_endpoint` request
+
+Plaid swaps the authorization code (`code`) for an `access_token`, `id_token`, and `refresh_token` by calling your `token_endpoint`.
+
+#### Client Authentication
+
+Unlike the preceding two redirect steps, the request to `token_endpoint` is a backend-to-backend call and must be authenticated. The authentication credentials consist of a client id and secret pair you issue to Plaid.
+
+For example,
+
+```json
+"client_id": "plaid",
+"client_secret": "rVXYOoQS4rHUG79n_48al",
+```
+
+Specify which [client authentication schemes](https://openid.net/specs/openid-connect-core-1_0.html#ClientAuthentication) your server supports using the
+`token_endpoint_auth_methods_supported` field in your openid-configuration object. Plaid uses this field to determine how to pass the client id and secret in the request.
+If omitted, Plaid defaults to `client_secret_basic` as described in the [OAuth spec](https://www.rfc-editor.org/rfc/rfc6749#section-2.3.://www.rfc-editor.org/rfc/rfc6749#section-2.3.1).
+
+#### Query parameters
+
+The request includes the following parameters:
+
+| query parameter | value                                             | comment                                                      |
+| --------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| `grant_type`    | `authorization_code`                              | The type of "grant" Plaid is exchanging for an access token. |
+| `redirect_uri`  | `https://cdn.plaid.com/link/v2/stable/oauth.html` | Specifies where Plaid expects your organization to redirect back to once the user completed all authentication steps. |
+| `code`          | `code` you sent to Plaid in the last step         | The temporary authorization code Plaid is exchanging for the access token. |
+
+#### Example
+
+Plaid request:
+
+```shell
+curl --request POST 'https://auth.firstplatypusbank.com/oauth2/v1/token' \
+--user "plaid:rVXYOoQS4rHUG79n_48al"
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "grant_type": "authorization_code",
+    "code": "1284918391",
+    "redirect_url": "https://cdn.plaid.com/link/v2/stable/oauth.html"
+}'
+```
+
+###  4. `token_endpoint` response
+
+Your organization validates that the `code`, `client_id`, `client_secret`, and `redirect_uri` query parameters from the request all match the expected values. Your response to this request contains everything that Plaid needs to subsequently access your Core Exchange API. This includes the following values:
+
+| property        | description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| `access_token`  | An opaque string (likely a JWT structured according to the [Oauth2 specification](https://datatracker.ietf.org/doc/html/rfc9068#section-2.2)) that Plaid will present as a bearer token to all requests made to your Core Exchange API. This encodes the identity of the user and the scope of access granted. |
+| `expires_in`    | The lifetime in seconds of the access token. This is lifetime is typically 15 minutes (900 seconds). Plaid checks for expiration before using an access token. Plaid requests a new access token if expired using the refresh token, sometimes long after the original access token expired. If your organization expires the token before the stated expiration date, Plaid expects Core Exchange to return a 401 response with an error code "602 not authorized". |
+| `id_token`      | An [OIDC ID token](https://openid.net/specs/openid-connect-core-1_0.html#IDToken). Plaid reads solely the `sub` field from the token.<br/>In a multi-tenant deployment, where each financial institution is a tenant, the `sub` field in this token must be unique to the user in each tenant. It doesn't need to be unique to the user across all tenants. |
+| `refresh_token` | An opaque string (likely a JWT) that can be used to request a new access token. Plaid will use this to fetch data periodically long after the original access token expires. See the following Refresh flow for more information. <br/>Plaid doesn't recommend setting an inactivity timeout for the refresh token, because it's not a good indicator of whether a user is active with a Plaid partner or not. For example, some Plaid partners can trigger Plaid to call the Core Exchange endpoint `/accounts/{accountID}` infrequently for large transactions. |
+
+#### Example
+
+Your response:
+
+```json
+{
+  "access_token": "agstynmdygjdghabrgraeh...",
+  "expires_in": 900,
+  "id_token": "snsyjrhvjdtvyjvsgcegaethstj...",
+  "refresh_token": "dhcsrtjsrgayvkdisfdgntshstu..."
+}
+```
+
+After it receives this response, Plaid has everything it needs to access your Core Exchange API.
+
+## Refresh flow
+
+For some use cases, Plaid needs to periodically fetch fresh data on behalf of the user. To get a new access token, Plaid makes another request to your `token_endpoint` with a different set of parameters.
+
+#### Query parameters
+
+The request includes the following parameters:
+
+| query parameter | value                                  | description                                                  |
+| --------------- | -------------------------------------- | ------------------------------------------------------------ |
+| `grant_type`    | `refresh_token`                        | Specifies that Plaid is requesting a new access token to replace the expired access token. |
+| `refresh_token` | The refresh token you issued to Plaid. |                                                              |
+
+### Example
+
+Plaid request:
+
+```shell
+curl --request POST 'https://auth.firstplatypusbank.com/oauth2/v1/token' \
+--user "plaid:rVXYOoQS4rHUG79n_48al"
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "grant_type": "refresh_token",
+    "refresh_token": "dhcsrtjsrgayvkdisfdgntshstu..."
+}'
+```
+
+Your organization's response:
+
+```json
+{
+  "access_token": "lngarogglkcangasgabba...",
+  "expires_in": 900,
+  "id_token": "snsyjrhvjdtvyjvsgcegaethstj...",
+}
+```
+
+See the previous section for descriptions of these response parameters.

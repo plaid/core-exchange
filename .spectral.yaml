@@ -1,0 +1,8 @@
+extends: spectral:oas
+rules:
+  no-$ref-siblings: off
+  oas3-valid-schema-example: off
+  operation-tag-defined: off
+  oas3-valid-oas-content-example: off
+  info-contact: off
+  openapi-tags: off
