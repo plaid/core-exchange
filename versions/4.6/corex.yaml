@@ -26,6 +26,7 @@ info:
     
     To view this specification and documentation as an openapi yaml file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/dist/versions).
 
+    update 4.6
     This specification contains the following endpoints:
 
       - `/customer/current`
@@ -36,7 +37,7 @@ info:
 
       - `/accounts/{accountId}/payment-networks`
 
-      - `/accounts/{accountId}/contacts`
+      - `/accounts/{accountId}/contact`
 
       - `/accounts/{accountId}/transactions`
 
