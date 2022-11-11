@@ -745,15 +745,13 @@ components:
             addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
           example:
-            - customerId: customer0000001
-              relationship: SECONDARY
+            - relationship: SECONDARY
               name:
                 first: 'Ernest'
                 middle: 'Miller'
                 last: 'Hemingway'
                 suffix: 'IV'
-            - customerId: customer0000003
-              relationship: PRIMARY_JOINT
+            - relationship: PRIMARY_JOINT
               name:
                 first: "Maya"
                 last: "Angelou"
