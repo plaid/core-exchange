@@ -26,7 +26,6 @@ info:
     
     To view this specification and documentation as an openapi yaml file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/dist/versions).
 
-    update 4.6
     This specification contains the following endpoints:
 
       - `/customer/current`
@@ -37,7 +36,7 @@ info:
 
       - `/accounts/{accountId}/payment-networks`
 
-      - `/accounts/{accountId}/contact`
+      - `/accounts/{accountId}/contacts`
 
       - `/accounts/{accountId}/transactions`
 
@@ -774,13 +773,15 @@ components:
             addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
           example:
-            - relationship: SECONDARY
+            - customerId: customer0000001
+              relationship: SECONDARY
               name:
                 first: 'Ernest'
                 middle: 'Miller'
                 last: 'Hemingway'
                 suffix: 'IV'
-            - relationship: PRIMARY_JOINT
+            - customerId: customer0000003
+              relationship: PRIMARY_JOINT
               name:
                 first: "Maya"
                 last: "Angelou"

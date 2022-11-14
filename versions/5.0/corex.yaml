@@ -38,7 +38,7 @@ info:
 
       - `/accounts/{accountId}/payment-networks`
 
-      - `/accounts/{accountId}/contact`
+      - `/accounts/{accountId}/contacts`
 
       - `/accounts/{accountId}/transactions`
 
@@ -745,13 +745,15 @@ components:
             addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
           example:
-            - relationship: SECONDARY
+            - customerId: customer0000001
+              relationship: SECONDARY
               name:
                 first: 'Ernest'
                 middle: 'Miller'
                 last: 'Hemingway'
                 suffix: 'IV'
-            - relationship: PRIMARY_JOINT
+            - customerId: customer0000003
+              relationship: PRIMARY_JOINT
               name:
                 first: "Maya"
                 last: "Angelou"
@@ -826,7 +828,7 @@ components:
             institution.
             Plaid expects that the last 4 digits of this masked number correspond to the last 4 digits of the account number.
           type: string
-          example: "4321"
+          example: 4321
         productName:
           type: string
           description: Marketed product name for this account. Used in UIs to assist in account selection
@@ -1493,8 +1495,6 @@ components:
         lastStmtDate: "2022-03-25"
         purchasesApr: 10.25
         advancesApr: 15.75
-        currentBalance: 375.00
-        availableCredit: 625.00
 
     LocTransaction:
       title: Line-Of-Credit Transaction entity
