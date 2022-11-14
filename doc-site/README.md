@@ -9,7 +9,4 @@ yarn run dev
 ``` 
 
 Deploy:
-This will deploy to production hosting so do not run unless you are sure you want to publish your changes.
-```bash
-yarn deploy
-```
+Deployments are handled automatically through github actions 
