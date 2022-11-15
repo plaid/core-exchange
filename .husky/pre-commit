@@ -9,9 +9,6 @@ if [ $(git diff --cached -- src | wc -l) -gt "0" ]; then
     git add dist/
     echo "Validating"
     npx spectral lint --ruleset=.spectral.yaml ./dist/versions/**/corex.yaml
-    echo "Backward compatible OAS versions"
-    make downgrade-oas-version
-    git add .backward-compatible-versions
     echo "Updating doc Markdown"
     for path in src/versions/* ; do
       version=$(echo $path| sed -E 's/src\/versions\/(..)/\1/')

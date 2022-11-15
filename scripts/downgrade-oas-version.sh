@@ -11,9 +11,10 @@ if ! command -v yq > /dev/null; then
   exit 1
 fi
 
+mkdir -p ./.backward-compatible-versions 
 for v in ./dist/versions/*/ ;
 do
-    file_version=$(echo $v| sed -E 's/\.\/dist\/versions\/(.)\.(.)\//\1\2/')
+    file_version=$(echo $v| sed -E 's/\.\/dist\/versions\/(.)\.(.)\//\1dot\2/')
     path="./.backward-compatible-versions/corex-$file_version-304.yaml"
     rm -f $path
     touch $path

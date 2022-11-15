@@ -5,3 +5,4 @@ openapi-build
 *.jar
 .DS_Store
 doc-site/out
+.backward-compatible-versions/corex-$longFormName-304.yaml
