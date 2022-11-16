@@ -1,0 +1,53 @@
+name: Code Generation
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - versions/**
+
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    strategy:
+            matrix:
+                target:
+                    - go-gin-server
+                    - python-flask
+                    - php-laravel 
+                    - ruby-on-rails
+                    - nodejs-express-server
+                cx-version:
+                    # downgradePath represents the spec file path as created as 
+                    # part of scripts/downgrade-oas-version.sh in a previous job 
+                    - {semantic: "5.0", downgradePath: "5dot0"}
+                    - {semantic: "4.6", downgradePath: "4dot6"}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: frenck/action-setup-yq@v1
+      - name: Cache OAS
+        id: cache-oas
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/tmp
+          key: downgraded-oas
+      - if: ${{ steps.cache-oas.outputs.cache-hit != 'true' }}
+        name: Downgrade OAS
+        run: | 
+          bash scripts/downgrade-oas-version.sh
+      - name: Generate Server 
+        uses: openapi-generators/openapitools-generator-action@v1
+        with:
+          generator: ${{ matrix.target }}
+          openapi-file: tmp/corex-${{matrix.cx-version.downgradePath}}-304.yaml
+          command-args: -o generated/${{ matrix.cx-version.semantic }}/${{ matrix.target }}
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: \[AUTOMATED\] Update generated sample server implementations
+          title: \[AUTOMATED\] Update generated sample server implementations 
