@@ -30,7 +30,7 @@ info:
 
     This specification contains the following endpoints:
 
-      - `/customer/current`
+      - `/customers/current`
 
       - `/accounts`
 
@@ -38,7 +38,7 @@ info:
 
       - `/accounts/{accountId}/payment-networks`
 
-      - `/accounts/{accountId}/contacts`
+      - `/accounts/{accountId}/contact`
 
       - `/accounts/{accountId}/transactions`
 
@@ -259,7 +259,7 @@ paths:
         List all account transactions.
         Plaid always queries this endpoint using an `startTime` and `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`,
         and expects the time filters to be based on the `postedTimestamp`.
-        Plaid consumes information from this endpoint solely for deposit, investment, loan, or line-of-credit (LOC) account types.
+        Plaid consumes information from this endpoint solely for deposit, investment, loan, or line of credit (LOC) account types.
 
       summary: List all account transactions
       security:
@@ -360,7 +360,7 @@ components:
       name: accountId
       in: path
       description:  |
-        Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID is a different value from the account number.
+        Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID to be a different value from the account number.
       required: true
       schema:
         type: string
@@ -745,15 +745,13 @@ components:
             addresses, or telephone numbers to account holders.
             For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
           example:
-            - customerId: customer0000001
-              relationship: SECONDARY
+            - relationship: SECONDARY
               name:
                 first: 'Ernest'
                 middle: 'Miller'
                 last: 'Hemingway'
                 suffix: 'IV'
-            - customerId: customer0000003
-              relationship: PRIMARY_JOINT
+            - relationship: PRIMARY_JOINT
               name:
                 first: "Maya"
                 last: "Angelou"
@@ -828,7 +826,7 @@ components:
             institution.
             Plaid expects that the last 4 digits of this masked number correspond to the last 4 digits of the account number.
           type: string
-          example: 4321
+          example: "4321"
         productName:
           type: string
           description: Marketed product name for this account. Used in UIs to assist in account selection
@@ -1016,9 +1014,10 @@ components:
               type: array
               description: |
                 An array of accounts with entity types dependent on the
-                account type (deposit, investment, loan, or line of credit). Plaid expects your organization to return an empty array if this information isn't available.
+                account type (deposit, investment, loan, or line of credit).
+                Plaid expects your organization to return an empty array if this information isn't available.
                 Plaid accepts all account types for this endpoint but consumes account details
-                through `GET accounts/{accountID}` solely for  deposit, investment, loan, and line-of-credit accounts.
+                through `GET accounts/{accountID}` solely for deposit, investment, loan, and line of credit accounts.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1410,7 +1409,7 @@ components:
     LocAccount:
       title: Line-Of-Credit Account entity
       description:  |
-        For line-of-credit account types, Plaid consumes the following in addition to the information returned by the `GET \accounts` endpoint:
+        For line of credit account types, Plaid consumes the following in addition to the information returned by the `GET \accounts` endpoint:
         
         * `availableCredit`
         * `creditLine`
@@ -1495,6 +1494,8 @@ components:
         lastStmtDate: "2022-03-25"
         purchasesApr: 10.25
         advancesApr: 15.75
+        currentBalance: 375.00
+        availableCredit: 625.00
 
     LocTransaction:
       title: Line-Of-Credit Transaction entity
@@ -1584,7 +1585,7 @@ components:
               description: |
                 An array of transactions with entity type dependent on the
                 account type.  Plaid expects your organization to return an empty array if this information isn't available.
-                Plaid consumes solely investment, deposit, loan, and line-of-credit transactions.
+                Plaid consumes solely investment, deposit, loan, and line of credit transactions.
               type: array
               items:
                 oneOf:
@@ -2198,7 +2199,7 @@ components:
         
         The type of an account.
         Plaid consumes basic balance account information from the `accounts/{id}` endpoint for a subset of the possible account types described in the FDX specification.
-        These account types are in the following categories: deposit, investment, line-of-credit, and loan accounts.
+        These account types are in the following categories: deposit, investment, line of credit, and loan accounts.
         In addition, Plaid consumes more detailed account information for the following account types:
         
         For Deposit accounts, Plaid consumes more detailed information for:
@@ -2213,7 +2214,7 @@ components:
         * `MORTGAGE`
         * `STUDENTLOAN`
         
-        For Line-of-credit accounts, Plaid consumes more detailed information for:
+        For line of credit accounts, Plaid consumes more detailed information for:
         
         * `CREDITCARD`
       type: string
@@ -2473,7 +2474,7 @@ components:
     LocTransactionType:
       title: Line-Of-Credit Transaction Type
       description: |
-        The type of a line-of-credit (LOC) transaction. Plaid passes through all LOC transaction types.
+        The type of a line of credit (LOC) transaction. Plaid passes through all LOC transaction types.
       type: string
       enum:
         - ADJUSTMENT
