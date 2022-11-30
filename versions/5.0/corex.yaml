@@ -73,7 +73,7 @@ paths:
 
   /customers/current:
     get:
-      operationId: getCustomerId
+      operationId: getCustomerInfo
       tags:
         - Personal Information
       description: >-
@@ -91,16 +91,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerWithId'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
 
   ############################################################
   #
@@ -110,7 +100,7 @@ paths:
 
   /accounts:
     get:
-      operationId: listAccounts
+      operationId: searchForAccounts
       tags:
         - Account Information
       summary: List all accounts
@@ -131,16 +121,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Accounts'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}:
     get:
       operationId: getAccount
@@ -168,16 +149,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountWithDetails'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}/contact:
     get:
       operationId: getAccountContact
@@ -204,16 +176,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountContact'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}/payment-networks:
     get:
       operationId: getAccountPaymentNetworks
@@ -240,19 +203,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}/transactions:
     get:
-      operationId: listAccountTransactions
+      operationId: searchForAccountTransactions
       tags:
         - Account Transactions
       description: |
@@ -282,16 +236,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transactions'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
 
 components:
 
@@ -381,50 +325,6 @@ components:
       schema:
         $ref: '#/components/schemas/DateString'
 
-  responses:
-
-    ############################################################
-    #
-    # Core request responses
-    #
-    ############################################################
-
-    BadRequest:
-      description: The request included invalid input
-      content:
-        application/json:
-            schema:
-              $ref: '#/components/schemas/InvalidInputErrors'
-
-    Unauthorized:
-      description: The request is not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CustomerNotAuthorized'
-
-    NotFound:
-      description: The requested resource was not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/AccountNotFound'
-
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/InternalServerError'
-
-    UnexpectedError:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-
-
   schemas:
 
     ############################################################
@@ -513,146 +413,6 @@ components:
       type: object
       allOf:
         - $ref: '#/components/schemas/Address'
-
-    Error:
-      title: Error
-      description: >-
-        An error entity which can be used at the API level for error responses
-      type: object
-      properties:
-        code:
-          type: string
-          description: >-
-            Long term persistent identifier which can be used to trace error
-            condition back to log information
-        message:
-          type: string
-          description: >-
-            End user displayable information which might help the customer
-            diagnose an error
-
-    InvalidInputError:
-      title: Invalid Input
-      type: object
-      description: Input sent by client does not satisfy API specification
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['401']
-            message:
-              type: string
-              enum: ['Invalid input']
-          required:
-            - code
-            - message
-
-    InternalServerError:
-      title: Internal server error
-      type: object
-      description: >-
-        Catch all exception where request was not processed due to an internal
-        outage/issue. Consider other more specific errors before using this error.
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['500']
-            message:
-              type: string
-              enum: ['Internal server error']
-          required:
-            - code
-            - message
-
-    CustomerNotAuthorized:
-      title: Customer not authorized
-      type: object
-      description: Authenticated customer does not have the authorization to perform this action
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['602']
-            message:
-              type: string
-              enum: ['Customer not authorized']
-          required:
-            - code
-            - message
-
-    AccountNotFound:
-      title: Account not found
-      type: object
-      description: Account with id not found
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['701']
-            message:
-              type: string
-              enum: ['Account not found']
-          required:
-            - code
-            - message
-
-    InvalidStartOrEndDate:
-      title: Invalid start or end date
-      type: object
-      description: Start or end date value is not in the ISO 8601 format
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['702']
-            message:
-              type: string
-              enum: ['Invalid start or end date']
-          required:
-            - code
-            - message
-
-    InvalidDateRange:
-      title: Invalid date range
-      type: object
-      description: >-
-        If the start date is not earlier than the end date or if the date range is
-        beyond what the system supports
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['703']
-            message:
-              type: string
-              enum: ['Invalid date range']
-          required:
-            - code
-            - message
-
-    InvalidInputErrors:
-      title: Invalid input errors
-      description: Any invalid input error
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/InvalidInputError'
-        - $ref: '#/components/schemas/InvalidStartOrEndDate'
-        - $ref: '#/components/schemas/InvalidDateRange'
-      required:
-        - code
 
     IndividualName:
       title: Individual name
@@ -1096,8 +856,6 @@ components:
         - $ref: '#/components/schemas/Transaction'
         - type: object
           properties:
-            transactionType:
-              $ref: '#/components/schemas/DepositTransactionType'
             payee:
               $ref: '#/components/schemas/String255'
               description: Payee name
@@ -2289,27 +2047,6 @@ components:
         - CREDIT
         - DEBIT
         - MEMO
-
-    DepositTransactionType:
-      title: Deposit Transaction Type
-      description: |
-        The type of a deposit transaction. Plaid passes through all deposit transaction types.
-      type: string
-      enum:
-        - ADJUSTMENT
-        - ATMDEPOSIT
-        - ATMWITHDRAWAL
-        - BILLPAYMENT
-        - CHECK
-        - DEPOSIT
-        - DIRECTDEPOSIT
-        - DIVIDEND
-        - FEE
-        - INTEREST
-        - POSCREDIT
-        - POSDEBIT
-        - TRANSFER
-        - WITHDRAWAL
 
     FiAttribute:
       title: FI Attribute entity

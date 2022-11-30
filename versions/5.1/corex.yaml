@@ -91,16 +91,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerWithId'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
 
   ############################################################
   #
@@ -131,20 +121,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Accounts'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '501':
-          $ref: '#/components/responses/NotImplemented'
-        '503':
-          $ref: '#/components/responses/ServerUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}:
     get:
       operationId: getAccount
@@ -172,20 +149,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountWithDetails'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '501':
-          $ref: '#/components/responses/NotImplemented'
-        '503':
-          $ref: '#/components/responses/ServerUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}/contact:
     get:
       operationId: getAccountContact
@@ -212,20 +176,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountContact'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '501':
-          $ref: '#/components/responses/NotImplemented'
-        '503':
-          $ref: '#/components/responses/ServerUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}/payment-networks:
     get:
       operationId: getAccountPaymentNetworks
@@ -252,20 +203,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '501':
-          $ref: '#/components/responses/NotImplemented'
-        '503':
-          $ref: '#/components/responses/ServerUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
+
   /accounts/{accountId}/transactions:
     get:
       operationId: searchForAccountTransactions
@@ -298,20 +236,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transactions'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-        '501':
-          $ref: '#/components/responses/NotImplemented'
-        '503':
-          $ref: '#/components/responses/ServerUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
 
 components:
 
@@ -400,64 +324,6 @@ components:
         Start time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`.
       schema:
         $ref: '#/components/schemas/DateString'
-
-  responses:
-
-    ############################################################
-    #
-    # Core request responses
-    #
-    ############################################################
-
-    BadRequest:
-      description: The request included invalid input
-      content:
-        application/json:
-            schema:
-              $ref: '#/components/schemas/InvalidInputErrors'
-
-    Unauthorized:
-      description: The request is not authorized
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/CustomerNotAuthorized'
-
-    NotFound:
-      description: The requested resource was not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotFound'
-
-    NotImplemented:
-      description: The requested FDX version in the header is not implemented
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/NotImplemented'
-
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/InternalServerError'
-
-    ServerUnavailable:
-      description: The server is not available
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ServerUnavailable'
-
-    UnexpectedError:
-      description: Unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-
 
   schemas:
 
@@ -549,146 +415,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/Address'
 
-    Error:
-      title: Error
-      description: >-
-        An error entity which can be used at the API level for error responses
-      type: object
-      properties:
-        code:
-          type: string
-          description: >-
-            Long term persistent identifier which can be used to trace error
-            condition back to log information
-        message:
-          type: string
-          description: >-
-            End user displayable information which might help the customer
-            diagnose an error
-
-    InvalidInputError:
-      title: Invalid Input
-      type: object
-      description: Input sent by client does not satisfy API specification
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['401']
-            message:
-              type: string
-              enum: ['Invalid input']
-          required:
-            - code
-            - message
-
-    InternalServerError:
-      title: Internal server error
-      type: object
-      description: >-
-        Catch all exception where request was not processed due to an internal
-        outage/issue. Consider other more specific errors before using this error.
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['500']
-            message:
-              type: string
-              enum: ['Internal server error']
-          required:
-            - code
-            - message
-
-    CustomerNotAuthorized:
-      title: Customer not authorized
-      type: object
-      description: Authenticated customer does not have the authorization to perform this action
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['602']
-            message:
-              type: string
-              enum: ['Customer not authorized']
-          required:
-            - code
-            - message
-
-    AccountNotFound:
-      title: Account not found
-      type: object
-      description: Account with id not found
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['701']
-            message:
-              type: string
-              enum: ['Account not found']
-          required:
-            - code
-            - message
-
-    InvalidStartOrEndDate:
-      title: Invalid start or end date
-      type: object
-      description: Start or end date value is not in the ISO 8601 format
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['702']
-            message:
-              type: string
-              enum: ['Invalid start or end date']
-          required:
-            - code
-            - message
-
-    InvalidDateRange:
-      title: Invalid date range
-      type: object
-      description: >-
-        If the start date is not earlier than the end date or if the date range is
-        beyond what the system supports
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['703']
-            message:
-              type: string
-              enum: ['Invalid date range']
-          required:
-            - code
-            - message
-
-    InvalidInputErrors:
-      title: Invalid input errors
-      description: Any invalid input error
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/InvalidInputError'
-        - $ref: '#/components/schemas/InvalidStartOrEndDate'
-        - $ref: '#/components/schemas/InvalidDateRange'
-      required:
-        - code
-
     IndividualName:
       title: Individual name
       description: >-
@@ -710,53 +436,6 @@ components:
       required:
         - first
         - last
-
-    NotFound:
-      title: CoreX version of not found
-      description: Resource is not found
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/NotFoundError'
-      required:
-        - code
-
-    NotFoundError:
-      title: Resource not found
-      description: Resource not found
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/AccountNotFound'
-        - $ref: '#/components/schemas/ParametersNotFound'
-        - $ref: '#/components/schemas/SourceAccountNotFound'
-      required:
-        - code
-
-    NotImplemented:
-      title: FDX version not implemented
-      description: FDX version in Header is not implemented by server.
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/NotImplementedError'
-      required:
-        - code
-
-    NotImplementedError:
-      title: Not Supported
-      type: object
-      description: FDX version specified by client is not implemented
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['1106']
-            message:
-              type: string
-              enum: ['FDX Version not supported or not implemented']
-          required:
-            - code
-            - message
 
     PageMetadata:
       title: Page Metadata
@@ -780,69 +459,6 @@ components:
       properties:
         page:
           $ref: '#/components/schemas/PageMetadata'
-
-    ParametersNotFound:
-      title: Data not found for request parameters
-      type: object
-      description: Given the request parameters, no data found
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['1107']
-            message:
-              type: string
-              enum: ['Data not found']
-          required:
-            - code
-            - message
-
-    ServerUnavailable:
-      title: Server Unavailable
-      description: System is unavailable
-      type: object
-      oneOf:
-        - $ref: '#/components/schemas/ServerUnavailableError'
-      required:
-        - code
-
-    ServerUnavailableError:
-      title: Server Unavailable
-      type: object
-      description: System is down for maintenance
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['503']
-            message:
-              type: string
-              enum: ['Scheduled Maintenance']
-          required:
-            - code
-            - message
-
-    SourceAccountNotFound:
-      title: Source account not found
-      type: object
-      description: Source account with id not found
-      allOf:
-        - $ref: '#/components/schemas/Error'
-        - type: object
-          properties:
-            code:
-              type: string
-              enum: ['901']
-            message:
-              type: string
-              enum: ['Source account not found']
-          required:
-            - code
-            - message
 
     TelephoneNumber:
       title: Telephone Number
@@ -965,8 +581,6 @@ components:
             Long-term persistent identity of the account, though not an account number.
             This identity must be unique within your organization.
           $ref: '#/components/schemas/Identifier'
-        accountCategory:
-          $ref: "#/components/schemas/AccountCategory"
         accountType:
           $ref: '#/components/schemas/AccountType'
         accountNumberDisplay:
@@ -990,7 +604,6 @@ components:
           $ref: '#/components/schemas/Currency'
       required:
         - accountId
-        - accountCategory
         - accountType
         - productName
         - status
@@ -1174,7 +787,6 @@ components:
               example:
                   - depositAccount:
                       accountId: depositAccount0000001
-                      accountCategory: DEPOSIT_ACCOUNT
                       accountType: CHECKING
                       accountNumberDisplay: '5820'
                       productName: 'Checking'
@@ -1184,7 +796,6 @@ components:
                         currencyCode: USD
                   - loanAccount:
                       accountId: loanAccount0000001
-                      accountCategory: LOAN_ACCOUNT
                       accountType: LOAN
                       accountNumberDisplay: "4704"
                       productName: "Loan"
@@ -1194,7 +805,6 @@ components:
                         currencyCode: USD
                   - locAccount:
                       accountId: locAccount0000001
-                      accountCategory: LOC_ACCOUNT
                       accountType: LINEOFCREDIT
                       accountNumberDisplay: "8200"
                       productName: "Loan of Credit"
@@ -1204,7 +814,6 @@ components:
                         currencyCode: USD
                   - investmentAccount:
                       accountId: investmentAccount0000001
-                      accountCategory: INVESTMENT_ACCOUNT
                       accountType: TAXABLE
                       accountNumberDisplay: "1050"
                       productName: "Brokerage Account"
@@ -1258,8 +867,6 @@ components:
         - $ref: '#/components/schemas/Transaction'
         - type: object
           properties:
-            transactionType:
-              $ref: '#/components/schemas/DepositTransactionType'
             payee:
               $ref: '#/components/schemas/String255'
               description: Payee name
@@ -1641,7 +1248,6 @@ components:
             - availableCredit
       example:
         accountId: loc_01_creditcard
-        accountCategory: LOC_ACCOUNT
         accountType: CREDITCARD
         accountNumberDisplay: "8200"
         productName: "First Plaidypus Credit Card"
@@ -2342,18 +1948,6 @@ components:
     # Core data types
     #
     ############################################################
-    AccountCategory:
-      title: Account Category type
-      description: The category of account
-      type: string
-      enum:
-        - ANNUITY_ACCOUNT
-        - DEPOSIT_ACCOUNT
-        - LOAN_ACCOUNT
-        - LOC_ACCOUNT
-        - INSURANCE_ACCOUNT
-        - INVESTMENT_ACCOUNT
-
     AccountStatus:
       title: Account Status
       description: The status of an account.
@@ -2465,27 +2059,6 @@ components:
         - CREDIT
         - DEBIT
         - MEMO
-
-    DepositTransactionType:
-      title: Deposit Transaction Type
-      description: |
-        The type of a deposit transaction. Plaid passes through all deposit transaction types.
-      type: string
-      enum:
-        - ADJUSTMENT
-        - ATMDEPOSIT
-        - ATMWITHDRAWAL
-        - BILLPAYMENT
-        - CHECK
-        - DEPOSIT
-        - DIRECTDEPOSIT
-        - DIVIDEND
-        - FEE
-        - INTEREST
-        - POSCREDIT
-        - POSDEBIT
-        - TRANSFER
-        - WITHDRAWAL
 
     FiAttribute:
       title: FI Attribute entity
