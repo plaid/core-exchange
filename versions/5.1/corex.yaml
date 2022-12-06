@@ -1326,7 +1326,10 @@ components:
           $ref: '#/components/schemas/TransactionStatus'
         amount:
           type: number
-          description: The amount of money in the account currency
+          description: |
+            The amount of money in the account currency.
+            The amount is an absolute value.
+            Plaid relies on the `DebitCreditMemo` enum to determine the direction (and sign) of the transaction.
         foreignAmount:
           type: number
           description: >-
