@@ -1,0 +1,12 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+echo "If you run into issues while running this task make sure you have dev dependencies installed by running 'npm install'"
+echo "Running pre commit tasks: "
+if [ $(git diff --cached -- src | wc -l) -gt "0" ]; then
+    echo "Changes Detected"
+    echo "Compiling"
+    ./node_modules/.bin/ts-node ./scripts/run-template.ts
+    git add dist/
+    echo "Validating"
+    npx spectral lint --ruleset=.spectral.yaml ./dist/versions/**/corex.yaml
+fi
