@@ -124,7 +124,7 @@ paths:
       - name: accountId
         in: path
         description: |
-          Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID to be a different value from the account number.
+          Account identifier, found in the `GET /accounts` endpoint response. **Do not use a full or masked account number for this value as this increases the risk of revealing Personally Identifiable Information (PII).**
         required: true
         schema:
           type: string
@@ -189,7 +189,7 @@ paths:
       parameters:
         - name: accountId
           in: path
-          description: Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID to be a different value from the account number.
+          description: Account identifier, found in the `GET /accounts` endpoint response. **Do not use a full or masked account number for this value as this increases the risk of revealing Personally Identifiable Information (PII).**
 
           required: true
           schema:
@@ -239,7 +239,7 @@ paths:
       parameters:
         - name: accountId
           in: path
-          description: Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID to be a different value from the account number.
+          description: Account identifier, found in the `GET /accounts` endpoint response. **Do not use a full or masked account number for this value as this increases the risk of revealing Personally Identifiable Information (PII).**
 
           required: true
           schema:
@@ -602,8 +602,9 @@ components:
       properties:
         accountId:
           description: |
-            Long-term persistent identity of the account, though not an account number.
+            Long-term persistent identity of the account.
             This identity must be unique within your organization.
+            **Do not use a full or masked account number for this value as this increases the risk of revealing Personally Identifiable Information (PII).**
           $ref: '#/components/schemas/Identifier'
         accountType:
           $ref: '#/components/schemas/AccountType'
