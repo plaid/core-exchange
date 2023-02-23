@@ -304,7 +304,7 @@ components:
       name: accountId
       in: path
       description:  |
-        Account identifier, found in the `GET /accounts` endpoint response. **Do not use a full or masked account number for this value as this increases the risk of revealing Personally Identifiable Information (PII).**
+        Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID to be a different value from the account number.
       required: true
       schema:
         type: string
@@ -578,9 +578,8 @@ components:
       properties:
         accountId:
           description: |
-            Long-term persistent identity of the account.
+            Long-term persistent identity of the account, though not an account number.
             This identity must be unique within your organization.
-            **Do not use a full or masked account number for this value as this increases the risk of revealing Personally Identifiable Information (PII).**
           $ref: '#/components/schemas/Identifier'
         accountType:
           $ref: '#/components/schemas/AccountType'
@@ -1969,7 +1968,6 @@ components:
     AccountType:
       title: Account Type
       description: |
-        
         The type of an account.
         Plaid consumes basic balance account information from the `accounts/{id}` endpoint for a subset of the possible account types described in the FDX specification.
         These account types are in the following categories: deposit, investment, line of credit, and loan accounts.
