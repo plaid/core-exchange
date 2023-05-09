@@ -104,7 +104,7 @@ paths:
       tags:
         - Account Information
       summary: List all accounts
-      description: List all accounts
+      description: Enables you to search and view customer accounts
       security:
       - openIdConnect:
         - Account
@@ -683,6 +683,7 @@ components:
       type: object
       oneOf:
         - type: object
+          title: Deposit Account
           properties:
             depositAccount:
               $ref: '#/components/schemas/DepositAccount'
@@ -690,6 +691,7 @@ components:
             - depositAccount
           additionalProperties: false
         - type: object
+          title: Investment Account
           properties:
             investmentAccount:
               $ref: '#/components/schemas/InvestmentAccount'
@@ -697,6 +699,7 @@ components:
             - investmentAccount
           additionalProperties: false
         - type: object
+          title: Loan Account
           properties:
             loanAccount:
               $ref: '#/components/schemas/LoanAccount'
@@ -704,6 +707,7 @@ components:
             - loanAccount
           additionalProperties: false
         - type: object
+          title: Line of Credit Account
           properties:
             locAccount:
               $ref: '#/components/schemas/LocAccount'
@@ -717,6 +721,7 @@ components:
       type: object
       oneOf:
         - type: object
+          title: Deposit Account
           properties:
             depositAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -725,6 +730,7 @@ components:
             - depositAccount
           additionalProperties: false
         - type: object
+          title: Loan Account
           properties:
             loanAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -733,6 +739,7 @@ components:
             - loanAccount
           additionalProperties: false
         - type: object
+          title: Line of Credit Account
           properties:
             locAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -741,6 +748,7 @@ components:
             - locAccount
           additionalProperties: false
         - type: object
+          title: Investment Account
           properties:
             investmentAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -749,6 +757,7 @@ components:
             - investmentAccount
           additionalProperties: false
         - type: object
+          title: Insurance Account
           properties:
             insuranceAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -757,6 +766,7 @@ components:
             - insuranceAccount
           additionalProperties: false
         - type: object
+          title: Annuity Account
           properties:
             annuityAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -928,6 +938,8 @@ components:
                 For security-based actions other than stock splits, quantity.
                 Shares for stocks, mutual funds, and others. Face value for bonds.
                 Contracts for options.
+                
+                **Note:** This field is required if the transaction involves a security.
             marketValue:
               type: number
               description: Market value at the time of data retrieved
@@ -1048,6 +1060,8 @@ components:
                 Unit price. Plaid uses this as the [price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-investment-transactions-price).
                 Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-close-price)
                 if you don't return `securityId` for transactions involving securities.
+                
+                **Note:** This field is required if the transaction involves a security.
             units:
               type: number
               description: |
@@ -1055,6 +1069,8 @@ components:
                 For security-based actions other than stock splits, quantity.
                 Shares for stocks, mutual funds, and others. Face value for bonds.
                 Contracts for options.
+                
+                **Note:** This field is required if the transaction involves a security.
             unitType:
               $ref: '#/components/schemas/UnitType'
               description: SHARES, CURRENCY
@@ -1354,13 +1370,15 @@ components:
           properties:
             transactions:
               description: |
-                An array of transactions with entity type dependent on the
-                account type.  Plaid expects your organization to return an empty array if this information isn't available.
-                Plaid consumes solely investment, deposit, loan, and line of credit transactions.
+                An array of transactions.
+                The `transactionType` is dependent on the account type.
+                Plaid consumes investment, deposit, loan, and line of credit transactions.
+                Plaid expects your organization to return an empty array if this information isn't available.
               type: array
               items:
                 oneOf:
                   - type: object
+                    title: Deposit Transaction
                     properties:
                       depositTransaction:
                         $ref: '#/components/schemas/DepositTransaction'
@@ -1368,6 +1386,7 @@ components:
                       - depositTransaction
                     additionalProperties: false
                   - type: object
+                    title: Investment Transaction
                     properties:
                       investmentTransaction:
                         $ref: '#/components/schemas/InvestmentTransaction'
@@ -1387,6 +1406,7 @@ components:
                       - investmentTransaction
                     additionalProperties: false
                   - type: object
+                    title: Loan Transaction
                     properties:
                       loanTransaction:
                         $ref: '#/components/schemas/LoanTransaction'
@@ -1394,6 +1414,7 @@ components:
                       - loanTransaction
                     additionalProperties: false
                   - type: object
+                    title: Line of Credit Transaction
                     properties:
                       locTransaction:
                         $ref: '#/components/schemas/LocTransaction'
