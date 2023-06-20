@@ -91,6 +91,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerWithId'
+        '404':
+          description: Customer with ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerNotFound'
+        '500':
+          $ref: '#/components/responses/500'
 
   ############################################################
   #
@@ -121,6 +129,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Accounts'
+        '404':
+          description: Customer with ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerNotFound'
+        '500':
+          $ref: '#/components/responses/500'
 
   /accounts/{accountId}:
     get:
@@ -149,6 +165,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountWithDetails'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          description: Account with ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNotFound'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
 
   /accounts/{accountId}/contact:
     get:
@@ -176,6 +204,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountContact'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          description: |
+            Client-side error.
+            Possible FDX error codes:
+              - **601: Customer not found**: Customer with ID not found
+              - **701: Account not found:**: Account with ID not found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CustomerNotFound'
+                  - $ref: '#/components/schemas/AccountNotFound'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
 
   /accounts/{accountId}/payment-networks:
     get:
@@ -203,6 +249,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          description: Account with ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNotFound'
+        '500':
+          $ref: '#/components/responses/500'
 
   /accounts/{accountId}/transactions:
     get:
@@ -236,6 +292,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transactions'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          description: Account with ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountNotFound'
+        '422':
+          $ref: '#/components/responses/422'
+        '500':
+          $ref: '#/components/responses/500'
 
 components:
 
@@ -332,7 +400,22 @@ components:
     # Shared data entities (usable by core and all extensions)
     #
     ############################################################
-
+    
+    AccountNotFound:
+      title: '701: Account Not Found'
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - example:
+            code: 701
+            message: Account not found
+    
+    AccountTypeNotSupported:
+      title: '704: Account Type Not Supported'
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - example:
+            code: 704
+            message: Account type not supported
 
     Address:
       title: Address
@@ -414,6 +497,30 @@ components:
       allOf:
         - $ref: '#/components/schemas/Address'
 
+    Error:
+      title: Error
+      description: >-
+        An error entity which can be used at the API level for error responses
+        or at the account level to indicate a problem specific to a particular
+        account
+      type: object
+      required: 
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: >-
+            The FDX error code: A long-term persistent identifier which can be used to trace error
+            condition back to log information
+        message:
+          type: string
+          description: >-
+            End user displayable information which might help the customer
+            diagnose an error
+
+
+
     IndividualName:
       title: Individual name
       description: >-
@@ -435,6 +542,14 @@ components:
       required:
         - first
         - last
+    
+    InternalServerError:
+      title: '500: Internal Server Error'
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - example:
+            code: 500
+            message: Internal server error
 
     PageMetadata:
       title: Page Metadata
@@ -458,6 +573,14 @@ components:
       properties:
         page:
           $ref: '#/components/schemas/PageMetadata'
+    
+    SubsystemUnavailable:
+      title: '501: Subsystem Unavailable'
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - example:
+            code: 501
+            message: Version not supported or not implemented
 
     TelephoneNumber:
       title: Telephone Number
@@ -637,11 +760,15 @@ components:
           description: |
             Can transfer funds to the account using this information. Plaid expect that this value represents the account's current ability to be credited through a payment network.
             Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
+            
+            **Note:** If `transferIn` and `transferOut` are both `false`, the account does not support ACH.
         transferOut:
           type: boolean
           description: |
             Can transfer funds from the account using this information. Plaid expect that this value represents the account's current ability to be debited through a payment network.
             Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
+            
+            **Note:** If `transferIn` and `transferOut` are both `false`, the account does not support ACH.
       required:
         - bankId
         - identifier
@@ -832,6 +959,23 @@ components:
           description: ISO 4217 currency code
       required:
         - currencyCode
+    
+    CustomerNotFound:
+      title: '601: Customer Not Found'
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - example:
+            code: 601
+            message: Customer not found
+    
+    CustomerNotAuthorized:
+      title: '602: Customer Not Authorized'
+      description: Authenticated customer does not have the authorization to perform this action. (HTTP status code 401)
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - example:
+            code: 602
+            message: Customer not authorized
 
     DepositAccount:
       title: Deposit Account entity
@@ -872,6 +1016,7 @@ components:
               type: integer
               description: |
                 Check number. Plaid expects this solely if the transaction involves a check.
+
 
     Holding:
       title: Holding entity
@@ -2336,3 +2481,33 @@ components:
       enum:
         - CURRENCY
         - SHARES
+          
+
+  responses:
+    '500':
+      description: |
+        The server encountered an unexpected condition that prevented it from fulfilling the request.
+        Possible FDX error codes:
+          - **500: Customer not found**: Customer with ID not found
+          - **501: Account not found:**: Account with ID not found
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '#/components/schemas/InternalServerError'
+              - $ref: '#/components/schemas/SubsystemUnavailable'
+    
+    '401':
+      description: Authenticated customer does not have the authorization to perform this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CustomerNotAuthorized'
+    
+    '422':
+      description: Request made for investment, loans, taxes, statements and other functions that we currently do not support. Error also covers certain account types that are not supported
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AccountTypeNotSupported'
+    

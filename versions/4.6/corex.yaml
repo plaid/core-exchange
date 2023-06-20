@@ -725,11 +725,15 @@ components:
           description: |
             Can transfer funds to the account using this information. Plaid expect that this value represents the account's current ability to be credited through a payment network.
             Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
+            
+            **Note:** If `transferIn` and `transferOut` are both `false`, the account does not support ACH.
         transferOut:
           type: boolean
           description: |
             Can transfer funds from the account using this information. Plaid expect that this value represents the account's current ability to be debited through a payment network.
             Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
+            
+            **Note:** If `transferIn` and `transferOut` are both `false`, the account does not support ACH.
       required:
         - bankId
         - identifier
