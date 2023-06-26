@@ -2549,8 +2549,8 @@ components:
       description: |
         The server encountered an unexpected condition that prevented it from fulfilling the request.
         Possible FDX error codes:
-          - **500: Customer not found**: Customer with ID not found
-          - **501: Account not found:**: Account with ID not found
+          - **500: Internal Server Error**: Catch all exception where request was not processed due to an internal outage/issue. Consider other more specific errors before using this error
+          - **501: Subsystem Unavailable:**: A system required to process the request was not available. Request was not processed
       content:
         application/json:
           schema:
