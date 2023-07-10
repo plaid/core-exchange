@@ -10,8 +10,8 @@ openapi: 3.1.0
 #                                                                                                        #
 ##########################################################################################################
 info:
-  version: '5.1.0'
-  title: FDX V5.1
+  version: '5.2.0'
+  title: FDX V5.2
   description: |
     ## FDX compliance
     
@@ -44,7 +44,7 @@ info:
 
     ## Mock server
 
-    See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.1.
+    See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.2.
 
   contact:
     name: Plaid support
@@ -52,7 +52,7 @@ info:
     email: dataconnectivity@plaid.com
 servers:
   - url: 'https://api.your-organization.com/fdx/v5'
-    description: Financial Data Exchange V5.1 Core API
+    description: Financial Data Exchange V5.2 Core API
 tags:
   - name: Personal Information
     description: Search and view customer or customers
