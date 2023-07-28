@@ -24,7 +24,7 @@ info:
     
     ## Download the specification
     
-    To view this specification and documentation as an openapi yaml file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/dist/versions).
+    To view this specification and documentation as an OpenAPI YAML file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/dist/versions).
 
     ## Endpoints
 
@@ -77,10 +77,13 @@ paths:
       tags:
         - Personal Information
       description: >-
-        Get the id of the customer within the authorization scope.
-        Plaid consumes this endpoint as an alternate method of customer identification if you use Oauth2.
-        If you instead use OIDC (recommended), Plaid identifies the customer using the OIDC `id_token` response, and you don't need to implement this endpoint.
-      summary: Get current authenticated customer id
+        Get the ID of the customer within the authorization scope.
+        
+        
+        **Note:** 
+          - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/authentication#4-the-token_endpoint-response).
+          - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
+      summary: Get current authenticated customer ID
       security:
         - openIdConnect: []
         - oauth2: []
@@ -112,7 +115,7 @@ paths:
       tags:
         - Account Information
       summary: List all accounts
-      description: Enables you to search and view customer accounts
+      description: Search and view customer accounts
       security:
       - openIdConnect:
         - Account
@@ -185,6 +188,8 @@ paths:
         - Personal Information
       description: |
         Get contact information on the account.
+        
+        
         Plaid links contact information to accounts, rather than to users.
         Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information.
         For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
@@ -267,9 +272,15 @@ paths:
         - Account Transactions
       description: |
         List all account transactions.
-        Plaid always queries this endpoint using an `startTime` and `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`,
+        Plaid always queries this endpoint a `startTime` and an `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`,
         and expects the time filters to be based on the `postedTimestamp`.
-        Plaid consumes information from this endpoint solely for deposit, investment, loan, or line of credit (LOC) account types.
+        
+        
+        Plaid consumes data from this endpoint for the following account types only:
+          - loan
+          - investment
+          - deposit
+          - line of credit (LOC)
 
       summary: List all account transactions
       security:
@@ -317,12 +328,12 @@ components:
     openIdConnect:
       type: openIdConnect
       description: >-
-        This API uses OpenId Connect (OIDC) with the authorization code flow, and accepts the access token as a bearer token, for example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OpenID Connect (OIDC) authentication flow](/authentication) and accepts the resulting [access token](/authentication#4-the-token_endpoint-response) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
       openIdConnectUrl: https://www.your-organization.com/.well-known/openid-configuration
     oauth2:
       type: oauth2
       description: >-
-        This API uses OAuth2.0 with a common OAuth2.0 flow, the authorization code flow, and accepts the access token as a bearer token, for example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
       flows:
         authorizationCode:
           authorizationUrl: https://www.your-organization.com/authorize
