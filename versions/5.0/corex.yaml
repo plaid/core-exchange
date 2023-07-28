@@ -81,7 +81,7 @@ paths:
         
         
         **Note:** 
-          - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/authentication#4-the-token_endpoint-response).
+          - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
           - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
       summary: Get current authenticated customer ID
       security:
@@ -328,7 +328,7 @@ components:
     openIdConnect:
       type: openIdConnect
       description: >-
-        This API uses an [OpenID Connect (OIDC) authentication flow](/authentication) and accepts the resulting [access token](/authentication#4-the-token_endpoint-response) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/authentication) and accepts the resulting [access token](/core-exchange/authentication#response-parameters) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
       openIdConnectUrl: https://www.your-organization.com/.well-known/openid-configuration
     oauth2:
       type: oauth2
