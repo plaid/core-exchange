@@ -750,15 +750,13 @@ components:
           description:  |
             Physical mail addresses associated with the account.
           example:
-            - type: HOME
-              line1:  1850 N Clark St
+            - line1:  1850 N Clark St
               line2:  Apartment 103
               city: Chicago
               region: IL
               postalCode: '60614'
               country: US
-            - type: HOME
-              line1:  2014 N Main St
+            - line1:  2014 N Main St
               city: San Francisco
               region: CA
               postalCode: '94105'
