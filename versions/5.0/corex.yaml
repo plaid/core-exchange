@@ -860,7 +860,7 @@ components:
           properties:
             depositAccount:
               $ref: '#/components/schemas/AccountDescriptor'
-              description: Brief description of deposit account
+              description: A deposit account. For example, a checking, savings or money market account
           required:
             - depositAccount
           additionalProperties: false
@@ -869,7 +869,7 @@ components:
           properties:
             loanAccount:
               $ref: '#/components/schemas/AccountDescriptor'
-              description: Brief description of loan account
+              description: A loan account. For example, mortgage, student loan or auto loan
           required:
             - loanAccount
           additionalProperties: false
@@ -878,7 +878,7 @@ components:
           properties:
             locAccount:
               $ref: '#/components/schemas/AccountDescriptor'
-              description: Brief description of line-of-credit account
+              description: A line-of-credit account. For example, a credit card or home equity line of credit
           required:
             - locAccount
           additionalProperties: false
@@ -887,7 +887,7 @@ components:
           properties:
             investmentAccount:
               $ref: '#/components/schemas/AccountDescriptor'
-              description: Brief description of investment account
+              description: An investment account. For example, a 401K or IRA
           required:
             - investmentAccount
           additionalProperties: false
@@ -896,7 +896,7 @@ components:
           properties:
             insuranceAccount:
               $ref: '#/components/schemas/AccountDescriptor'
-              description: Brief description of insurance account
+              description: An insurance account. For example, whole life insurance or short-term disability
           required:
             - insuranceAccount
           additionalProperties: false
@@ -905,7 +905,7 @@ components:
           properties:
             annuityAccount:
               $ref: '#/components/schemas/AccountDescriptor'
-              description: Brief description of annuity account
+              description: An annuity account. For example, a fixed or variable annuity account
           required:
             - annuityAccount
           additionalProperties: false
