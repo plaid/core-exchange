@@ -1023,7 +1023,7 @@ components:
                       accountId: locAccount0000001
                       accountType: LINEOFCREDIT
                       accountNumberDisplay: "8200"
-                      productName: "Loan of Credit"
+                      productName: "Line of Credit"
                       nickname: "First plaidypus LOC"
                       status: OPEN
                       currency:

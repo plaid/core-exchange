@@ -979,6 +979,7 @@ components:
             - insuranceAccount
           additionalProperties: false
         - type: object
+          title: Annuity Account
           properties:
             annuityAccount:
               $ref: '#/components/schemas/AccountDescriptor'
@@ -1028,7 +1029,7 @@ components:
                       accountId: locAccount0000001
                       accountType: LINEOFCREDIT
                       accountNumberDisplay: "8200"
-                      productName: "Loan of Credit"
+                      productName: "Line of Credit"
                       nickname: "First plaidypus LOC"
                       status: OPEN
                       currency:
