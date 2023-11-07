@@ -1039,11 +1039,12 @@ components:
           properties:
             securityId:
               description: |
-                Plaid requires this field and `securityIdType` for:
-                - holding types that use security IDs, such as stocks and options.
-                - transactions involving such holding types.
-                If you return this for a holding, Plaid looks up the close price from NYSE Group Security Master using the security ID.
-                If you don't return this for a holding that uses security IDs (not recommended), Plaid uses the `currentUnitPrice` you return as the close price.
+                If you return the `securityId` for a holding, Plaid uses it to look up the closing price from NYSE Group Security Master.
+                If you don't return `securityId` for a holding that uses security IDs (not recommended), Plaid uses the `unitPrice` as the closing price.
+                
+                This field, along with `securityIdType` are **required** unless `symbol` is provided.
+                
+                **Note:** If `securityId` is provided, `securityIdType` is required.
               type: string
             securityIdType:
               $ref: '#/components/schemas/SecurityIdType'
@@ -1058,6 +1059,8 @@ components:
             symbol:
               type: string
               description: Ticker / Market symbol
+                
+                This field is **required** unless both `securityId` and `securityIdType` are provided.
             purchasedPrice:
               type: number
               description: |
@@ -1184,6 +1187,9 @@ components:
         
         * `fees`
         * `transactionType`
+        * Either of the following:
+          - `symbol`
+          - `securityId` and `securityIdType`
         
         If the transaction involves a security, Plaid additionally requires the following fields:
         
@@ -1199,11 +1205,12 @@ components:
             securityId:
               type: string
               description: |
-                Plaid requires this field and `securityIdType` for:
-                - holding types that use security IDs, such as stocks and options.
-                - transactions involving such holding types.
-                If you return this for a holding, Plaid looks up the close price from NYSE Group Security Master using the security ID.
-                If you don't return this for a holding that uses security IDs (not recommended), Plaid uses the `currentUnitPrice` you return as the close price.
+                If you return the `securityId` for a holding, Plaid uses it to look up the closing price from NYSE Group Security Master.
+                If you don't return `securityId` for a holding that uses security IDs (not recommended), Plaid uses the `unitPrice` as the closing price.
+                
+                This field, along with `securityIdType` are **required** unless `symbol` is provided.
+                
+                **Note:** If `securityId` is provided, `securityIdType` is required.
             securityIdType:
               $ref: '#/components/schemas/SecurityIdType'
             securityType:
@@ -1212,6 +1219,8 @@ components:
             symbol:
               type: string
               description: Ticker symbol
+                
+                This field is **required** unless both `securityId` and `securityIdType` are provided.
             commission:
               type: number
               description: |
@@ -1589,6 +1598,9 @@ components:
                           
                           * `fees`
                           * `transactionType`
+                          * Either of the following:
+                            - `symbol`
+                            - `securityId` and `securityIdType`
                           
                           If the transaction involves a security, Plaid additionally requires the following fields:
                           
@@ -2473,9 +2485,13 @@ components:
         - CA_LVTS
 
     SecurityIdType:
-      title: Security Id Type
+      title: Security ID Type
       description: |
         Plaid consumes solely CUSIP, ISIN, and SEDOL.
+        
+        This field, along with `securityId` are **required** unless `symbol` is provided.
+        
+        **Note:** If `securityIdType` is provided, `securityId` is required.
       type: string
       enum:
         - CUSIP
