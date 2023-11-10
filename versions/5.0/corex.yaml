@@ -24,7 +24,7 @@ info:
     
     ## Download the specification
     
-    To view this specification and documentation as an OpenAPI YAML file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/blob/main/dist/versions).
+    To view this specification and documentation as an OpenAPI YAML file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/tree/main/versions).
 
     ## Endpoints
 
@@ -45,6 +45,29 @@ info:
     ## Mock server
 
     See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.0.
+    
+    ## Error responses
+    
+    An error entity which can be used at the API level for error responses or at the account level to indicate a problem specific to a particular account.
+    Error responses must contain a `code` and `message`.
+    See the descriptions below:
+    
+    - `code`: The FDX error code: A long-term persistent identifier which can be used to trace error condition back to log information.
+      (**Note:** This code may differ from the HTTP status code.)
+    - `message`: End user displayable information which might help the customer diagnose an error
+    
+    ### Example error
+    
+    The following is an example response with an HTTP status code of 409.
+    
+    ```
+    {
+      "code": 705,
+      "message": "Account is closed"
+    }
+    ```
+    
+    See the Errors table in each endpoint description for more specific message examples.
 
   contact:
     name: Plaid support
@@ -83,6 +106,34 @@ paths:
         **Note:** 
           - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
           - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
+        
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>601</td>
+            <td>Customer not found</td>
+            <td>A customer with the provided customer ID could not be found</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+        </table>
       summary: Get current authenticated customer ID
       security:
         - openIdConnect: []
@@ -107,7 +158,36 @@ paths:
       tags:
         - Account Information
       summary: List all accounts
-      description: Search and view customer accounts
+      description: >-
+        Search and view customer accounts
+        
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>601</td>
+            <td>Customer not found</td>
+            <td>A customer with the provided customer ID could not be found</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+        </table>
       security:
       - openIdConnect:
         - Account
@@ -137,6 +217,46 @@ paths:
         - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
         - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
         For more information, see the example response descriptions.
+        
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>422</td>
+            <td>704</td>
+            <td>Account type not supported</td>
+            <td>The account type does not support the selected action</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+        </table>
       security:
       - openIdConnect:
         - Account
@@ -165,6 +285,58 @@ paths:
         Plaid links contact information to accounts, rather than to users.
         Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information.
         For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
+        
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>601</td>
+            <td>Customer not found</td>
+            <td>A customer with the provided customer ID could not be found</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>422</td>
+            <td>704</td>
+            <td>Account type not supported</td>
+            <td>The account type does not support the selected action</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       summary: Get an account's contact information
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -191,6 +363,40 @@ paths:
       description: |
         Get payment networks supported by an account, for example ACH (Automated Clearing House).
         For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
+        
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+        </table>
       summary: Get payment networks supported by the account
       security:
       - openIdConnect:
@@ -225,7 +431,46 @@ paths:
           - investment
           - deposit
           - line of credit (LOC)
-
+        
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>422</td>
+            <td>704</td>
+            <td>Account type not supported</td>
+            <td>The account type does not support the selected action</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+        </table>
       summary: List all account transactions
       security:
       - openIdConnect:
@@ -736,7 +981,7 @@ components:
               description: |
                 A deposit account. For example, a checking, savings or money market account.
                 Plaid consumes more detailed information for `CHECKING` and `SAVINGS` accounts.
-                
+
                 The `accountType` field for deposit accounts may be set to any of the following:
                 * `CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.<br/>
                 * `SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.<br/>
@@ -756,7 +1001,7 @@ components:
               description: |
                 A loan account. For example, mortgage, student loan or auto loan.
                 Plaid consumes more detailed information for `MORTGAGE` and `STUDENTLOAN` accounts.
-                
+
                 The `accountType` field for loan accounts may be set to any of the following:
                 * `AUTOLOAN`: A type of loan used to finance a car purchase.<br/>
                 * `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.<br/>
@@ -779,7 +1024,7 @@ components:
               description: |
                 A line-of-credit account. For example, a credit card or home equity line of credit.
                 Plaid consumes more detailed information for `CREDITCARD` accounts.
-                
+
                 The `accountType` field for line of credit accounts may be set to any of the following:
                 * `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.<br/>
                 * `CHARGE`: An account to which goods and services may be charged on credit.<br/>
@@ -797,7 +1042,7 @@ components:
               description: |
                 An investment account. For example, a 401K or IRA.
                 Plaid consumes the same details for all investment accounts.
-                
+
                 The `accountType` field for investment accounts may be set to any of the following:
                 * `401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.<br/>
                 * `401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.<br/>
@@ -834,7 +1079,7 @@ components:
               $ref: '#/components/schemas/InsuranceAccountDescriptor'
               description: |
                 An insurance account. For example, whole life insurance or short-term disability.
-                
+
                 The `accountType` field for insurance accounts may be set to any of the following:
                 * `LONGTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year.<br/>
                 * `SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.<br/>
@@ -850,7 +1095,7 @@ components:
               $ref: '#/components/schemas/AnnuityAccountDescriptor'
               description: |
                 An annuity account. For example, a fixed or variable annuity account.
-                
+
                 The `accountType` field for annuity accounts may be set to any of the following:
                 * `ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.<br/>
                 * `FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.<br/>
@@ -1019,7 +1264,7 @@ components:
             symbol:
               type: string
               description: Ticker / Market symbol
-                
+
                 This field is **required** unless both `securityId` and `securityIdType` are provided.
             purchasedPrice:
               type: number
@@ -1179,7 +1424,7 @@ components:
             symbol:
               type: string
               description: Ticker symbol
-                
+
                 This field is **required** unless both `securityId` and `securityIdType` are provided.
             commission:
               type: number
@@ -1312,7 +1557,6 @@ components:
           required:
             - accountNumber
             - principalBalance
-            - originatingDate
             - interestRate
             - interestRateType
             - accountType
