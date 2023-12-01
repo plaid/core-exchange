@@ -301,7 +301,7 @@ paths:
         Get the ID of the customer within the authorization scope.
         
         
-        **Note:** 
+        **Note:**
           - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
           - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
       summary: Get current authenticated customer ID
@@ -537,7 +537,7 @@ components:
             $ref: '#/components/schemas/AccountHolder'
           minItems: 1
           description: |
-            Owners of the account. 
+            Owners of the account.
             Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their
             contact information in the full `AccountHolder` schema, Plaid doesn't consume these associations.
             Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails,
@@ -561,7 +561,7 @@ components:
             type: string
           minItems: 1
           description:  |
-            Email addresses associated with the account. 
+            Email addresses associated with the account.
           example:
             - "ernest.m.hemingway@domain.tld"
             - "m.angelou@domain.tld"
@@ -590,7 +590,7 @@ components:
             $ref: '#/components/schemas/TelephoneNumber'
           minItems: 1
           description: |
-            Telephone numbers associated with the account. 
+            Telephone numbers associated with the account.
           example:
           - type: HOME
             country: '1'
@@ -678,6 +678,8 @@ components:
                 account type (deposit, investment, loan, or line of credit).
                 Plaid accepts all account types for this endpoint but consumes account details
                 through `GET accounts/{accountId}` solely for deposit, investment, loan, and line of credit accounts.
+                
+                **Note:** Each object in the accounts array is expected contain at least one account type.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -763,7 +765,7 @@ components:
                 $ref: '#/components/schemas/AccountPaymentNetwork'
               minItems: 1
               description: |
-                Array of payment networks. 
+                Array of payment networks.
                 Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH.
               example:
                 - bankId: '010088889'
@@ -1111,7 +1113,7 @@ components:
                 Array of financial institution-specific attributes.
                 Plaid recommends including a value for [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
                 property in this array.
-                Plaid accepts `isCashEquivalent` as the name and a string `true` or `false` as the value.
+                Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
                 If you return a value for `isCashEquivalent`, then return the same value for `cashAccount` as a boolean.
               items:
                 $ref: '#/components/schemas/FiAttribute'
@@ -1255,7 +1257,7 @@ components:
                 Array of financial institution-specific attributes.
                 Plaid recommends including a value for [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-is-cash-equivalent)
                 property in this array.
-                Plaid accepts `isCashEquivalent` as the name and a string `true` or `false` as the value.
+                Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
               items:
                 $ref: '#/components/schemas/FiAttribute'
           required:
@@ -2215,10 +2217,10 @@ components:
       properties:
         name:
           type: string
-          description: Name of attribute
+          description: The attribute's name
         value:
           type: string
-          description: Value of attribute
+          description: The attribute's value
 
     HoldingSubType:
       title: Holding SubType

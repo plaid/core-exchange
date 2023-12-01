@@ -10,8 +10,8 @@ openapi: 3.1.0
 #                                                                                                        #
 ##########################################################################################################
 info:
-  version: '5.2.0'
-  title: FDX V5.2
+  version: '5.3.2'
+  title: FDX V5.3
   description: |
     ## FDX compliance
     
@@ -49,31 +49,6 @@ info:
     ## Mock server
 
     See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.2.
-    
-    ## Error responses
-    
-    An error entity which can be used at the API level for error responses or at the account level to indicate a problem specific to a particular account.
-    Error responses must contain a `code` and `message`, and may optionally include a `debugMessage`.
-    See the descriptions below:
-    
-    - `code`: The FDX error code: A long-term persistent identifier which can be used to trace error condition back to log information.
-      (**Note:** This code may differ from the HTTP status code.)
-    - `message`: End user displayable information which might help the customer diagnose an error
-    - `debugMessage`: Message used to debug the root cause of the error. Contents should not be used in consumer's business logic. Can change at any time and should only be used for consumer to communicate with the data provider about an issue. Provider can include an error GUID in message for their use
-    
-    ### Example error
-    
-    The following is an example response with an HTTP status code of 409.
-    
-    ```
-    {
-      "code": 705,
-      "message": "Account is closed",
-      "debugMessage": "Operation is not supported by the closed account"
-    }
-    ```
-    
-    See the Errors table in each endpoint description for more specific message and debug message examples.
 
   contact:
     name: Plaid support
@@ -107,47 +82,13 @@ paths:
       operationId: getCustomerInfo
       tags:
         - Personal Information
-      description: |
+      description: >-
         Get the ID of the customer within the authorization scope.
         
         
         **Note:**
           - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
           - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
-        
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>601</td>
-            <td>Customer not found</td>
-            <td>A customer with the provided customer ID could not be found</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       summary: Get current authenticated customer ID
       security:
         - openIdConnect: []
@@ -172,42 +113,7 @@ paths:
       tags:
         - Account Information
       summary: List all accounts
-      description: |
-        Search and view customer accounts
-        
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>601</td>
-            <td>Customer not found</td>
-            <td>A customer with the provided customer ID could not be found</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
+      description: Search and view customer accounts
       security:
       - openIdConnect:
         - Account
@@ -237,58 +143,6 @@ paths:
         - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
         - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
         For more information, see the example response descriptions.
-        
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>422</td>
-            <td>704</td>
-            <td>Account type not supported</td>
-            <td>The account type does not support the selected action</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       security:
       - openIdConnect:
         - Account
@@ -317,64 +171,6 @@ paths:
         Plaid links contact information to accounts, rather than to users.
         Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information.
         For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
-        
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>601</td>
-            <td>Customer not found</td>
-            <td>A customer with the provided customer ID could not be found</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>422</td>
-            <td>704</td>
-            <td>Account type not supported</td>
-            <td>The account type does not support the selected action</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       summary: Get an account's contact information
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -401,52 +197,6 @@ paths:
       description: |
         Get payment networks supported by an account, for example ACH (Automated Clearing House).
         For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
-        
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       summary: Get payment networks supported by the account
       security:
       - openIdConnect:
@@ -480,9 +230,9 @@ paths:
       operationId: searchForAccountStatements
       tags:
         - Account Statements
-      description: |
+      description: >-
         Get account statements.
-        
+
         Example: `GET /accounts/{accountId}/statements?startTime=value1&endTime=value2`
       summary: Search for statements
       parameters:
@@ -514,8 +264,8 @@ paths:
       operationId: getAccountStatement
       tags:
         - Account Statements
-      description: |
-        Get account statement PDF.
+      description: >-
+        Get account statement image file. Use [HTTP Accept request-header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html) to specify desired content types. (See Content-Type definition for typical values.)
       summary: Get account statement
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -546,58 +296,7 @@ paths:
           - investment
           - deposit
           - line of credit (LOC)
-        
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>422</td>
-            <td>704</td>
-            <td>Account type not supported</td>
-            <td>The account type does not support the selected action</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
+
       summary: List all account transactions
       security:
       - openIdConnect:
@@ -809,7 +508,7 @@ components:
 
     HateoasLink:
       title: HATEOAS Link
-      description: HATEOAS (Hypermedia As The Engine Of Application State) link
+      description: REST application constraint (Hypermedia As The Engine Of Application State)
       required:
         - href
       type: object
@@ -817,20 +516,20 @@ components:
         href:
           type: string
           format: uri-reference
-          description: The resource URL
+          description: URL to invoke the action on the resource
           example: "https://api.fi.com/fdx/v4/accounts/12345"
         action:
-          description: The HTTP method to use for the request
+          description: HTTP method to use for the request
           $ref: '#/components/schemas/HttpAction'
         rel:
           description: >-
-            The relation of this link to its containing entity, as defined by the [IETF RFC5988](https://datatracker.ietf.org/doc/html/rfc5988)
+            Relation of this link to its containing entity, as defined by the [IETF RFC5988](https://datatracker.ietf.org/doc/html/rfc5988)
           type: string
         types:
           type: array
           items:
             $ref: '#/components/schemas/ContentTypes'
-          description: The content-types that can be used in the Accept header. **Note:** Plaid currently only accepts the PDF (`application/pdf`) content type.
+          description: Content-types that can be used in the Accept header
 
     IndividualName:
       title: Individual name
@@ -1159,7 +858,6 @@ components:
                 * `CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.<br/>
                 * `SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.<br/>
                 * `CD`: A certificate of deposit (CD) is a product offered by banks and credit unions that provides an interest rate premium in exchange for the customer agreeing to leave a lump-sum deposit untouched for a predetermined period of time.<br/>
-                * `COMMERCIALDEPOSIT`: A deposit account for commercial customers, for example a business trust account.<br/>
                 * `ESCROW`: A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties.<br/>
                 * `MONEYMARKET`: A deposit account that pays interest based on current interest rates in the money markets.<br/>
                 * `OTHERDEPOSIT`: Use when none of the listed enums apply.<br/>
@@ -1177,7 +875,6 @@ components:
 
                 The `accountType` field for loan accounts may be set to any of the following:
                 * `AUTOLOAN`: A type of loan used to finance a car purchase.<br/>
-                * `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.<br/>
                 * `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.<br/>
                 * `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.<br/>
                 * `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.<br/>
@@ -1201,7 +898,6 @@ components:
                 The `accountType` field for line of credit accounts may be set to any of the following:
                 * `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.<br/>
                 * `CHARGE`: An account to which goods and services may be charged on credit.<br/>
-                * `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.<br/>
                 * `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.<br/>
                 * `HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.<br/>
           required:
@@ -1222,7 +918,6 @@ components:
                 * `403B`: A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States.<br/>
                 * `529`: A tax-advantaged savings plan designed to help pay for education.<br/>
                 * `BROKERAGEPRODUCT`: Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options.<br/>
-                * `COMMERCIALINVESTMENT`: Investment Account for Commercial Customers. e.g. Commercial Brokerage Account.<br/>
                 * `COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.<br/>
                 * `DIGITALASSET`: An account containing digital assets.<br/>
                 * `DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.<br/>
@@ -1276,6 +971,22 @@ components:
           required:
             - annuityAccount
           additionalProperties: false
+        - type: object
+          title: Commercial Account
+          properties:
+            commercialAccount:
+              $ref: '#/components/schemas/CommercialAccountDescriptor'
+              description: |
+                A commercial account. For example, a business deposit account.
+
+                The `accountType` field for deposit accounts may be set to any of the following:
+                * `COMMERCIALDEPOSIT`: A deposit account for commercial customers, for example a business trust account.<br/>
+                * `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.<br/>
+                * `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.<br/>
+                * `COMMERCIALINVESTMENT`: Investment Account for Commercial Customers. e.g. Commercial Brokerage Account.<br/>
+          required:
+            - commercialAccount
+          additionalProperties: false
 
     Accounts:
       title: Accounts entity
@@ -1289,7 +1000,7 @@ components:
               type: array
               description: |
                 An array of accounts with entity types dependent on the
-                account type (deposit, investment, loan, line of credit, insurance, or annuity).
+                account type (deposit, investment, loan, line of credit, insurance, annuity, or commercial).
                 Plaid accepts all account types for this endpoint but consumes account details
                 through `GET accounts/{accountId}` solely for deposit, investment, loan, and line of credit accounts.
                 
@@ -1336,6 +1047,16 @@ components:
                         currencyCode: USD
           required:
             - accounts
+
+    CommercialAccountDescriptor:
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            accountType:
+              $ref: '#/components/schemas/CommercialAccountType'
+          required:
+            - accountType
 
     Currency:
       title: Currency entity
@@ -1895,10 +1616,7 @@ components:
           description: Description of the statement
         links:
           $ref: '#/components/schemas/HateoasLinks'
-          description: |
-            The HATEOAS links to retrieve this account statement, or to invoke other APIs.
-            
-            **Note:** Plaid only accepts one link object in this array.
+          description: The links to retrieve this account statement, or to invoke other APIs
         status:
           description: Availability status of statement
           type: string
@@ -2138,7 +1856,7 @@ components:
 
     HateoasLinks:
       title: HATEOAS links array
-      description: An array of HATEOAS links
+      description: Links relative to this containing entity
       type: array
       items:
         $ref: '#/components/schemas/HateoasLink'
@@ -2163,7 +1881,8 @@ components:
 
     Iso3166CountryCode:
       title: ISO 3166 Country Code
-      description: ISO 3166 Codes for the representation of names of countries and their subdivisions
+      description: >-
+        ISO 3166-1 alpha-2 codes as of April 5, 2023, from officially assigned Country Codes on [ISO Online Browsing Platform](https://www.iso.org/obp/ui/). Change log is at [ISO 3166 Maintenance Agency](https://www.iso.org/fr/committee/48750.html?t=3V3rukDb61p05Wd6ojyTRvE0S3Yg_fZgUjrLjHWcd9-mDmTKHOGjbX3nEJ3SqHar&view=documents#section-isodocuments-top)
       type: string
       enum:
         - AD
@@ -2173,7 +1892,6 @@ components:
         - AI
         - AL
         - AM
-        - AN
         - AO
         - AQ
         - AR
@@ -2192,9 +1910,11 @@ components:
         - BH
         - BI
         - BJ
+        - BL
         - BM
         - BN
         - BO
+        - BQ
         - BR
         - BS
         - BT
@@ -2215,9 +1935,9 @@ components:
         - CN
         - CO
         - CR
-        - CS
         - CU
         - CV
+        - CW
         - CX
         - CY
         - CZ
@@ -2304,6 +2024,8 @@ components:
         - MA
         - MC
         - MD
+        - ME
+        - MF
         - MG
         - MH
         - MK
@@ -2352,6 +2074,7 @@ components:
         - QA
         - RE
         - RO
+        - RS
         - RU
         - RW
         - SA
@@ -2369,8 +2092,10 @@ components:
         - SN
         - SO
         - SR
+        - SS
         - ST
         - SV
+        - SX
         - SY
         - SZ
         - TC
@@ -2412,7 +2137,8 @@ components:
 
     Iso4217Code:
       title: ISO 4217 Code
-      description: ISO 4217 Currency codes
+      description: >-
+        Currency, fund and precious metal codes as of Jan. 1, 2023 per [ISO 4217 Currency Code Maintenance](https://www.six-group.com/en/products-services/financial-information/data-standards.html)
       type: string
       enum:
         - AED
@@ -2439,6 +2165,7 @@ components:
         - BSD
         - BTN
         - BWP
+        - BYN
         - BZD
         - CAD
         - CDF
@@ -2475,7 +2202,6 @@ components:
         - GYD
         - HKD
         - HNL
-        - HRK
         - HTG
         - HUF
         - IDR
@@ -2509,6 +2235,7 @@ components:
         - MMK
         - MNT
         - MOP
+        - MRU
         - MUR
         - MVR
         - MWK
@@ -2542,10 +2269,12 @@ components:
         - SEK
         - SGD
         - SHP
+        - SLE
         - SLL
         - SOS
         - SRD
         - SSP
+        - STN
         - SVC
         - SYP
         - SZL
@@ -2564,7 +2293,10 @@ components:
         - USN
         - UYI
         - UYU
+        - UYW
         - UZS
+        - VED
+        - VES
         - VND
         - VUV
         - WST
@@ -2651,6 +2383,17 @@ components:
         - FIXEDANNUITY
         - VARIABLEANNUITY
 
+    CommercialAccountType:
+      description: |
+        The type of an account.
+        Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
+      type: string
+      enum:
+        - COMMERCIALDEPOSIT
+        - COMMERCIALINVESTMENT
+        - COMMERCIALLOAN
+        - COMMERCIALLINEOFCREDIT
+
     DepositAccountType:
       description: |
         The type of an account.
@@ -2660,7 +2403,6 @@ components:
         - CHECKING
         - SAVINGS
         - CD
-        - COMMERCIALDEPOSIT
         - ESCROW
         - MONEYMARKET
         - OTHERDEPOSIT
@@ -2676,7 +2418,6 @@ components:
         - 403B
         - "529"
         - BROKERAGEPRODUCT
-        - COMMERCIALINVESTMENT
         - COVERDELL
         - DIGITALASSET
         - DEFINEDBENEFIT
@@ -2732,10 +2473,10 @@ components:
       properties:
         name:
           type: string
-          description: The attribute's name
+          description: Name of attribute
         value:
           type: string
-          description: The attribute's value
+          description: Value of attribute
 
     HoldingSubType:
       title: Holding SubType
@@ -2868,7 +2609,6 @@ components:
       type: string
       enum:
         - AUTOLOAN
-        - COMMERCIALLOAN
         - HOMEEQUITYLOAN
         - INSTALLMENT
         - LOAN
@@ -2909,7 +2649,6 @@ components:
       enum:
         - LINEOFCREDIT
         - CHARGE
-        - COMMERCIALLINEOFCREDIT
         - CREDITCARD
         - HOMELINEOFCREDIT
 
@@ -2925,6 +2664,7 @@ components:
         - INTEREST
         - PAYMENT
         - WITHDRAWAL
+        - PURCHASE
 
     PaymentNetworkType:
       title: Payment Network Type
@@ -2979,8 +2719,13 @@ components:
         **Note:** If `securityIdType` is provided, `securityId` is required.
       type: string
       enum:
+        - CINS
+        - CMC
+        - CME
         - CUSIP
         - ISIN
+        - ITSA
+        - NASDAQ
         - SEDOL
         - SICC
         - VALOR
@@ -2993,6 +2738,7 @@ components:
       enum:
         - BOND
         - DEBT
+        - DIGITALASSET
         - MUTUALFUND
         - OPTION
         - OTHER
