@@ -679,7 +679,7 @@ components:
                 Plaid accepts all account types for this endpoint but consumes account details
                 through `GET accounts/{accountId}` solely for deposit, investment, loan, and line of credit accounts.
                 
-                **Note:** Each object in the accounts array is expected contain at least one account type.
+                **Note:** Each object in the accounts array is expected to contain at least one account type.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1515,11 +1515,10 @@ components:
           $ref: '#/components/schemas/Identifier'
         postedTimestamp:
           description: |
-            The date and time that the transaction was posted to the account. If
-            not provided then TransactionTimestamp can be used as PostedTimeStamp.
-            Plaid expects that your organization doesn't pass this property for `PENDING` transactions,
-            and validates that your organization passes this property for `POSTED` transactions.
-            If not provided then TransactionTimestamp can be used as PostedTimeStamp.
+            The date and time that the transaction was posted to the account.
+            
+            This property is **required** by Plaid when `status=POSTED`.
+            Plaid expects this property to be omitted when `status=PENDING`
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: >-

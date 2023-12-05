@@ -49,22 +49,22 @@ info:
     ## Mock server
 
     See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.2.
-    
+
     ## Error responses
-    
+
     An error entity which can be used at the API level for error responses or at the account level to indicate a problem specific to a particular account.
     Error responses must contain a `code` and `message`, and may optionally include a `debugMessage`.
     See the descriptions below:
-    
+
     - `code`: The FDX error code: A long-term persistent identifier which can be used to trace error condition back to log information.
       (**Note:** This code may differ from the HTTP status code.)
     - `message`: End user displayable information which might help the customer diagnose an error
     - `debugMessage`: Message used to debug the root cause of the error. Contents should not be used in consumer's business logic. Can change at any time and should only be used for consumer to communicate with the data provider about an issue. Provider can include an error GUID in message for their use
-    
+
     ### Example error
-    
+
     The following is an example response with an HTTP status code of 409.
-    
+
     ```
     {
       "code": 705,
@@ -72,7 +72,7 @@ info:
       "debugMessage": "Operation is not supported by the closed account"
     }
     ```
-    
+
     See the Errors table in each endpoint description for more specific message and debug message examples.
 
   contact:
@@ -114,7 +114,7 @@ paths:
         **Note:**
           - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
           - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
-        
+
         **Errors:**
         <table>
           <tr>
@@ -174,7 +174,7 @@ paths:
       summary: List all accounts
       description: |
         Search and view customer accounts
-        
+
         **Errors:**
         <table>
           <tr>
@@ -237,7 +237,7 @@ paths:
         - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
         - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
         For more information, see the example response descriptions.
-        
+
         **Errors:**
         <table>
           <tr>
@@ -317,7 +317,7 @@ paths:
         Plaid links contact information to accounts, rather than to users.
         Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information.
         For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
-        
+
         **Errors:**
         <table>
           <tr>
@@ -401,7 +401,7 @@ paths:
       description: |
         Get payment networks supported by an account, for example ACH (Automated Clearing House).
         For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
-        
+
         **Errors:**
         <table>
           <tr>
@@ -482,7 +482,7 @@ paths:
         - Account Statements
       description: |
         Get account statements.
-        
+
         Example: `GET /accounts/{accountId}/statements?startTime=value1&endTime=value2`
       summary: Search for statements
       parameters:
@@ -522,13 +522,11 @@ paths:
         - $ref: '#/components/parameters/StatementIdPath'
       responses:
         '200':
-          description: An image of an account statement
+          description: A pdf of an account statement
           content:
             application/pdf:
               schema:
-                description: An account statement PDF
-                type: string
-                format: binary
+                $ref: '#/components/schemas/StatementPDF'
 
   /accounts/{accountId}/transactions:
     get:
@@ -546,7 +544,7 @@ paths:
           - investment
           - deposit
           - line of credit (LOC)
-        
+
         **Errors:**
         <table>
           <tr>
@@ -1293,7 +1291,7 @@ components:
                 Plaid accepts all account types for this endpoint but consumes account details
                 through `GET accounts/{accountId}` solely for deposit, investment, loan, and line of credit accounts.
                 
-                **Note:** Each object in the accounts array is expected contain at least one account type.
+                **Note:** Each object in the accounts array is expected to contain at least one account type.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1916,6 +1914,14 @@ components:
               description: An array of statements, each with its own HATEOAS link to retrieve the account statement
               items:
                 $ref: '#/components/schemas/Statement'
+          required:
+              - statements
+
+    StatementPDF:
+      title: Statement PDF
+      description: An account statement PDF
+      type: string
+      format: binary
 
     Transaction:
       title: Transaction
@@ -1936,11 +1942,10 @@ components:
           $ref: '#/components/schemas/Identifier'
         postedTimestamp:
           description: |
-            The date and time that the transaction was posted to the account. If
-            not provided then TransactionTimestamp can be used as PostedTimeStamp.
-            Plaid expects that your organization doesn't pass this property for `PENDING` transactions,
-            and validates that your organization passes this property for `POSTED` transactions.
-            If not provided then TransactionTimestamp can be used as PostedTimeStamp.
+            The date and time that the transaction was posted to the account.
+            
+            This property is **required** by Plaid when `status=POSTED`.
+            Plaid expects this property to be omitted when `status=PENDING`
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: |
