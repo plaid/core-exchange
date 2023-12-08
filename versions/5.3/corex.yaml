@@ -50,6 +50,31 @@ info:
 
     See the [mock server postman collection](/core-exchange/example) for Core Exchange v5.2.
 
+    ## Error responses
+
+    An error entity which can be used at the API level for error responses or at the account level to indicate a problem specific to a particular account.
+    Error responses must contain a `code` and `message`, and may optionally include a `debugMessage`.
+    See the descriptions below:
+
+    - `code`: The FDX error code: A long-term persistent identifier which can be used to trace error condition back to log information.
+      (**Note:** This code may differ from the HTTP status code.)
+    - `message`: End user displayable information which might help the customer diagnose an error
+    - `debugMessage`: Message used to debug the root cause of the error. Contents should not be used in consumer's business logic. Can change at any time and should only be used for consumer to communicate with the data provider about an issue. Provider can include an error GUID in message for their use
+
+    ### Example error
+
+    The following is an example response with an HTTP status code of 409.
+
+    ```
+    {
+      "code": 705,
+      "message": "Account is closed",
+      "debugMessage": "Operation is not supported by the closed account"
+    }
+    ```
+
+    See the Errors table in each endpoint description for more specific message and debug message examples.
+
   contact:
     name: Plaid support
     url: 'https://plaid.com/data-connectivity-core-exchange/'
@@ -82,13 +107,47 @@ paths:
       operationId: getCustomerInfo
       tags:
         - Personal Information
-      description: >-
+      description: |
         Get the ID of the customer within the authorization scope.
         
         
         **Note:**
           - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
           - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
+
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>601</td>
+            <td>Customer not found</td>
+            <td>A customer with the provided customer ID could not be found</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       summary: Get current authenticated customer ID
       security:
         - openIdConnect: []
@@ -113,7 +172,42 @@ paths:
       tags:
         - Account Information
       summary: List all accounts
-      description: Search and view customer accounts
+      description: |
+        Search and view customer accounts
+
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>601</td>
+            <td>Customer not found</td>
+            <td>A customer with the provided customer ID could not be found</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       security:
       - openIdConnect:
         - Account
@@ -143,6 +237,58 @@ paths:
         - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
         - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
         For more information, see the example response descriptions.
+
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>409</td>
+            <td>705</td>
+            <td>Account is closed</td>
+            <td>Operation is not supported by the closed account</td>
+          </tr>
+          <tr>
+            <td>422</td>
+            <td>704</td>
+            <td>Account type not supported</td>
+            <td>The account type does not support the selected action</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       security:
       - openIdConnect:
         - Account
@@ -171,6 +317,64 @@ paths:
         Plaid links contact information to accounts, rather than to users.
         Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information.
         For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
+
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>601</td>
+            <td>Customer not found</td>
+            <td>A customer with the provided customer ID could not be found</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>409</td>
+            <td>705</td>
+            <td>Account is closed</td>
+            <td>Operation is not supported by the closed account</td>
+          </tr>
+          <tr>
+            <td>422</td>
+            <td>704</td>
+            <td>Account type not supported</td>
+            <td>The account type does not support the selected action</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       summary: Get an account's contact information
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -197,6 +401,52 @@ paths:
       description: |
         Get payment networks supported by an account, for example ACH (Automated Clearing House).
         For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
+
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>409</td>
+            <td>705</td>
+            <td>Account is closed</td>
+            <td>Operation is not supported by the closed account</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       summary: Get payment networks supported by the account
       security:
       - openIdConnect:
@@ -230,7 +480,7 @@ paths:
       operationId: searchForAccountStatements
       tags:
         - Account Statements
-      description: >-
+      description: |
         Get account statements.
 
         Example: `GET /accounts/{accountId}/statements?startTime=value1&endTime=value2`
@@ -264,8 +514,8 @@ paths:
       operationId: getAccountStatement
       tags:
         - Account Statements
-      description: >-
-        Get account statement image file. Use [HTTP Accept request-header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html) to specify desired content types. (See Content-Type definition for typical values.)
+      description: |
+        Get account statement PDF.
       summary: Get account statement
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -295,6 +545,57 @@ paths:
           - deposit
           - line of credit (LOC)
 
+        **Errors:**
+        <table>
+          <tr>
+            <th>HTTP status code</th>
+            <th>FDX error code</th>
+            <th>Example message</th>
+            <th>Example debug message</th>
+          </tr>
+          <tr>
+            <td>401</td>
+            <td>602</td>
+            <td>Customer not authorized</td>
+            <td>Authenticated customer does not have the authorization to perform this action</td>
+          </tr>
+          <tr>
+            <td>404</td>
+            <td>701</td>
+            <td>Account not found</td>
+            <td>An account with the provided account ID could not be found</td>
+          </tr>
+          <tr>
+            <td>409</td>
+            <td>705</td>
+            <td>Account is closed</td>
+            <td>Operation is not supported by the closed account</td>
+          </tr>
+          <tr>
+            <td>422</td>
+            <td>704</td>
+            <td>Account type not supported</td>
+            <td>The account type does not support the selected action</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>500</td>
+            <td>Internal server error</td>
+            <td>Provider custom developer-level error details for troubleshooting</td>
+          </tr>
+          <tr>
+            <td>500</td>
+            <td>501</td>
+            <td>Subsystem unavailable</td>
+            <td>A system required to process the request was not available. Request was not processed</td>
+          </tr>
+          <tr>
+            <td>503</td>
+            <td>503</td>
+            <td>Scheduled maintenance</td>
+            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
+          </tr>
+        </table>
       summary: List all account transactions
       security:
       - openIdConnect:
@@ -506,7 +807,7 @@ components:
 
     HateoasLink:
       title: HATEOAS Link
-      description: REST application constraint (Hypermedia As The Engine Of Application State)
+      description: HATEOAS (Hypermedia As The Engine Of Application State) link
       required:
         - href
       type: object
@@ -514,20 +815,20 @@ components:
         href:
           type: string
           format: uri-reference
-          description: URL to invoke the action on the resource
+          description: The resource URL
           example: "https://api.fi.com/fdx/v4/accounts/12345"
         action:
-          description: HTTP method to use for the request
+          description: The HTTP method to use for the request
           $ref: '#/components/schemas/HttpAction'
         rel:
           description: >-
-            Relation of this link to its containing entity, as defined by the [IETF RFC5988](https://datatracker.ietf.org/doc/html/rfc5988)
+            The relation of this link to its containing entity, as defined by the [IETF RFC5988](https://datatracker.ietf.org/doc/html/rfc5988)
           type: string
         types:
           type: array
           items:
             $ref: '#/components/schemas/ContentTypes'
-          description: Content-types that can be used in the Accept header
+          description: The content-types that can be used in the Accept header. **Note:** Plaid currently only accepts the PDF (`application/pdf`) content type.
 
     IndividualName:
       title: Individual name
@@ -1614,7 +1915,10 @@ components:
           description: Description of the statement
         links:
           $ref: '#/components/schemas/HateoasLinks'
-          description: The links to retrieve this account statement, or to invoke other APIs
+          description: |
+            The HATEOAS links to retrieve this account statement, or to invoke other APIs.
+
+            **Note:** Plaid only accepts one link object in this array.
         status:
           description: Availability status of statement
           type: string
@@ -1861,7 +2165,7 @@ components:
 
     HateoasLinks:
       title: HATEOAS links array
-      description: Links relative to this containing entity
+      description: An array of HATEOAS links
       type: array
       items:
         $ref: '#/components/schemas/HateoasLink'
@@ -2478,10 +2782,10 @@ components:
       properties:
         name:
           type: string
-          description: Name of attribute
+          description: The attribute's name
         value:
           type: string
-          description: Value of attribute
+          description: The attribute's value
 
     HoldingSubType:
       title: Holding SubType
