@@ -1691,10 +1691,10 @@ components:
                 the account at the owning institution
             principalBalance:
               type: number
-              description: Principal balance of loan.
+              description: Principal balance of loan
             escrowBalance:
               type: number
-              description: Escrow balance of loan.
+              description: Escrow balance of loan
             originalPrincipal:
               type: number
               description: Original principal of loan
@@ -1706,13 +1706,13 @@ components:
               description: Term of loan in months
             nextPaymentAmount:
               type: number
-              description: Amount of next payment.
+              description: Amount of next payment
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Date of next payment
             lastPaymentAmount:
               type: number
-              description: Last payment amount.
+              description: Last payment amount
             lastPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Last payment date
@@ -1724,10 +1724,9 @@ components:
               description: Interest paid year to date
             interestRate:
               type: number
-              description: Interest Rate of Account
+              description: The account's interest rate
             interestRateType:
               $ref: '#/components/schemas/InterestRateType'
-              description: FIXED or VARIABLE
           required:
             - accountNumber
             - principalBalance
@@ -1895,7 +1894,7 @@ components:
           $ref: '#/components/schemas/HateoasLinks'
           description: |
             The HATEOAS links to retrieve this account statement, or to invoke other APIs.
-            
+
             **Note:** Plaid only accepts one link object in this array.
         status:
           description: Availability status of statement
@@ -2744,7 +2743,8 @@ components:
 
     HoldingSubType:
       title: Holding SubType
-      description:
+      description: |
+        The subtype of an investment holding. Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (CASH, MONEYMARKET).
       type: string
       enum:
         - CASH
@@ -2767,7 +2767,7 @@ components:
 
     InterestRateType:
       title: Interest Rate Type
-      description: The type of interest rate
+      description: Specifies whether an interest rate is fixed or variable. This information is helpful for personal financial planning and advising. For example, it affects the potential benefits of refinancing, and informs whether a mortgage payment is expected to change in the future
       type: string
       enum:
         - FIXED

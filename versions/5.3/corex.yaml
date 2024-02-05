@@ -1713,10 +1713,10 @@ components:
                 the account at the owning institution
             principalBalance:
               type: number
-              description: Principal balance of loan.
+              description: Principal balance of loan
             escrowBalance:
               type: number
-              description: Escrow balance of loan.
+              description: Escrow balance of loan
             originalPrincipal:
               type: number
               description: Original principal of loan
@@ -1728,13 +1728,13 @@ components:
               description: Term of loan in months
             nextPaymentAmount:
               type: number
-              description: Amount of next payment.
+              description: Amount of next payment
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Date of next payment
             lastPaymentAmount:
               type: number
-              description: Last payment amount.
+              description: Last payment amount
             lastPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Last payment date
@@ -1746,10 +1746,9 @@ components:
               description: Interest paid year to date
             interestRate:
               type: number
-              description: Interest Rate of Account
+              description: The account's interest rate
             interestRateType:
               $ref: '#/components/schemas/InterestRateType'
-              description: FIXED or VARIABLE
           required:
             - accountNumber
             - principalBalance
@@ -1814,34 +1813,34 @@ components:
               description: Available credit
             nextPaymentAmount:
               type: number
-              description: Amount of next payment.
+              description: Amount of next payment
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Due date of next payment
             principalBalance:
               type: number
-              description: Principal balance.
+              description: Principal balance
             currentBalance:
               type: number
-              description: Current balance of the line of credit.
+              description: Current balance of the line of credit
             minimumPaymentAmount:
               type: number
-              description: Minimum payment amount.
+              description: Minimum payment amount
             lastPaymentAmount:
               type: number
-              description: Last payment amount.
+              description: Last payment amount
             lastPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: Last payment date
             pastDueAmount:
               type: number
-              description: Amount owed that the account holder failed to pay on the due date.
+              description: Amount owed that the account holder failed to pay on the due date
             lastStmtBalance:
               type: number
-              description: Last Statement Balance.
+              description: Last statement balance
             lastStmtDate:
               $ref: '#/components/schemas/DateString'
-              description: Last Statement Date
+              description: Last statement date
             purchasesApr:
               type: number
               description: Purchases APR
@@ -2789,7 +2788,8 @@ components:
 
     HoldingSubType:
       title: Holding SubType
-      description:
+      description: |
+        The subtype of an investment holding. Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (CASH, MONEYMARKET).
       type: string
       enum:
         - CASH
@@ -2812,7 +2812,7 @@ components:
 
     InterestRateType:
       title: Interest Rate Type
-      description: The type of interest rate
+      description: Specifies whether an interest rate is fixed or variable. This information is helpful for personal financial planning and advising. For example, it affects the potential benefits of refinancing, and informs whether a mortgage payment is expected to change in the future
       type: string
       enum:
         - FIXED

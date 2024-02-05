@@ -1347,10 +1347,9 @@ components:
               description: Interest paid year to date
             interestRate:
               type: number
-              description: Interest Rate of Account
+              description: The account's interest rate
             interestRateType:
               $ref: '#/components/schemas/InterestRateType'
-              description: FIXED or VARIABLE
           required:
             - accountNumber
             - principalBalance
@@ -2247,7 +2246,7 @@ components:
 
     InterestRateType:
       title: Interest Rate Type
-      description: The type of interest rate
+      description: Specifies whether an interest rate is fixed or variable. This information is helpful for personal financial planning and advising. For example, it affects the potential benefits of refinancing, and informs whether a mortgage payment is expected to change in the future
       type: string
       enum:
         - FIXED
