@@ -1587,14 +1587,14 @@ components:
         
         * `fees`
         * `transactionType`
-        * Either of the following:
-          - `symbol`
-          - `securityId` and `securityIdType`
         
         If the transaction involves a security, Plaid additionally requires the following fields:
         
         * `unitPrice`
         * `units`
+        * Either of the following:
+          - `symbol`
+          - `securityId` and `securityIdType`
       type: object
       allOf:
         - $ref: '#/components/schemas/Transaction'
@@ -2045,14 +2045,14 @@ components:
                           
                           * `fees`
                           * `transactionType`
-                          * Either of the following:
-                            - `symbol`
-                            - `securityId` and `securityIdType`
                           
                           If the transaction involves a security, Plaid additionally requires the following fields:
                           
                           * `unitPrice`
                           * `units`
+                          * Either of the following:
+                            - `symbol`
+                            - `securityId` and `securityIdType`
                     required:
                       - investmentTransaction
                     additionalProperties: false
