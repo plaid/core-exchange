@@ -1078,7 +1078,11 @@ components:
                 if you don't return `securityId` for holdings involving securities.
             currentUnitPriceDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Current unit price as of date
+              description: |
+                Current unit price as of date
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             units:
               type: number
               description: |
@@ -1151,6 +1155,9 @@ components:
             balanceAsOf:
               description: |
                 As-of date of balances.
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
@@ -1323,7 +1330,11 @@ components:
               description: Original principal of loan
             originatingDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Loan origination date
+              description: |
+                Loan origination date
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             loanTerm:
               type: integer
               description: Term of loan in months
@@ -1332,16 +1343,28 @@ components:
               description: Amount of next payment
             nextPaymentDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Date of next payment
+              description: |
+                Date of next payment
+              
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             lastPaymentAmount:
               type: number
               description: Last payment amount
             lastPaymentDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Last payment date
+              description: |
+                Last payment date
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             maturityDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Maturity date
+              description: |
+                Maturity date
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             interestPaidYearToDate:
               type: number
               description: Interest paid year to date
@@ -1416,7 +1439,11 @@ components:
               description: Amount of next payment
             nextPaymentDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Due date of next payment
+              description: |
+                Due date of next payment
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             principalBalance:
               type: number
               description: Principal balance
@@ -1431,7 +1458,11 @@ components:
               description: Last payment amount
             lastPaymentDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Last payment date
+              description: |
+                Last payment date
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             pastDueAmount:
               type: number
               description: Past Due Amount
@@ -1440,7 +1471,11 @@ components:
               description: Last Statement Balance
             lastStmtDate:
               $ref: '#/components/schemas/Timestamp'
-              description: Last Statement Date
+              description: |
+                Last Statement Date
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             purchasesApr:
               type: number
               description: Purchases APR
@@ -1518,11 +1553,17 @@ components:
             
             This property is **required** by Plaid when `status=POSTED`.
             Plaid expects this property to be omitted when `status=PENDING`
+            
+            ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+            [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: >-
             The date and time that the transaction was added to the server
             backend systems.
+            
+            ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+            [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
           $ref: '#/components/schemas/Timestamp'
         description:
           type: string
@@ -2130,8 +2171,8 @@ components:
     Timestamp:
       title: Timestamp
       description: >-
-        ISO 8601 date-time in format 'YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]' according to
-        [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+        ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+        [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: string
       format: date-time
       example: '2021-07-15T14:46:41.375Z'

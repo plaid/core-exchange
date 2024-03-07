@@ -1527,6 +1527,9 @@ components:
             balanceAsOf:
               description: |
                 As-of date of balances.
+                
+                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
@@ -1945,11 +1948,17 @@ components:
             
             This property is **required** by Plaid when `status=POSTED`.
             Plaid expects this property to be omitted when `status=PENDING`
+            
+            ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+            [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: |
             The date and time that the transaction was added to the server
             backend systems. This acts as postedTimestamp when postedTimestamp is not present (pending transaction).
+            
+            ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+            [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
           $ref: '#/components/schemas/Timestamp'
         description:
           type: string
@@ -2619,8 +2628,8 @@ components:
     Timestamp:
       title: Timestamp
       description: >-
-        ISO 8601 date-time in format 'YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]' according to
-        [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+        ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
+        [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: string
       format: date-time
       example: '2021-07-15T14:46:41.375Z'
