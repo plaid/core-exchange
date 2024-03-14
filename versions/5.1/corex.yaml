@@ -2541,6 +2541,7 @@ components:
         - ANNUITY
         - BOND
         - CD
+        - DIGITALASSET
         - MUTUALFUND
         - OPTION
         - OTHER
@@ -2824,6 +2825,7 @@ components:
         - BOND
         - DEBT
         - MUTUALFUND
+        - DIGITALASSET
         - OPTION
         - OTHER
         - STOCK
