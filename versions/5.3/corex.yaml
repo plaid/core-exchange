@@ -233,10 +233,10 @@ paths:
       summary: Get account balances and liabilities
       description: |
         Get account balances, liabilities, and other information. Plaid uses this endpoint to:
-        - Get account balances for deposit accounts, for example, `CHECKING` or `SAVINGS`. For more information about how Plaid uses this information, see [Plaid Balance API](https://plaid.com/docs/api/products/balance/).
-        - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD`. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
+        - Get account balances for deposit accounts. For example, `CHECKING` or `SAVINGS`. For more information about how Plaid uses this information, see [Plaid Balance API](https://plaid.com/docs/api/products/balance/).
+        - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` loan accounts. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
         - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
-        For more information, see the example response descriptions.
+        See the response schema below for a full list of possible parameters for each account type.
 
         **Errors:**
         <table>
@@ -299,7 +299,7 @@ paths:
       responses:
         '200':
           description: >-
-            This can be one of Investment Account, Loan Account, Deposit Account, or Line of Credit Account
+            The full details of an investment, loan, deposit, or line of credit account
           content:
             application/json:
               schema:
@@ -1103,7 +1103,7 @@ components:
 
     AccountWithDetails:
       title: Account With Details entity
-      description: This provides an instance of an account with full details
+      description: An account with full details
       type: object
       oneOf:
         - type: object
@@ -1371,10 +1371,10 @@ components:
     DepositAccount:
       title: Deposit Account entity
       description: |
-        Information for a deposit account type. Plaid consumes the same information for the `GET /accounts/{accountID}` for all deposit accounts.
-        For all monetary amounts, for example for `currentBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        Full details of a deposit account. Plaid consumes the same information for all types of deposit accounts.
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`. 
         
-        The `accountType` field for deposit accounts may be set to any of the following:
+        The `accountType` field for deposit accounts may be set to either of the following:
         * `CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.<br/>
         * `SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.<br/>
       type: object
@@ -1532,9 +1532,9 @@ components:
     InvestmentAccount:
       title: Investment Account entity
       description: |
-        Plaid consumes all `InvestmentAccount` FDX fields for all investment account types.
+        Full details of an investment account. Plaid consumes all `InvestmentAccount` FDX fields for all types of investment accounts.
         In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information.
-        For all monetary amounts, for example for `currentBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1669,14 +1669,14 @@ components:
     LoanAccount:
       title: Loan Account entity
       description: |
-        A loan account type. Plaid consumes solely the MORTGAGE and STUDENTLOAN types for its Liabilities product, and for other loan account types, consumes account details and transactions.
-        Plaid consumes the following in addition the information returned by the  `GET \accounts` endpoint:
+        Full details of a loan account. Plaid only consumes the `MORTGAGE` and `STUDENTLOAN` types for its [Liabilities API](https://plaid.com/docs/api/products/liabilities/). For other loan account types Plaid consumes account details and transactions.
+        Plaid consumes all loan account information as returned in the `GET /accounts` endpoint, as well as the additional information listed below:
         
-        For all loan account types, Plaid consumes:
+        Required for all loan accounts:
         
         * `principalBalance`
         
-        For `STUDENTLOAN`, Plaid additionally consumes:
+        Optional fields for `STUDENTLOAN` accounts:
         * `interestPaidYearToDate`
         * `interestRate`
         * `lastPaymentAmount`
@@ -1686,7 +1686,7 @@ components:
         * `originalPrincipal`
         * `originatingDate`
         
-        For `MORTGAGE`, Plaid additionally consumes:
+        Optional fields for `MORTGAGE` accounts:
         * `accountNumber`
         * `escrowBalance`
         * `interestPaidYearToDate`
@@ -1701,7 +1701,7 @@ components:
         * `originalPrincipal`
         * `originatingDate`
         
-        For all monetary amounts, for example for `escrowBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"escrowBalance": 192.00`.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1783,7 +1783,7 @@ components:
     LocAccount:
       title: Line-Of-Credit Account entity
       description:  |
-        For line of credit account types, Plaid consumes the following in addition to the information returned by the `GET \accounts` endpoint:
+        Full details of a line of credit account. Plaid may consume all the parameters returned by the `GET /accounts` endpoint.
         
         * `availableCredit`
         * `creditLine`
@@ -1799,7 +1799,7 @@ components:
         * `minimumPaymentAmount`
         * `nextPaymentDate`
         * `purchasesApr`
-        For all monetary amounts, for example for `currentBalance`, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
 
       type: object
       allOf:
@@ -1950,7 +1950,7 @@ components:
     Transaction:
       title: Transaction
       description: |
-        Base entity for financial transactions. For monetary amounts, Plaid expects a decimal amount, with two places to represent fractional values of the base currency, for example `101.99`.
+        Base entity for financial transactions. Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
       type: object
       properties:
         transactionId:
@@ -2088,7 +2088,6 @@ components:
           nextOffset: qwer123454q2f
         transactions:
           - depositTransaction:
-              transactionType: CHECK
               checkNumber: 1234
               payee: ACME llc
               transactionId: depositTransaction000000001
@@ -2099,7 +2098,6 @@ components:
               status: PENDING
               amount: 400.00
           - depositTransaction:
-              transactionType: ADJUSTMENT
               transactionId: depositTransaction000000002
               postedTimestamp: '2022-04-07T00:00:00.000Z'
               transactionTimestamp: '2022-04-07T00:00:00.000Z'
@@ -2108,7 +2106,6 @@ components:
               status: POSTED
               amount: 0.80
           - depositTransaction:
-              transactionType: ATMDEPOSIT
               transactionId: depositTransaction000000003
               postedTimestamp: '2022-04-08T00:00:00.000Z'
               transactionTimestamp: '2022-04-08T00:00:00.000Z'
