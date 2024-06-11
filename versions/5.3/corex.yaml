@@ -494,15 +494,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/Statements'
               examples:
-                Search for statements success response:
+                example-1:
                   value:
-                    "page":
-                      "nextOffset": "2"
-                      "total": 3
-                    "links":
-                      "next":
-                        "href": "/accounts/1111/statements?offSet=2&limit=10"
-                    "statements": [{"accountId": "10001", "statementId": "20001"}]
+                    page:
+                      nextOffset: "2"
+                      total: 3
+                    statements:
+                      - accountId: '10001'
+                        statementId: '20001'
+                        links:
+                          next:
+                            href: "/accounts/1111/statements?offSet=2&limit=10"
 
   /accounts/{accountId}/statements/{statementId}:
     get:
