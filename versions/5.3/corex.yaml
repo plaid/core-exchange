@@ -455,7 +455,7 @@ paths:
             Account identifier, found in the `GET /accounts` endpoint response.
             Plaid expects the ID to be a different value from the account number.
 
-            **Note:** If the status of the `accountId` provided is `RESTRICTED`, you will receive a 200 response, though no payment networks will be available at this time.
+            **Note:** If the status of the `accountId` provided is `RESTRICTED`, you can send a 200 response with an empty body to indicate that no payment networks are available at this time.
 
           required: true
           schema:
