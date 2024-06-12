@@ -1,0 +1,6 @@
+{
+  "spectral.rulesetFile": "../.spectral.yaml",
+  "spectral.run": "onSave",
+  "spectral.enable": true,
+  "spectral.validateFiles": ["**/dist/**/corex.yaml"]
+}
