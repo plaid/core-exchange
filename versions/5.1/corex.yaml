@@ -1,14 +1,14 @@
-openapi: 3.1.0
-##########################################################################################################
-#                                                                                                        #
-#  Core Exchange is a subset of the Financial Data Exchange (“FDX”) API specification, the usage thereof #
-#  (or any part thereof) constitutes acceptance of the FDX API License Agreement, which can be found     #
-#  at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX.   #
-#  Modifications to eliminate required or conditional elements prescribed in the FDX API Certification   #
-#  Use Cases will render any implementations using said modifications non-conformant with the FDX API    #
-#  Certification Use Cases.                                                                              #
-#                                                                                                        #
-##########################################################################################################
+openapi: 3.0.3
+  ##########################################################################################################
+  #                                                                                                        #
+  #  Core Exchange is a subset of the Financial Data Exchange (“FDX”) API specification, the usage thereof #
+  #  (or any part thereof) constitutes acceptance of the FDX API License Agreement, which can be found     #
+  #  at https://financialdataexchange.org/. The FDX API specification is distributed exclusively by FDX.   #
+  #  Modifications to eliminate required or conditional elements prescribed in the FDX API Certification   #
+  #  Use Cases will render any implementations using said modifications non-conformant with the FDX API    #
+  #  Certification Use Cases.                                                                              #
+  #                                                                                                        #
+  ##########################################################################################################
 info:
   version: '5.1.0'
   title: FDX V5.1
@@ -105,46 +105,15 @@ paths:
         Get the ID of the customer within the authorization scope.
         
         **Note:**
-          - If you use [OIDC authentication](#section/Authentication/openIdConnect) (recommended) you **do not** need to implement this endpoint as Plaid identifies the customer using the OIDC [`id_token` response](/core-exchange/authentication#response-parameters).
-          - If you use [OAuth2 authentication](#section/Authentication/oauth2), Plaid uses this endpoint as an alternate method of customer identification.
-
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>601</td>
-            <td>Customer not found</td>
-            <td>A customer with the provided customer ID could not be found</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
+        
+        <ul>
+          <li>If you use <a href='/core-exchange/docs/authentication/#oidc-compliant-server'>OIDC authentication</a> (recommended) you <b>do not</b> need to implement this endpoint as Plaid identifies the customer using the OIDC <a href='/core-exchange/docs/authentication/#response-parameters'>`id_token` response</a>.</li>
+          <li>If you use OAuth2 authentication, Plaid uses this endpoint as an alternate method of customer identification.</li>
+        </ul>
       summary: Get current authenticated customer ID
       security:
-        - openIdConnect: []
-        - oauth2: []
+        - openIdConnect: [ ]
+        - oauth2: [ ]
       responses:
         '200':
           description: Data describing current authenticated customer
@@ -152,6 +121,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerWithId'
+              examples:
+                example-1:
+                  value:
+                    customerId: 'someLongTermUniqueIDString'
 
   ############################################################
   #
@@ -167,45 +140,11 @@ paths:
       summary: List all accounts
       description: |
         Search and view customer accounts
-
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>601</td>
-            <td>Customer not found</td>
-            <td>A customer with the provided customer ID could not be found</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       security:
-      - openIdConnect:
-        - Account
-      - oauth2:
-        - Account
+        - openIdConnect:
+            - Account
+        - oauth2:
+            - Account
       parameters:
         - $ref: '#/components/parameters/OffsetQuery'
         - $ref: '#/components/parameters/LimitQuery'
@@ -217,6 +156,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Accounts'
+              examples:
+                example-1:
+                  value:
+                    page:
+                      nextOffset: '25'
+                    accounts:
+                      - depositAccount:
+                          accountId: depositAccount0000001
+                          accountType: CHECKING
+                          accountNumberDisplay: '5820'
+                          productName: Checking
+                          nickname: Main Checking
+                          status: OPEN
+                          currency:
+                            currencyCode: USD
+                      - loanAccount:
+                          accountId: loanAccount0000001
+                          accountType: LOAN
+                          accountNumberDisplay: '4704'
+                          productName: Loan
+                          nickname: Primary Loan
+                          status: OPEN
+                          currency:
+                            currencyCode: USD
+                      - locAccount:
+                          accountId: locAccount0000001
+                          accountType: LINEOFCREDIT
+                          accountNumberDisplay: '8200'
+                          productName: Line of Credit
+                          nickname: First plaidypus LOC
+                          status: OPEN
+                          currency:
+                            currencyCode: USD
+                      - investmentAccount:
+                          accountId: investmentAccount0000001
+                          accountType: TAXABLE
+                          accountNumberDisplay: '1050'
+                          productName: Brokerage Account
+                          nickname: First plaidypus Brokerage
+                          status: OPEN
+                          currency:
+                            currencyCode: USD
 
   /accounts/{accountId}:
     get:
@@ -226,67 +207,19 @@ paths:
       summary: Get account balances and liabilities
       description: |
         Get account balances, liabilities, and other information. Plaid uses this endpoint to:
-        - Get account balances for deposit accounts. For example, `CHECKING` or `SAVINGS`. For more information about how Plaid uses this information, see [Plaid Balance API](https://plaid.com/docs/api/products/balance/).
-        - Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` loan accounts. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).
-        - Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).
+        
+        <ul>
+          <li>Get account balances for deposit accounts. For example, `CHECKING` or `SAVINGS`. For more information about how Plaid uses this information, see [Plaid Balance API](https://plaid.com/docs/api/products/balance/).</li>
+          <li>Get account liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` loan accounts. For more information about how Plaid uses this information, see [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/).</li>
+          <li>Get balances and holdings for investment accounts. For more information about how Plaid uses this information, see [Plaid Investments API](https://plaid.com/docs/investments/).</li>
+        </ul>
+        
         See the response schema below for a full list of possible parameters for each account type.
-
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>422</td>
-            <td>704</td>
-            <td>Account type not supported</td>
-            <td>The account type does not support the selected action</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       security:
-      - openIdConnect:
-        - Account
-      - oauth2:
-        - Account
+        - openIdConnect:
+            - Account
+        - oauth2:
+            - Account
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
       responses:
@@ -307,72 +240,14 @@ paths:
         Get contact information on the account.
         
         Plaid links contact information to accounts, rather than to users. Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information. For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
-
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>601</td>
-            <td>Customer not found</td>
-            <td>A customer with the provided customer ID could not be found</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>422</td>
-            <td>704</td>
-            <td>Account type not supported</td>
-            <td>The account type does not support the selected action</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       summary: Get an account's contact information
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
       security:
-      - openIdConnect:
-        - Customer
-      - oauth2:
-        - Customer
+        - openIdConnect:
+            - Customer
+        - oauth2:
+            - Customer
       responses:
         '200':
           description: >-
@@ -390,58 +265,12 @@ paths:
 
       description: |
         Get payment networks supported by an account, for example ACH (Automated Clearing House). For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
-
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
       summary: Get payment networks supported by the account
       security:
-      - openIdConnect:
-        - Account
-      - oauth2:
-        - Account
+        - openIdConnect:
+            - Account
+        - oauth2:
+            - Account
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/OffsetQuery'
@@ -452,7 +281,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountPaymentNetworkList'
+                properties:
+                  page:
+                    $ref: '#/components/schemas/PageMetadata'
+                  paymentNetworks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AccountPaymentNetwork'
+                required:
+                  - paymentNetworks
+              examples:
+                example-1:
+                  page:
+                    nextOffset: 25
+                  paymentNetworks:
+                    - bankId: '010088889'
+                      identifier: '1111222233335820'
+                      type: US_ACH
+                      transferIn: true
+                      transferOut: true
 
   /accounts/{accountId}/transactions:
     get:
@@ -463,68 +310,18 @@ paths:
         List all account transactions. Plaid always queries this endpoint a `startTime` and an `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`, and expects the time filters to be based on the `postedTimestamp`.
         
         Plaid consumes data from this endpoint for the following account types only:
-          - loan
-          - investment
-          - deposit
-          - line of credit (LOC)
-
-        **Errors:**
-        <table>
-          <tr>
-            <th>HTTP status code</th>
-            <th>FDX error code</th>
-            <th>Example message</th>
-            <th>Example debug message</th>
-          </tr>
-          <tr>
-            <td>401</td>
-            <td>602</td>
-            <td>Customer not authorized</td>
-            <td>Authenticated customer does not have the authorization to perform this action</td>
-          </tr>
-          <tr>
-            <td>404</td>
-            <td>701</td>
-            <td>Account not found</td>
-            <td>An account with the provided account ID could not be found</td>
-          </tr>
-          <tr>
-            <td>409</td>
-            <td>705</td>
-            <td>Account is closed</td>
-            <td>Operation is not supported by the closed account</td>
-          </tr>
-          <tr>
-            <td>422</td>
-            <td>704</td>
-            <td>Account type not supported</td>
-            <td>The account type does not support the selected action</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>500</td>
-            <td>Internal server error</td>
-            <td>Provider custom developer-level error details for troubleshooting</td>
-          </tr>
-          <tr>
-            <td>500</td>
-            <td>501</td>
-            <td>Subsystem unavailable</td>
-            <td>A system required to process the request was not available. Request was not processed</td>
-          </tr>
-          <tr>
-            <td>503</td>
-            <td>503</td>
-            <td>Scheduled maintenance</td>
-            <td>System is down for maintenance. Retry-After HTTP header may be used to communicate estimated time of recovery</td>
-          </tr>
-        </table>
+        <ul>
+          <li>Loan</li>
+          <li>Investment</li>
+          <li>Deposit</li>
+          <li>Line of credit (LOC)</li>
+        </ul>
       summary: List all account transactions
       security:
-      - openIdConnect:
-        - Transactions
-      - oauth2:
-        - Transactions
+        - openIdConnect:
+            - Transactions
+        - oauth2:
+            - Transactions
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
         - $ref: '#/components/parameters/StartTimeQuery'
@@ -539,6 +336,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transactions'
+              examples:
+                example-1:
+                  value:
+                    page:
+                      nextOffset: "2"
+                    transactions:
+                      - depositTransaction:
+                          checkNumber: 1234
+                          payee: ACME llc
+                          transactionId: depositTransaction000000001
+                          postedTimestamp: '2022-04-06T00:00:00.000Z'
+                          transactionTimestamp: '2022-04-05T00:00:00.000Z'
+                          description: check for latest ACME invoice
+                          debitCreditMemo: DEBIT
+                          status: PENDING
+                          amount: 400
+                      - depositTransaction:
+                          transactionId: depositTransaction000000002
+                          postedTimestamp: '2022-04-07T00:00:00.000Z'
+                          transactionTimestamp: '2022-04-07T00:00:00.000Z'
+                          description: reconciliation/adjustment of bank statement error
+                          debitCreditMemo: DEBIT
+                          status: POSTED
+                          amount: 0.8
 
 components:
 
@@ -601,7 +422,7 @@ components:
     AccountIdPath:
       name: accountId
       in: path
-      description:  |
+      description: |
         Account identifier, found in the `GET /accounts` endpoint response. Plaid expects the ID to be a different value from the account number.
       required: true
       schema:
@@ -672,7 +493,7 @@ components:
         customerId:
           $ref: '#/components/schemas/Identifier'
           description: |
-            Long-term persistent identity of the customer. This identity must be unique within your organization. Plaid consumes this customer ID if your organization uses Oauth2 instead of OIDC to secure the API. Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user
+            Long-term persistent identity of the customer. This identity must be unique within your organization. Plaid consumes this customer ID if your organization uses OAuth2 instead of OIDC to secure the API. Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user
           example:
             - customerId: customer0000001
       required:
@@ -733,7 +554,7 @@ components:
 
     PageMetadata:
       title: Page Metadata
-      description:  |
+      description: |
         Contains opaque identifier, `nextoffset`, for paginated result sets. The `nextOffset` ID doesn't need to be numeric or have any specific pattern. In other words, your organization can implement this however you prefer. The presence of this offset indicates that there's at least one more page of data available. The absence of this offset indicates that there are no more pages of data left in this paginated array. The API consumer returns this in the `offset` parameter in a new request to get the next page in the response array.
       type: object
       properties:
@@ -789,7 +610,7 @@ components:
             $ref: '#/components/schemas/AccountHolder'
           minItems: 1
           description: |
-            Owners of the account. Note that while the [FDX specification]((https://financialdataexchange.org) enables associating holders and their contact information in the full `AccountHolder` schema, Plaid doesn't consume these associations. Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails, addresses, or telephone numbers to account holders. For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
+            Owners of the account. Note that while the [FDX specification](https://financialdataexchange.org) enables associating holders and their contact information in the full `AccountHolder` schema, Plaid doesn't consume these associations. Instead, Plaid consumes limited information for each `AccountHolder` and doesn't associate contact information such as emails, addresses, or telephone numbers to account holders. For more information about Plaid's data model for account contact information, see [Identity](https://plaid.com/docs/api/products/identity/).
           example:
             - relationship: SECONDARY
               name:
@@ -807,7 +628,7 @@ components:
           items:
             type: string
           minItems: 1
-          description:  |
+          description: |
             Email addresses associated with the account.
           example:
             - "ernest.m.hemingway@domain.tld"
@@ -817,16 +638,16 @@ components:
           items:
             $ref: '#/components/schemas/DeliveryAddress'
           minItems: 1
-          description:  |
+          description: |
             Physical mail addresses associated with the account.
           example:
-            - line1:  1850 N Clark St
-              line2:  Apartment 103
+            - line1: 1850 N Clark St
+              line2: Apartment 103
               city: Chicago
               region: IL
               postalCode: '60614'
               country: US
-            - line1:  2014 N Main St
+            - line1: 2014 N Main St
               city: San Francisco
               region: CA
               postalCode: '94105'
@@ -839,15 +660,15 @@ components:
           description: |
             Telephone numbers associated with the account.
           example:
-          - type: HOME
-            country: '1'
-            number: '3127771926'
-          - type: CELL
-            country: '53'
-            number: '45915607'
-          - type: HOME
-            country: '1'
-            number: '4157771926'
+            - type: HOME
+              country: '1'
+              number: '3127771926'
+            - type: CELL
+              country: '53'
+              number: '45915607'
+            - type: HOME
+              country: '1'
+              number: '4157771926'
       required:
         - holders
         - emails
@@ -932,30 +753,6 @@ components:
         - transferIn
         - transferOut
 
-    AccountPaymentNetworkList:
-      title: List payment networks for account
-      description: An optionally paginated array of payment networks supported by the account
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/PaginatedArray'
-        - type: object
-          properties:
-            paymentNetworks:
-              type: array
-              items:
-                $ref: '#/components/schemas/AccountPaymentNetwork'
-              minItems: 1
-              description: |
-                Array of payment networks. Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH.
-              example:
-                - bankId: '010088889'
-                  identifier: '1111222233335820'
-                  type: US_ACH
-                  transferIn: true
-                  transferOut: true
-          required:
-            - paymentNetworks
-
     AccountWithDetails:
       title: Account With Details entity
       description: An account with full details
@@ -998,7 +795,7 @@ components:
       title: Account With Descriptor entity
       description: This provides an instance of an account without full details
       type: object
-      oneOf:
+      anyOf:
         - type: object
           title: Deposit Account
           properties:
@@ -1009,13 +806,16 @@ components:
                 Plaid consumes more detailed information for `CHECKING` and `SAVINGS` accounts.
 
                 The `accountType` field for deposit accounts may be set to any of the following:
-                * `CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.<br/>
-                * `SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.<br/>
-                * `CD`: A certificate of deposit (CD) is a product offered by banks and credit unions that provides an interest rate premium in exchange for the customer agreeing to leave a lump-sum deposit untouched for a predetermined period of time.<br/>
-                * `COMMERCIALDEPOSIT`: A deposit account for commercial customers, for example a business trust account.<br/>
-                * `ESCROW`: A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties.<br/>
-                * `MONEYMARKET`: A deposit account that pays interest based on current interest rates in the money markets.<br/>
-                * `OTHERDEPOSIT`: Use when none of the listed enums apply.<br/>
+                
+                <ul>
+                  <li>`CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.</li>
+                  <li>`SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.</li>
+                  <li>`CD`: A certificate of deposit (CD) is a product offered by banks and credit unions that provides an interest rate premium in exchange for the customer agreeing to leave a lump-sum deposit untouched for a predetermined period of time.</li>
+                  <li>`COMMERCIALDEPOSIT`: A deposit account for commercial customers, for example a business trust account.</li>
+                  <li>`ESCROW`: A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties.</li>
+                  <li>`MONEYMARKET`: A deposit account that pays interest based on current interest rates in the money markets.</li>
+                  <li>`OTHERDEPOSIT`: Use when none of the listed enums apply.</li>
+                </ul>
           required:
             - depositAccount
           additionalProperties: false
@@ -1029,16 +829,19 @@ components:
                 Plaid consumes more detailed information for `MORTGAGE` and `STUDENTLOAN` accounts.
 
                 The `accountType` field for loan accounts may be set to any of the following:
-                * `AUTOLOAN`: A type of loan used to finance a car purchase.<br/>
-                * `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.<br/>
-                * `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.<br/>
-                * `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.<br/>
-                * `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.<br/>
-                * `MILITARYLOAN`: A military loan.<br/>
-                * `MORTGAGE`: A type of loan you can use to buy or refinance a home.<br/>
-                * `PERSONALLOAN`: A type of debt that is not protected by a guarantor, or collateralized by a lien on specific assets of the borrower.<br/>
-                * `SMBLOAN`: A small/medium business loan.<br/>
-                * `STUDENTLOAN`: A type of loan designed to help students pay for post-secondary education and the associated fees, such as tuition, books and supplies, and living expenses.<br/>
+                
+                <ul>
+                  <li>`AUTOLOAN`: A type of loan used to finance a car purchase.</li>
+                  <li>`COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.</li>
+                  <li>`HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.</li>
+                  <li>`INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.</li>
+                  <li>`LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.</li>
+                  <li>`MILITARYLOAN`: A military loan.</li>
+                  <li>`MORTGAGE`: A type of loan you can use to buy or refinance a home.</li>
+                  <li>`PERSONALLOAN`: A type of debt that is not protected by a guarantor, or collateralized by a lien on specific assets of the borrower.</li>
+                  <li>`SMBLOAN`: A small/medium business loan.</li>
+                  <li>`STUDENTLOAN`: A type of loan designed to help students pay for post-secondary education and the associated fees, such as tuition, books and supplies, and living expenses.</li>
+                </ul>
           required:
             - loanAccount
           additionalProperties: false
@@ -1052,11 +855,14 @@ components:
                 Plaid consumes more detailed information for `CREDITCARD` accounts.
 
                 The `accountType` field for line of credit accounts may be set to any of the following:
-                * `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.<br/>
-                * `CHARGE`: An account to which goods and services may be charged on credit.<br/>
-                * `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.<br/>
-                * `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.<br/>
-                * `HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.<br/>
+                
+                <ul>
+                  <li>`LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.</li>
+                  <li>`CHARGE`: An account to which goods and services may be charged on credit.</li>
+                  <li>`COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.</li>
+                  <li>`CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.</li>
+                  <li>`HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.</li>
+                </ul>
           required:
             - locAccount
           additionalProperties: false
@@ -1070,31 +876,33 @@ components:
                 Plaid consumes the same details for all investment accounts.
 
                 The `accountType` field for investment accounts may be set to any of the following:
-                * `401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.<br/>
-                * `401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.<br/>
-                * `403B`: A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States.<br/>
-                * `529`: A tax-advantaged savings plan designed to help pay for education.<br/>
-                * `BROKERAGEPRODUCT`: Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options.<br/>
-                * `COMMERCIALINVESTMENT`: Investment Account for Commercial Customers. e.g. Commercial Brokerage Account.<br/>
-                * `COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.<br/>
-                * `DIGITALASSET`: An account containing digital assets.<br/>
-                * `DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.<br/>
-                * `ESOP`: An employee stock ownership plan (ESOP) is an employee benefit plan that gives workers ownership interest in the company.<br/>
-                * `GUARDIAN`: An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent.<br/>
-                * `INSTITUTIONALTRUST`: An institutional trust account.<br/>
-                * `IRA`: An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement.<br/>
-                * `KEOGH`: A tax-deferred pension plan available to self-employed individuals or unincorporated businesses for retirement purposes.<br/>
-                * `NONQUALIFIEDPLAN`: A type of tax-deferred employer-sponsored retirement plan that falls outside of ERISA guidelines.<br/>
-                * `OTHERINVESTMENT`: Use when none of the listed enums apply.<br/>
-                * `ROLLOVER`: An account containing investments rolled over from an employee-sponsored account.<br/>
-                * `ROTH`: An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement.<br/>
-                * `SARSEP`: A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement.<br/>
-                * `TAXABLE`: A taxable investment account.<br/>
-                * `TDA`: TreasuryDirect Account.<br/>
-                * `TRUST`: A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms.<br/>
-                * `TERM`: Life insurance that provides coverage at a fixed rate of payments for a limited period of time.<br/>
-                * `UGMA`: Uniform Gifts to Minors Act account.<br/>
-                * `UTMA`: Uniform Transfers to Minors Act account.<br/>
+                
+                <ul>
+                  <li>`401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.</li>
+                  <li>`401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.</li>
+                  <li>`403B`: A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States.</li>
+                  <li>`529`: A tax-advantaged savings plan designed to help pay for education.</li>
+                  <li>`BROKERAGEPRODUCT`: Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options.</li>
+                  <li>`COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.</li>
+                  <li>`DIGITALASSET`: An account containing digital assets.</li>
+                  <li>`DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.</li>
+                  <li>`ESOP`: An employee stock ownership plan (ESOP) is an employee benefit plan that gives workers ownership interest in the company.</li>
+                  <li>`GUARDIAN`: An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent.</li>
+                  <li>`INSTITUTIONALTRUST`: An institutional trust account.</li>
+                  <li>`IRA`: An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement.</li>
+                  <li>`KEOGH`: A tax-deferred pension plan available to self-employed individuals or unincorporated businesses for retirement purposes.</li>
+                  <li>`NONQUALIFIEDPLAN`: A type of tax-deferred employer-sponsored retirement plan that falls outside of ERISA guidelines.</li>
+                  <li>`OTHERINVESTMENT`: Use when none of the listed enums apply.</li>
+                  <li>`ROLLOVER`: An account containing investments rolled over from an employee-sponsored account.</li>
+                  <li>`ROTH`: An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement.</li>
+                  <li>`SARSEP`: A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement.</li>
+                  <li>`TAXABLE`: A taxable investment account.</li>
+                  <li>`TDA`: TreasuryDirect Account.</li>
+                  <li>`TRUST`: A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms.</li>
+                  <li>`TERM`: Life insurance that provides coverage at a fixed rate of payments for a limited period of time.</li>
+                  <li>`UGMA`: Uniform Gifts to Minors Act account.</li>
+                  <li>`UTMA`: Uniform Transfers to Minors Act account.</li>
+                </ul>
           required:
             - investmentAccount
           additionalProperties: false
@@ -1107,10 +915,13 @@ components:
                 An insurance account. For example, whole life insurance or short-term disability.
 
                 The `accountType` field for insurance accounts may be set to any of the following:
-                * `LONGTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year.<br/>
-                * `SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.<br/>
-                * `UNIVERSALLIFE`: A type of a cash value life insurance where the excess of premium payments above the current cost of insurance is credited to the cash value of the policy, which in turn is credited each month with interest.<br/>
-                * `WHOLELIFE`: Life insurance which is guaranteed to remain in force for the insured's entire lifetime, provided required premiums are paid, or to the maturity date.<br/>
+                
+                <ul>
+                  <li>`LONGTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year.</li>
+                  <li>`SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.</li>
+                  <li>`UNIVERSALLIFE`: A type of a cash value life insurance where the excess of premium payments above the current cost of insurance is credited to the cash value of the policy, which in turn is credited each month with interest.</li>
+                  <li>`WHOLELIFE`: Life insurance which is guaranteed to remain in force for the insured's entire lifetime, provided required premiums are paid, or to the maturity date.</li>
+                </ul>
           required:
             - insuranceAccount
           additionalProperties: false
@@ -1123,9 +934,12 @@ components:
                 An annuity account. For example, a fixed or variable annuity account.
 
                 The `accountType` field for annuity accounts may be set to any of the following:
-                * `ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.<br/>
-                * `FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.<br/>
-                * `VARIABLEANNUITY`: A type of insurance contract that promises to pay back the buyer based on the performance of an underlying portfolio of mutual funds selected by the buyer.<br/>
+                
+                <ul>
+                  <li>`ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.</li>
+                  <li>`FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.</li>
+                  <li>`VARIABLEANNUITY`: A type of insurance contract that promises to pay back the buyer based on the performance of an underlying portfolio of mutual funds selected by the buyer.</li>
+                </ul>
           required:
             - annuityAccount
           additionalProperties: false
@@ -1141,48 +955,10 @@ components:
             accounts:
               type: array
               description: |
-                An array of accounts with entity types dependent on the account type (deposit, investment, loan, line of credit, insurance, or annuity). Plaid accepts all account types for this endpoint but consumes account details through `GET accounts/{accountId}` solely for deposit, investment, loan, and line of credit accounts.
+                An array of accounts. May include accounts of any of the following types: [deposit](#deposit-account), [investment](#investment-account), [line of credit](#line-of-credit-account), [loan](#loan-account)
+                
                 **Note:** Each object in the accounts array is expected to contain at least one account type.
-              items:
-                $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
-              example:
-                  - depositAccount:
-                      accountId: depositAccount0000001
-                      accountType: CHECKING
-                      accountNumberDisplay: '5820'
-                      productName: 'Checking'
-                      nickname: 'Main Checking'
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
-                  - loanAccount:
-                      accountId: loanAccount0000001
-                      accountType: LOAN
-                      accountNumberDisplay: "4704"
-                      productName: "Loan"
-                      nickname: "Primary Loan"
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
-                  - locAccount:
-                      accountId: locAccount0000001
-                      accountType: LINEOFCREDIT
-                      accountNumberDisplay: "8200"
-                      productName: "Line of Credit"
-                      nickname: "First plaidypus LOC"
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
-                  - investmentAccount:
-                      accountId: investmentAccount0000001
-                      accountType: TAXABLE
-                      accountNumberDisplay: "1050"
-                      productName: "Brokerage Account"
-                      nickname: "First plaidypus Brokerage"
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
           required:
             - accounts
 
@@ -1195,6 +971,16 @@ components:
               $ref: '#/components/schemas/AnnuityAccountType'
           required:
             - accountType
+      x-examples:
+        - annuityAccount:
+            accountId: annuityAccount0000001
+            accountType: FIXEDANNUITY
+            accountNumberDisplay: '53901'
+            productName: Fixed Annuity
+            nickname: Fixed annuity 1
+            status: OPEN
+            currency:
+              currencyCode: USD
 
     Currency:
       title: Currency entity
@@ -1208,43 +994,64 @@ components:
         - currencyCode
 
     DepositAccount:
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            accountType:
+              $ref: '#/components/schemas/DepositAccountType'
+          required:
+            - accountType
+
+    DepositAccountDescriptor:
       title: Deposit Account entity
       description: |
         Full details of a deposit account. Plaid consumes the same information for all types of deposit accounts.
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
         
-        The `accountType` field for deposit accounts may be set to either of the following:
-        * `CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.<br/>
-        * `SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.<br/>
+        The `accountType` field for deposit accounts may be set to any of the [account types](#deposit-account-types) listed below.
       type: object
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/DepositAccountType'
-            currentBalance:
-              type: number
-              description: |
-                The total amount of money in the account (sum of all posted/cleared transactions, not including pending transactions). For Plaid's full definition, see the [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-current).
-            availableBalance:
-              type: number
-              description:  |
-                The money in the account available to spend (sum of all transactions, plus or minus pending transactions). For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available).
-          required:
-            - currentBalance
-            - availableBalance
-            - accountType
+      properties:
+        depositAccount:
+          $ref: '#/components/schemas/DepositAccount'
+      required:
+        - depositAccount
+      x-examples:
+        - depositAccount:
+            accountId: depositAccount0000001
+            accountType: CHECKING
+            accountNumberDisplay: '5820'
+            productName: Checking
+            nickname: Main Checking
+            status: OPEN
+            currency:
+              currencyCode: USD
 
-    DepositAccountDescriptor:
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/DepositAccountType'
-          required:
-            - accountType
+    DepositAccountFull:
+      title: Deposit Account entity
+      description: |
+        Full details of a deposit account. Plaid consumes the same information for all types of deposit accounts.
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
+        
+        The `accountType` field for deposit accounts may be set to any of the [account types](#deposit-account-types) listed below.
+      type: object
+      properties:
+        depositAccount:
+          $ref: '#/components/schemas/DepositAccount'
+      required:
+        - depositAccount
+      x-examples:
+        - depositAccount:
+            accountId: someLongTermUniqueIDString
+            accountNumberDisplay: '4321'
+            productName: string
+            nickname: string
+            status: CLOSED
+            currency:
+              currencyCode: AED
+            accountType: CHECKING
+            currentBalance: 0
+            availableBalance: 0
 
     DepositTransaction:
       title: Deposit Transaction entity
@@ -1261,7 +1068,15 @@ components:
               type: integer
               description: |
                 Check number. Plaid expects this solely if the transaction involves a check.
-
+      x-examples:
+        - transactionId: depositTransaction000000001
+          transactionTimestamp: '2022-04-05T00:00:00.000Z'
+          description: check for latest ACME invoice
+          debitCreditMemo: DEBIT
+          status: PENDING
+          amount: 400
+          payee: 'Acme LLC'
+          checkNumber: 57448
 
     Holding:
       title: Holding entity
@@ -1345,18 +1160,52 @@ components:
               $ref: '#/components/schemas/InsuranceAccountType'
           required:
             - accountType
+      x-examples:
+        - insuranceAccount:
+            accountId: insuranceAccount0000001
+            accountType: LONGTERMDISABILITY
+            accountNumberDisplay: '5820'
+            productName: Long-term disability
+            nickname: Long term
+            status: OPEN
+            currency:
+              currencyCode: USD
 
     InvestmentAccount:
-      title: Investment Account entity
-      description: |
-        Full details of an investment account. Plaid consumes all `InvestmentAccount` FDX fields for all types of investment accounts. In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information. Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
-      type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
           properties:
             accountType:
               $ref: '#/components/schemas/InvestmentAccountType'
+          required:
+            - accountType
+
+    InvestmentAccountDescriptor:
+      description: |
+        The type of investment account. For example, a 401K or IRA. Plaid consumes the same details for all investment accounts. The `accountType` field for investment accounts may be set to any of the [account types](#investment-account-types) listed below.
+      type: object
+      properties:
+        investmentAccount:
+          $ref: '#/components/schemas/InvestmentAccount'
+      required:
+        - investmentAccount
+      x-examples:
+        - investmentAccount:
+            accountId: investmentAccount0000001
+            accountType: TAXABLE
+            accountNumberDisplay: '1050'
+            productName: Brokerage Account
+            nickname: First plaidypus Brokerage
+            status: OPEN
+            currency:
+              currencyCode: USD
+
+    InvestmentAccountFull:
+      allOf:
+        - $ref: '#/components/schemas/InvestmentAccount'
+        - type: object
+          properties:
             availableCashBalance:
               type: number
               description: >-
@@ -1381,17 +1230,38 @@ components:
           required:
             - availableCashBalance
             - currentValue
-            - accountType
-
-    InvestmentAccountDescriptor:
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/InvestmentAccountType'
-          required:
-            - accountType
+        - x-examples:
+            - investmentAccount:
+                accountId: investmentAccount0000001
+                accountType: TAXABLE
+                accountNumberDisplay: '1050'
+                productName: Brokerage Account
+                nickname: First plaidypus Brokerage
+                status: OPEN
+                currency:
+                  currencyCode: USD
+                availableCashBalance: 4302.39
+                balanceAsOf:
+                currentValue: 4302.39
+                holdings:
+                  - securityId: string
+                    securityIdType: CINS
+                    holdingName: string
+                    holdingType: ANNUITY
+                    holdingSubType: CASH
+                    symbol: MTSN
+                    purchasedPrice: 12.5
+                    currentUnitPrice: 34.2
+                    currentUnitPriceDate: '2024-07-15'
+                    units: 100
+                    marketValue: 3400
+                    faceValue: 3400
+                    cashAccount: true
+                    currency:
+                      currencyCode: AED
+                    fiAttributes:
+                      - name: string
+                        value: string
 
     InvestmentTransaction:
       title: Investment Transaction entity
@@ -1470,11 +1340,97 @@ components:
           required:
             - fees
             - transactionType
+      x-examples:
+        - transactionId: investmentTransaction000000001
+          transactionTimestamp: '2022-04-05T00:00:00.000Z'
+          description: check for latest ACME invoice
+          debitCreditMemo: DEBIT
+          status: PENDING
+          amount: 400
+          transactionType: CHECK
+          securityId: APW881
+          securityIdType: CMC
+          securityType: DEBT
+          symbol: MSFT
+          commission: 0.1
+          unitPrice: 15.3
+          units: 1000
+          unitType: SHARES
+          fiAttributes:
+            - name: Vanguard
+              value: 80
 
     LoanAccount:
       title: Loan Account entity
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            accountType:
+              $ref: '#/components/schemas/LoanAccountType'
+            accountNumber:
+              type: string
+              example: 'loanAccount0000001'
+              description: |
+                Full account number for the end user's handle for the account at the owning institution
+                Required for accountType 'MORTGAGE'
+            principalBalance:
+              type: number
+              example: 580303.95
+              description: Principal balance of loan
+            escrowBalance:
+              type: number
+              example: 3400.61
+              description: Escrow balance of loan
+            originalPrincipal:
+              type: number
+              example: 650400.00
+              description: Original principal of loan
+            originatingDate:
+              $ref: '#/components/schemas/DateString'
+              description: Loan origination date
+            loanTerm:
+              type: integer
+              example: 360
+              description: Term of loan in months
+            nextPaymentAmount:
+              type: number
+              example: 2483.12
+              description: Amount of next payment
+            nextPaymentDate:
+              $ref: '#/components/schemas/DateString'
+              description: Date of next payment
+            lastPaymentAmount:
+              type: number
+              example: 2483.12
+              description: Last payment amount
+            lastPaymentDate:
+              $ref: '#/components/schemas/DateString'
+              description: Last payment date
+            maturityDate:
+              $ref: '#/components/schemas/DateString'
+              description: Maturity date
+            interestPaidYearToDate:
+              type: number
+              description: Interest paid year to date
+            interestRate:
+              type: number
+              example: 0.075
+              description: The account's interest rate
+            interestRateType:
+              $ref: '#/components/schemas/InterestRateType'
+          required:
+            - principalBalance
+            - interestRate
+            - interestRateType
+            - accountType
+
+    LoanAccountDescriptor:
       description: |
-        Full details of a loan account. Plaid only consumes the `MORTGAGE` and `STUDENTLOAN` types for its [Liabilities API](https://plaid.com/docs/api/products/liabilities/). For other loan account types Plaid consumes account details and transactions.
+        Full details of a loan account. The `accountType` field for loan accounts may be set to any of the [account types](#loan-account-types) listed below.
+        
+        Plaid only consumes the `MORTGAGE` and `STUDENTLOAN` types for its [Liabilities API](https://plaid.com/docs/api/products/liabilities/). For other loan account types Plaid consumes account details and transactions.
         Plaid consumes all loan account information as returned in the `GET /accounts` endpoint, as well as the additional information listed below:
         
         Required for all loan accounts:
@@ -1508,70 +1464,89 @@ components:
         
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"escrowBalance": 192.00`.
       type: object
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/LoanAccountType'
-            accountNumber:
-              type: string
-              description: |
-                Full account number for the end user's handle for the account at the owning institution
-                Required for accountType 'MORTGAGE'
-            principalBalance:
-              type: number
-              description: Principal balance of loan
-            escrowBalance:
-              type: number
-              description: Escrow balance of loan
-            originalPrincipal:
-              type: number
-              description: Original principal of loan
-            originatingDate:
-              $ref: '#/components/schemas/DateString'
-              description: Loan origination date
-            loanTerm:
-              type: integer
-              description: Term of loan in months
-            nextPaymentAmount:
-              type: number
-              description: Amount of next payment
-            nextPaymentDate:
-              $ref: '#/components/schemas/DateString'
-              description: Date of next payment
-            lastPaymentAmount:
-              type: number
-              description: Last payment amount
-            lastPaymentDate:
-              $ref: '#/components/schemas/DateString'
-              description: Last payment date
-            maturityDate:
-              $ref: '#/components/schemas/DateString'
-              description: Maturity date
-            interestPaidYearToDate:
-              type: number
-              description: Interest paid year to date
-            interestRate:
-              type: number
-              description: The account's interest rate
-            interestRateType:
-              $ref: '#/components/schemas/InterestRateType'
-          required:
-            - principalBalance
-            - interestRate
-            - interestRateType
-            - accountType
+      properties:
+        loanAccount:
+          $ref: '#/components/schemas/LoanAccount'
+      required:
+        - loanAccount
+      x-examples:
+        - loanAccount:
+            accountId: loanAccount0000001
+            accountType: LOAN
+            accountNumberDisplay: '4704'
+            productName: Loan
+            nickname: Primary Loan
+            status: OPEN
+            currency:
+              currencyCode: USD
 
-    LoanAccountDescriptor:
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/LoanAccountType'
-          required:
-            - accountType
+    LoanAccountFull:
+      description: |
+        Full details of a loan account. The `accountType` field for loan accounts may be set to any of the [account types](#loan-account-types) listed below.
+        
+        Plaid only consumes the `MORTGAGE` and `STUDENTLOAN` types for its [Liabilities API](https://plaid.com/docs/api/products/liabilities/). For other loan account types Plaid consumes account details and transactions.
+        Plaid consumes all loan account information as returned in the `GET /accounts` endpoint, as well as the additional information listed below:
+        
+        Required for all loan accounts:
+        * `principalBalance`
+        * `interestRate`
+        * `interestRateType`
+        
+        Optional fields for `STUDENTLOAN` accounts:
+        * `interestPaidYearToDate`
+        * `lastPaymentAmount`
+        * `lastPaymentDate`
+        * `maturityDate`
+        * `nextPaymentDate`
+        * `originalPrincipal`
+        * `originatingDate`
+        
+        Required for `MORTGAGE` accounts:
+        * `accountNumber`
+        
+        Optional fields for `MORTGAGE` accounts:
+        * `escrowBalance`
+        * `interestPaidYearToDate`
+        * `lastPaymentAmount`
+        * `lastPaymentDate`
+        * `loanTerm`
+        * `maturityDate`
+        * `nextPaymentAmount`
+        * `nextPaymentDate`
+        * `originalPrincipal`
+        * `originatingDate`
+        
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"escrowBalance": 192.00`.
+      type: object
+      properties:
+        loanAccount:
+          $ref: '#/components/schemas/LoanAccount'
+      required:
+        - loanAccount
+      x-examples:
+        - loanAccount:
+            accountId: someLongTermUniqueIDString
+            accountNumberDisplay: '4321'
+            productName: string
+            nickname: string
+            status: CLOSED
+            currency:
+              currencyCode: AED
+            accountType: AUTOLOAN
+            accountNumber: string
+            principalBalance: 0
+            escrowBalance: 0
+            originalPrincipal: 0
+            originatingDate: '2021-07-15'
+            loanTerm: 0
+            nextPaymentAmount: 0
+            nextPaymentDate: '2021-07-15'
+            lastPaymentAmount: 0
+            lastPaymentDate: '2021-07-15'
+            maturityDate: '2021-07-15'
+            interestPaidYearToDate: 0
+            interestRate: 0
+            interestRateType: FIXED
 
     LoanTransaction:
       title: Loan Transaction entity
@@ -1583,11 +1558,73 @@ components:
           properties:
             transactionType:
               $ref: '#/components/schemas/LoanTransactionType'
+      x-examples:
+        - transactionId: loanTransaction000000001
+          transactionTimestamp: '2022-04-05T00:00:00.000Z'
+          description: latest ACME invoice
+          debitCreditMemo: CREDIT
+          status: PENDING
+          amount: 400
 
     LocAccount:
-      title: Line-Of-Credit Account entity
-      description:  |
-        Full details of a line of credit account. Plaid may consume all the parameters returned by the `GET /accounts` endpoint.
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AccountDescriptor'
+        - type: object
+          properties:
+            accountType:
+              $ref: '#/components/schemas/LocAccountType'
+            creditLine:
+              type: number
+              description: Credit limit
+            availableCredit:
+              type: number
+              description: Available credit. Required for all accountTypes except for `CHARGE`
+            nextPaymentAmount:
+              type: number
+              description: Amount of next payment
+            nextPaymentDate:
+              $ref: '#/components/schemas/DateString'
+              description: Due date of next payment
+            principalBalance:
+              type: number
+              description: Principal balance
+            currentBalance:
+              type: number
+              description: Current balance of the line of credit
+            minimumPaymentAmount:
+              type: number
+              description: Minimum payment amount
+            lastPaymentAmount:
+              type: number
+              description: Last payment amount
+            lastPaymentDate:
+              $ref: '#/components/schemas/DateString'
+              description: Last payment date
+            pastDueAmount:
+              type: number
+              description: Amount owed that the account holder failed to pay on the due date
+            lastStmtBalance:
+              type: number
+              description: Last statement balance
+            lastStmtDate:
+              $ref: '#/components/schemas/DateString'
+              description: Last statement date
+            purchasesApr:
+              type: number
+              description: Purchases APR
+            advancesApr:
+              type: number
+              description: Advances APR
+          required:
+            - currentBalance
+            - accountType
+
+    LocAccountDescriptor:
+      description: |
+        Full details of a line of credit account. The `accountType` field for line of credit accounts may be set to any of the [account types](#loc-account-types) listed below.
+        
+        Plaid may consume all the parameters returned by the `GET /accounts` endpoint:
         
         * `availableCredit`
         * `creditLine`
@@ -1604,88 +1641,70 @@ components:
         * `nextPaymentDate`
         * `purchasesApr`
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
-
       type: object
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/LocAccountType'
-            creditLine:
-              type: number
-              description: Credit limit
-            availableCredit:
-              type: number
-              description: Available credit. Required for all accountTypes except for `CHARGE`
-            nextPaymentAmount:
-              type: number
-              description: Amount of next payment.
-            nextPaymentDate:
-              $ref: '#/components/schemas/DateString'
-              description: Due date of next payment
-            principalBalance:
-              type: number
-              description: Principal balance.
-            currentBalance:
-              type: number
-              description: Current balance of the line of credit.
-            minimumPaymentAmount:
-              type: number
-              description: Minimum payment amount.
-            lastPaymentAmount:
-              type: number
-              description: Last payment amount.
-            lastPaymentDate:
-              $ref: '#/components/schemas/DateString'
-              description: Last payment date
-            pastDueAmount:
-              type: number
-              description: Amount owed that the account holder failed to pay on the due date.
-            lastStmtBalance:
-              type: number
-              description: Last Statement Balance.
-            lastStmtDate:
-              $ref: '#/components/schemas/DateString'
-              description: Last Statement Date
-            purchasesApr:
-              type: number
-              description: Purchases APR
-            advancesApr:
-              type: number
-              description: Advances APR
-          required:
-            - currentBalance
-            - accountType
-      example:
-        accountId: loc_01_creditcard
-        accountType: CREDITCARD
-        accountNumberDisplay: "8200"
-        productName: "First Plaidypus Credit Card"
-        nickname: "my travel rewards card"
-        status: OPEN
-        currency:
-          currencyCode: USD
-        minimumPaymentAmount: 100.00
-        lastPaymentAmount: 400.00
-        lastPaymentDate: "2022-03-30"
-        pastDueAmount: 0.00
-        lastStmtBalance: 400.00
-        lastStmtDate: "2022-03-25"
-        purchasesApr: 10.25
-        advancesApr: 15.75
-        currentBalance: 375.00
-        availableCredit: 625.00
+      properties:
+        locAccount:
+          $ref: '#/components/schemas/LocAccount'
+      required:
+        - locAccount
+      x-examples:
+        - locAccount:
+            accountId: loc_01_creditcard
+            accountNumberDisplay: "8200"
+            productName: "First Plaidypus Credit Card"
+            nickname: "my travel rewards card"
+            status: OPEN
+            currency:
+              currencyCode: USD
+            accountType: CREDITCARD
 
-    LocAccountDescriptor:
-      allOf:
-        - $ref: '#/components/schemas/AccountDescriptor'
-        - type: object
-          properties:
-            accountType:
-              $ref: '#/components/schemas/LocAccountType'
-          required:
-            - accountType
+    LocAccountFull:
+      description: |
+        Full details of a line of credit account. The `accountType` field for line of credit accounts may be set to any of the [account types](#loc-account-types) listed below.
+        
+        Plaid may consume all the parameters returned by the `GET /accounts` endpoint:
+        
+        * `availableCredit`
+        * `creditLine`
+        * `currentBalance`
+        
+        Additionally, for the `CREDITCARD` accountType, Plaid consumes the previous information plus the following for its liabilities product:
+        
+        * `advancesApr`
+        * `lastPaymentAmount`
+        * `lastPaymentDate`
+        * `lastStmtBalance`
+        * `lastStmtDate`
+        * `minimumPaymentAmount`
+        * `nextPaymentDate`
+        * `purchasesApr`
+        Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`.
+      type: object
+      properties:
+        locAccount:
+          $ref: '#/components/schemas/LocAccount'
+      required:
+        - locAccount
+      x-examples:
+        - locAccount:
+            accountId: loc_01_creditcard
+            accountNumberDisplay: "8200"
+            productName: "First Plaidypus Credit Card"
+            nickname: "my travel rewards card"
+            status: OPEN
+            currency:
+              currencyCode: USD
+            minimumPaymentAmount: 100.00
+            lastPaymentAmount: 400.00
+            lastPaymentDate: "2022-03-30"
+            pastDueAmount: 0.00
+            lastStmtBalance: 400.00
+            lastStmtDate: "2022-03-25"
+            purchasesApr: 10.25
+            advancesApr: 15.75
+            currentBalance: 375.00
+            availableCredit: 625.00
+            accountType: CREDITCARD
 
     LocTransaction:
       title: Line-Of-Credit Transaction entity
@@ -1700,6 +1719,13 @@ components:
             checkNumber:
               type: integer
               description: Check number
+      x-examples:
+        - transactionId: locTransaction000000001
+          transactionTimestamp: '2022-04-05T00:00:00.000Z'
+          description: credit for latest ACME invoice
+          debitCreditMemo: DEBIT
+          status: PENDING
+          amount: 400
 
     Transaction:
       title: Transaction
@@ -1770,65 +1796,66 @@ components:
       title: Transactions entity
       description: Optionally paginated array of transactions
       type: object
-      allOf:
-        - $ref: '#/components/schemas/PaginatedArray'
-        - type: object
-          properties:
-            transactions:
-              description: |
-                An array of transactions. The `transactionType` is dependent on the account type. Plaid consumes investment, deposit, loan, and line of credit transactions. Plaid expects your organization to return an empty array if this information isn't available.
-              type: array
-              items:
-                oneOf:
-                  - type: object
-                    title: Deposit Transaction
-                    properties:
-                      depositTransaction:
-                        $ref: '#/components/schemas/DepositTransaction'
-                    required:
-                      - depositTransaction
-                    additionalProperties: false
-                  - type: object
-                    title: Investment Transaction
-                    properties:
-                      investmentTransaction:
-                        $ref: '#/components/schemas/InvestmentTransaction'
-                        description: |
-                          A transaction on an investment account.
-                          In addition to the required fields in the base `Transaction` model, Plaid requires the following fields
-                          for all transactions on an investment account:
-                          
-                          * `fees`
-                          * `transactionType`
-                          
-                          If the transaction involves a security, Plaid additionally requires the following fields:
-                          
-                          * `unitPrice`
-                          * `units`
-                          * Either of the following:
-                            - `symbol`
-                            - `securityId` and `securityIdType`
-                    required:
-                      - investmentTransaction
-                    additionalProperties: false
-                  - type: object
-                    title: Loan Transaction
-                    properties:
-                      loanTransaction:
-                        $ref: '#/components/schemas/LoanTransaction'
-                    required:
-                      - loanTransaction
-                    additionalProperties: false
-                  - type: object
-                    title: Line of Credit Transaction
-                    properties:
-                      locTransaction:
-                        $ref: '#/components/schemas/LocTransaction'
-                    required:
-                      - locTransaction
-                    additionalProperties: false
-          required:
-            - transactions
+      properties:
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+        transactions:
+          description: |
+            An array of transactions. The `transactionType` is dependent on the account type. Plaid consumes the following types of transactions: [investment](#investment-transaction), [deposit](#deposit-transaction), [loan](#loan-transaction), and [line of credit](#line-of-credit-transaction)
+            
+            Plaid expects your organization to return an empty array if this information isn't available.
+          type: array
+          items:
+            oneOf:
+              - type: object
+                title: Deposit Transaction
+                properties:
+                  depositTransaction:
+                    $ref: '#/components/schemas/DepositTransaction'
+                required:
+                  - depositTransaction
+                additionalProperties: false
+              - type: object
+                title: Investment Transaction
+                properties:
+                  investmentTransaction:
+                    $ref: '#/components/schemas/InvestmentTransaction'
+                    description: |
+                      A transaction on an investment account.
+                      In addition to the required fields in the base `Transaction` model, Plaid requires the following fields
+                      for all transactions on an investment account:
+                      
+                      * `fees`
+                      * `transactionType`
+                      
+                      If the transaction involves a security, Plaid additionally requires the following fields:
+                      
+                      * `unitPrice`
+                      * `units`
+                      * Either of the following:
+                        - `symbol`
+                        - `securityId` and `securityIdType`
+                required:
+                  - investmentTransaction
+                additionalProperties: false
+              - type: object
+                title: Loan Transaction
+                properties:
+                  loanTransaction:
+                    $ref: '#/components/schemas/LoanTransaction'
+                required:
+                  - loanTransaction
+                additionalProperties: false
+              - type: object
+                title: Line of Credit Transaction
+                properties:
+                  locTransaction:
+                    $ref: '#/components/schemas/LocTransaction'
+                required:
+                  - locTransaction
+                additionalProperties: false
+      required:
+        - transactions
       example:
         page:
           nextOffset: qwer123454q2f
@@ -2394,6 +2421,7 @@ components:
       description: |
         The type of an account. Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
       type: string
+      example: FIXEDANNUITY
       enum:
         - ANNUITY
         - FIXEDANNUITY
@@ -2401,7 +2429,7 @@ components:
 
     DebitCreditMemo:
       title: DebitCreditMemo
-      description:  |
+      description: |
         The posting type of a transaction. The transaction amount is an absolute value, and this parameter indicates the direction of the transaction. Plaid expects `DEBIT` or `CREDIT` for this enum. Plaid expects that your organization indicates the `MEMO` (i.e., pending) status using the `status` field in the transaction response rather than this field. If your organization sends `MEMO` in this `DebitCreditMemo` enum, Plaid handles this value the same as it handles `DEBIT`. * `DEBIT`: An amount leaves the account * `CREDIT`: An amount enters the account * `MEMO`: A pending transaction to be completed at the end of this day.
       type: string
       enum:
@@ -2413,6 +2441,7 @@ components:
       description: |
         The type of an account. Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
       type: string
+      example: SAVINGS
       enum:
         - CHECKING
         - SAVINGS
@@ -2462,6 +2491,7 @@ components:
       description: |
         The type of an account. Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
       type: string
+      example: WHOLELIFE
       enum:
         - LONGTERMDISABILITY
         - SHORTTERMDISABILITY
@@ -2480,6 +2510,7 @@ components:
       description: |
         The type of an account. Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
       type: string
+      example: ROTH
       enum:
         - 401A
         - 401K
@@ -2604,6 +2635,7 @@ components:
       description: |
         The type of an account. Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
       type: string
+      example: HOMEEQUITYLOAN
       enum:
         - AUTOLOAN
         - COMMERCIALLOAN
@@ -2620,14 +2652,17 @@ components:
       title: Loan Transaction Type
       description: |
         The type of a loan transaction. Plaid passes through all loan transaction types.
-        * `ADJUSTMENT`: Adjustment or correction.<br/>
-        * `FEE`: Fee charge. For example, a late payment fee.<br/>
-        * `INTEREST`: Interest charge.<br/>
-        * `PAYMENT`: Required payment that satisfies the minimum payment (e.g. principal + interest for mortgages).<br/>
-        * `LUMP_SUM_PAYMENT`: A single payment of money, as opposed to a series of payments made over time.<br/>
-        * `SKIP_PAYMENT`: Payment that satisfies deferral of a required payment.</br>
-        * `DOUBLE_UP_PAYMENT`: Additional payment beyond the required payment to reduce the principal.</br>
-        * `PAYOFF`: Payment that satisfies the terms of the mortgage loan and completely pays off the debt.
+        
+        <ul>
+          <li>`ADJUSTMENT`: Adjustment or correction.</li>
+          <li>`FEE`: Fee charge. For example, a late payment fee.</li>
+          <li>`INTEREST`: Interest charge.</li>
+          <li>`PAYMENT`: Required payment that satisfies the minimum payment (e.g. principal + interest for mortgages).</li>
+          <li>`LUMP_SUM_PAYMENT`: A single payment of money, as opposed to a series of payments made over time.</li>
+          <li>`SKIP_PAYMENT`: Payment that satisfies deferral of a required payment.</li>
+          <li>`DOUBLE_UP_PAYMENT`: Additional payment beyond the required payment to reduce the principal.</li>
+          <li>`PAYOFF`: Payment that satisfies the terms of the mortgage loan and completely pays off the debt.</li>
+        </ul>
       type: string
       enum:
         - ADJUSTMENT
@@ -2643,13 +2678,13 @@ components:
       description: |
         The type of an account. Plaid consumes basic balance account information from the `accounts/{accountId}` endpoint for a subset of the possible account types described in the FDX specification.
       type: string
+      example: CREDITCARD
       enum:
         - LINEOFCREDIT
         - CHARGE
         - COMMERCIALLINEOFCREDIT
         - CREDITCARD
         - HOMELINEOFCREDIT
-
 
     LocTransactionType:
       title: Line-Of-Credit Transaction Type
@@ -2738,7 +2773,7 @@ components:
 
     TransactionStatus:
       title: Transaction Status
-      description:  |
+      description: |
         The status of a transaction. Plaid consumes solely the `PENDING` and `POSTED` enums,
         and treats `MEMO` and `AUTHORIZATION` as if they were `PENDING`. Plaid expects that pending and posted transactions
         have different `transactionIds`.
