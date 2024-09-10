@@ -373,12 +373,12 @@ components:
     openIdConnect:
       type: openIdConnect
       description: >
-        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/authentication) and accepts the resulting [access token](/core-exchange/authentication#response-parameters) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/authentication) and accepts the resulting [access token](/core-exchange/authentication#response-parameters) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       openIdConnectUrl: https://www.your-organization.com/.well-known/openid-configuration
     oauth2:
       type: oauth2
       description: >
-        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       flows:
         authorizationCode:
           authorizationUrl: https://www.your-organization.com/authorize
@@ -2702,7 +2702,7 @@ components:
     PaymentNetworkType:
       title: Payment Network Type
       description: |
-        Suggested values for Payment Network Type. `US_` refers to the USA, and `CA_` refers to Canada.
+        Suggested values for Payment Network Type. `US&#95;` refers to the USA, and `CA&#95;` refers to Canada.
         <table>
         <thead>
         <tr>
@@ -2712,23 +2712,23 @@ components:
         </thead>
         <tbody>
         <tr>
-        <td>US_ACH</td>
+        <td>US&#95;ACH</td>
         <td>Automated Clearing House, also called Fed ACH network (mostly small banks)</td>
         </tr>
         <tr>
-        <td>US_FEDWIRE</td>
+        <td>US&#95;FEDWIRE</td>
         <td>Fedwire Funds Service.</td>
         </tr>
         <tr>
-        <td>US_CHIPS</td>
+        <td>US&#95;CHIPS</td>
         <td>Clearinghouse Interbank Payments System. Also called Clearing House ACH network (primarily big banks)</td>
         </tr>
         <tr>
-        <td>CA_ACSS</td>
+        <td>CA&#95;ACSS</td>
         <td>Automated Clearing House Settlement System</td>
         </tr>
         <tr>
-        <td>CA_LVTS</td>
+        <td>CA&#95;LVTS</td>
         <td>Large-Value Transfer System</td>
         </tr>
         </tbody>

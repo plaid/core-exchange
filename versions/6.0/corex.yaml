@@ -512,12 +512,12 @@ components:
     openIdConnect:
       type: openIdConnect
       description: >
-        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/authentication) and accepts the resulting [access token](/core-exchange/authentication#response-parameters) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/authentication) and accepts the resulting [access token](/core-exchange/authentication#response-parameters) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       openIdConnectUrl: https://www.your-organization.com/.well-known/openid-configuration
     oauth2:
       type: oauth2
       description: >
-        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS_TOKEN>'`.
+        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       flows:
         authorizationCode:
           authorizationUrl: https://www.your-organization.com/authorize
@@ -670,7 +670,7 @@ components:
           description: Whether this account has joint owners
           type: boolean
       required:
-        - identifier 
+        - identifier
         - institutionId
         - type
 
@@ -913,7 +913,7 @@ components:
       title: Account Descriptor entity
       description: |
         This descriptor provides minimal information about the account for use in lightweight arrays.
-        
+
         **Note:** This object may contain fewer fields than the full account object.
       type: object
       discriminator:
@@ -2886,7 +2886,7 @@ components:
     PaymentNetworkType:
       title: Payment Network Type
       description: |
-        Suggested values for Payment Network Type. `US_` refers to the USA, and `CA_` refers to Canada.
+        Suggested values for Payment Network Type. `US&#95;` refers to the USA, and `CA&#95;` refers to Canada.
         <table>
         <thead>
         <tr>
@@ -2896,31 +2896,31 @@ components:
         </thead>
         <tbody>
         <tr>
-        <td>CA_ACSS</td>
+        <td>CA&#95;ACSS</td>
         <td>Automated Clearing House Settlement System</td>
         </tr>
         <tr>
-        <td>CA_LVTS</td>
+        <td>CA&#95;LVTS</td>
         <td>Large-Value Transfer System</td>
         </tr>
         <tr>
-        <td>US_ACH</td>
+        <td>US&#95;ACH</td>
         <td>Automated Clearing House, also called Fed ACH network (mostly small banks)</td>
         </tr>
         <tr>
-        <td>US_CHIPS</td>
+        <td>US&#95;CHIPS</td>
         <td>Clearinghouse Interbank Payments System. Also called Clearing House ACH network (primarily big banks)</td>
         </tr>
         <tr>
-        <td>US_FEDNOW</td>
+        <td>US&#95;FEDNOW</td>
         <td>Federal Reserve Instant Payment System.</td>
         </tr>
         <tr>
-        <td>US_FEDWIRE</td>
+        <td>US&#95;FEDWIRE</td>
         <td>Fedwire Funds Service.</td>
         </tr>
         <tr>
-        <td>US_RTP</td>
+        <td>US&#95;RTP</td>
         <td>US Real Time Payments System.</td>
         </tr>
         </tbody>
@@ -3053,3 +3053,100 @@ components:
             Can change at any time and should only be used for consumer
             to communicate with the data provider about an issue.
             Provider can include an error GUID in message for their use.
+
+    ############################################################
+    #
+    # Consent entities
+    #
+    ############################################################
+    ConsentRequest:
+      title: Consent Request entity
+      description: >-
+        Details of request to create new consent grant.
+        This schema is to be used in POST request to Data Provider’s
+        'POST /par' endpoint using the Pushed Authorization Request (PAR) method
+      type: object
+      properties:
+        durationType:
+          description: The type of duration of the consent
+          $ref: '#/components/schemas/ConsentDurationType'
+        durationPeriod:
+          description: The consent duration in days from day of original grant
+          $ref: '#/components/schemas/ConsentDurationPeriod'
+        lookbackPeriod:
+          description: >-
+            Period, in days, for which historical data may be requested;
+            measured from request time, not grant time
+          $ref: '#/components/schemas/LookbackPeriod'
+        resources:
+          description: The requested resource entities
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentRequestedResource'
+
+    ConsentDurationType:
+      title: Consent Duration Type
+      description: Duration of the Consent Grant, per FDX UX Guidelines v1.0 (pp 18 - 20)
+      type: string
+      enum:
+        - ONE_TIME
+        - PERSISTENT
+        - TIME_BOUND
+
+    ConsentDurationPeriod:
+      title: Consent Duration Period
+      description: Consent duration, in days, from day of original grant
+      type: integer
+
+    LookbackPeriod:
+      title: Lookback Period
+      description: >-
+        Period, in days, for which historical data may be requested;
+        period is measured from request time, not grant time
+      type: integer
+
+    ConsentRequestedResource:
+      title: Consent Requested Resource entity
+      description: Details of requested resource and data clusters
+      type: object
+      properties:
+        resourceType:
+          description: Type of resource permission requested
+          $ref: '#/components/schemas/ConsentResourceType'
+        dataClusters:
+          description: Names of clusters of data elements requested
+          type: array
+          items:
+            $ref: '#/components/schemas/DataCluster'
+          minItems: 1
+      required:
+        - resourceType
+        - dataClusters
+
+    ConsentResourceType:
+      title: Consent Resource Type
+      description: >-
+        Resource for which data may be permissioned;
+        can be extended to support additional types of resources
+      type: string
+      enum:
+        - ACCOUNT
+        - CUSTOMER
+        - DOCUMENT
+
+    DataCluster:
+      title: Data Cluster
+      description: >-
+        Name of permissioned Data Cluster. For Data Cluster definitions refer
+        to the Consent Components > Data Clusters section of the
+        User Experience Guidelines document included in the FDX API
+      type: string
+      enum:
+        - ACCOUNT_BASIC
+        - ACCOUNT_DETAILED
+        - ACCOUNT_PAYMENTS
+        - CUSTOMER_CONTACT
+        - CUSTOMER_PERSONAL
+        - INVESTMENTS
+        - STATEMENTS
+        - TRANSACTIONS
