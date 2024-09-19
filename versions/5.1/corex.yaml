@@ -954,6 +954,8 @@ components:
           properties:
             accounts:
               type: array
+              items:
+                $ref: '#/components/schemas/AccountWithDetails'
               description: |
                 An array of accounts. May include accounts of any of the following types: [deposit](#deposit-account), [investment](#investment-account), [line of credit](#line-of-credit-account), [loan](#loan-account)
                 
