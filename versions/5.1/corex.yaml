@@ -762,7 +762,7 @@ components:
           title: Deposit Account
           properties:
             depositAccount:
-              $ref: '#/components/schemas/DepositAccount'
+              $ref: '#/components/schemas/DepositAccountFull'
           required:
             - depositAccount
           additionalProperties: false
@@ -770,7 +770,7 @@ components:
           title: Investment Account
           properties:
             investmentAccount:
-              $ref: '#/components/schemas/InvestmentAccount'
+              $ref: '#/components/schemas/InvestmentAccountFull'
           required:
             - investmentAccount
           additionalProperties: false
@@ -778,7 +778,7 @@ components:
           title: Loan Account
           properties:
             loanAccount:
-              $ref: '#/components/schemas/LoanAccount'
+              $ref: '#/components/schemas/LoanAccountFull'
           required:
             - loanAccount
           additionalProperties: false
@@ -786,7 +786,7 @@ components:
           title: Line of Credit Account
           properties:
             locAccount:
-              $ref: '#/components/schemas/LocAccount'
+              $ref: '#/components/schemas/LocAccountFull'
           required:
             - locAccount
           additionalProperties: false
@@ -1039,7 +1039,19 @@ components:
       type: object
       properties:
         depositAccount:
-          $ref: '#/components/schemas/DepositAccount'
+          allOf:
+            - $ref: '#/components/schemas/DepositAccount'
+            - type: object
+              properties:
+                currentBalance:
+                  type: number
+                  description: Current balance of the deposit account
+                availableBalance:
+                  type: number
+                  description: Available balance of the deposit account
+              required:
+                - currentBalance
+                - availableBalance
       required:
         - depositAccount
       x-examples:
@@ -1204,66 +1216,71 @@ components:
               currencyCode: USD
 
     InvestmentAccountFull:
-      allOf:
-        - $ref: '#/components/schemas/InvestmentAccount'
-        - type: object
-          properties:
-            availableCashBalance:
-              type: number
-              description: >-
-                Cash balance across all sub-accounts. Plaid expects that this includes sweep funds.
-            balanceAsOf:
-              description: |
-                As-of date of balances.
-
-                ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
-              $ref: '#/components/schemas/Timestamp'
-            currentValue:
-              type: number
-              description:  >-
-                Total current value of all investments.
-            holdings:
-              type: array
-              description: |
-                Holdings in the investment account.
-                Plaid maps the `holding` and the `investmentAccount` FDX models to its securities models, which hold universal information like the ticker symbol, and to its holdings models, which hold account-specific information like balances. For more information, see [Plaid investments](https://plaid.com/docs/investments/#securities-and-holdings).
-              items:
-                $ref: '#/components/schemas/Holding'
-          required:
-            - availableCashBalance
-            - currentValue
-        - x-examples:
-            - investmentAccount:
-                accountId: investmentAccount0000001
-                accountType: TAXABLE
-                accountNumberDisplay: '1050'
-                productName: Brokerage Account
-                nickname: First plaidypus Brokerage
-                status: OPEN
-                currency:
-                  currencyCode: USD
-                availableCashBalance: 4302.39
+      description: |
+        The type of investment account. For example, a 401K or IRA. Plaid consumes the same details for all investment accounts. The `accountType` field for investment accounts may be set to any of the [account types](#investment-account-types) listed below.
+      type: object
+      properties:
+        investmentAccount:
+          allOf:
+            - $ref: '#/components/schemas/InvestmentAccount'
+            - type: object
+              properties:
+                availableCashBalance:
+                  type: number
+                  description: >-
+                    Cash balance across all sub-accounts. Plaid expects that this includes sweep funds.
                 balanceAsOf:
-                currentValue: 4302.39
+                  description: |
+                    As-of date of balances.
+    
+                    ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                  $ref: '#/components/schemas/Timestamp'
+                currentValue:
+                  type: number
+                  description:  >-
+                    Total current value of all investments.
                 holdings:
-                  - securityId: string
-                    securityIdType: CINS
-                    holdingName: string
-                    holdingType: ANNUITY
-                    holdingSubType: CASH
-                    symbol: MTSN
-                    purchasedPrice: 12.5
-                    currentUnitPrice: 34.2
-                    currentUnitPriceDate: '2024-07-15'
-                    units: 100
-                    marketValue: 3400
-                    faceValue: 3400
-                    cashAccount: true
-                    currency:
-                      currencyCode: AED
-                    fiAttributes:
-                      - name: string
-                        value: string
+                  type: array
+                  description: |
+                    Holdings in the investment account.
+                    Plaid maps the `holding` and the `investmentAccount` FDX models to its securities models, which hold universal information like the ticker symbol, and to its holdings models, which hold account-specific information like balances. For more information, see [Plaid investments](https://plaid.com/docs/investments/#securities-and-holdings).
+                  items:
+                    $ref: '#/components/schemas/Holding'
+              required:
+                - availableCashBalance
+                - currentValue
+      x-examples:
+        - investmentAccount:
+            accountId: investmentAccount0000001
+            accountType: TAXABLE
+            accountNumberDisplay: '1050'
+            productName: Brokerage Account
+            nickname: First plaidypus Brokerage
+            status: OPEN
+            currency:
+              currencyCode: USD
+            availableCashBalance: 4302.39
+            balanceAsOf:
+            currentValue: 4302.39
+            holdings:
+              - securityId: string
+                securityIdType: CINS
+                holdingName: string
+                holdingType: ANNUITY
+                holdingSubType: CASH
+                symbol: MTSN
+                purchasedPrice: 12.5
+                currentUnitPrice: 34.2
+                currentUnitPriceDate: '2024-07-15'
+                units: 100
+                marketValue: 3400
+                faceValue: 3400
+                cashAccount: true
+                currency:
+                  currencyCode: AED
+                fiAttributes:
+                  - name: string
+                    value: string
 
     InvestmentTransaction:
       title: Investment Transaction entity

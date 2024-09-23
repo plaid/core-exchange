@@ -1051,15 +1051,15 @@ components:
       discriminator:
         propertyName: accountCategory
         mapping:
-          DEPOSIT_ACCOUNT: '#/components/schemas/DepositAccount'
-          INVESTMENT_ACCOUNT: '#/components/schemas/InvestmentAccount'
-          LOAN_ACCOUNT: '#/components/schemas/LoanAccount'
-          LOC_ACCOUNT: '#/components/schemas/LineOfCreditAccount'
+          DEPOSIT_ACCOUNT: '#/components/schemas/DepositAccountFull'
+          INVESTMENT_ACCOUNT: '#/components/schemas/InvestmentAccountFull'
+          LOAN_ACCOUNT: '#/components/schemas/LoanAccountFull'
+          LOC_ACCOUNT: '#/components/schemas/LineOfCreditAccountFull'
       oneOf:
-        - $ref: '#/components/schemas/DepositAccount'
-        - $ref: '#/components/schemas/InvestmentAccount'
-        - $ref: '#/components/schemas/LoanAccount'
-        - $ref: '#/components/schemas/LineOfCreditAccount'
+        - $ref: '#/components/schemas/DepositAccountFull'
+        - $ref: '#/components/schemas/InvestmentAccountFull'
+        - $ref: '#/components/schemas/LoanAccountFull'
+        - $ref: '#/components/schemas/LineOfCreditAccountFull'
 
     AccountWithDescriptor:
       title: Account With Descriptor entity
