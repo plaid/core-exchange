@@ -297,25 +297,7 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  page:
-                    $ref: '#/components/schemas/PageMetadata'
-                  paymentNetworks:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AccountPaymentNetwork'
-                required:
-                  - paymentNetworks
-              examples:
-                example-1:
-                  page:
-                    nextOffset: 25
-                  paymentNetworks:
-                    - bankId: '010088889'
-                      identifier: '1111222233335820'
-                      type: US_ACH
-                      transferIn: true
-                      transferOut: true
+                $ref: '#/components/schemas/AccountPaymentNetworkList'
 
   /accounts/{accountId}/statements:
     get:
@@ -810,7 +792,7 @@ components:
         - status
         - currency
 
-    AnnuityAccountDescriptor:
+    AnnuityAccount:
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -882,38 +864,10 @@ components:
       description: An account with full details
       type: object
       oneOf:
-        - type: object
-          title: Deposit Account
-          properties:
-            depositAccount:
-              $ref: '#/components/schemas/DepositAccount'
-          required:
-            - depositAccount
-          additionalProperties: false
-        - type: object
-          title: Investment Account
-          properties:
-            investmentAccount:
-              $ref: '#/components/schemas/InvestmentAccount'
-          required:
-            - investmentAccount
-          additionalProperties: false
-        - type: object
-          title: Loan Account
-          properties:
-            loanAccount:
-              $ref: '#/components/schemas/LoanAccount'
-          required:
-            - loanAccount
-          additionalProperties: false
-        - type: object
-          title: Line of Credit Account
-          properties:
-            locAccount:
-              $ref: '#/components/schemas/LocAccountFull'
-          required:
-            - locAccount
-          additionalProperties: false
+        - $ref: '#/components/schemas/DepositAccountFull'
+        - $ref: '#/components/schemas/InvestmentAccountFull'
+        - $ref: '#/components/schemas/LoanAccountFull'
+        - $ref: '#/components/schemas/LocAccountFull'
 
     AccountWithDescriptor:
       title: Account With Descriptor entity
@@ -924,13 +878,13 @@ components:
           title: Deposit Account
           properties:
             depositAccount:
-              $ref: '#/components/schemas/DepositAccountDescriptor'
+              $ref: '#/components/schemas/DepositAccount'
               description: |
                 A deposit account. For example, a checking, savings or money market account.
                 Plaid consumes more detailed information for `CHECKING` and `SAVINGS` accounts.
 
                 The `accountType` field for deposit accounts may be set to any of the following:
-                
+
                 <ul>
                   <li>`CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.</li>
                   <li>`SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.</li>
@@ -947,13 +901,13 @@ components:
           title: Loan Account
           properties:
             loanAccount:
-              $ref: '#/components/schemas/LoanAccountDescriptor'
+              $ref: '#/components/schemas/LoanAccount'
               description: |
                 A loan account. For example, mortgage, student loan or auto loan.
                 Plaid consumes more detailed information for `MORTGAGE` and `STUDENTLOAN` accounts.
 
                 The `accountType` field for loan accounts may be set to any of the following:
-                
+
                 <ul>
                   <li>`AUTOLOAN`: A type of loan used to finance a car purchase.</li>
                   <li>`COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.</li>
@@ -973,13 +927,13 @@ components:
           title: Line of Credit Account
           properties:
             locAccount:
-              $ref: '#/components/schemas/LocAccountDescriptor'
+              $ref: '#/components/schemas/LocAccount'
               description: |
                 A line-of-credit account. For example, a credit card or home equity line of credit.
                 Plaid consumes more detailed information for `CREDITCARD` accounts.
 
                 The `accountType` field for line of credit accounts may be set to any of the following:
-                
+
                 <ul>
                   <li>`LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.</li>
                   <li>`CHARGE`: An account to which goods and services may be charged on credit.</li>
@@ -994,13 +948,13 @@ components:
           title: Investment Account
           properties:
             investmentAccount:
-              $ref: '#/components/schemas/InvestmentAccountDescriptor'
+              $ref: '#/components/schemas/InvestmentAccount'
               description: |
                 An investment account. For example, a 401K or IRA.
                 Plaid consumes the same details for all investment accounts.
 
                 The `accountType` field for investment accounts may be set to any of the following:
-                
+
                 <ul>
                   <li>`401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.</li>
                   <li>`401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.</li>
@@ -1035,12 +989,12 @@ components:
           title: Insurance Account
           properties:
             insuranceAccount:
-              $ref: '#/components/schemas/InsuranceAccountDescriptor'
+              $ref: '#/components/schemas/InsuranceAccount'
               description: |
                 An insurance account. For example, whole life insurance or short-term disability.
 
                 The `accountType` field for insurance accounts may be set to any of the following:
-                
+
                 <ul>
                   <li>`LONGTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year.</li>
                   <li>`SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.</li>
@@ -1054,12 +1008,12 @@ components:
           title: Annuity Account
           properties:
             annuityAccount:
-              $ref: '#/components/schemas/AnnuityAccountDescriptor'
+              $ref: '#/components/schemas/AnnuityAccount'
               description: |
                 An annuity account. For example, a fixed or variable annuity account.
 
                 The `accountType` field for annuity accounts may be set to any of the following:
-                
+
                 <ul>
                   <li>`ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.</li>
                   <li>`FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.</li>
@@ -1080,7 +1034,7 @@ components:
             accounts:
               type: array
               items:
-                $ref: '#/components/schemas/AccountWithDetails'
+                $ref: '#/components/schemas/AccountWithDescriptor'
               description: |
                 An array of accounts. May include accounts of any of the following types: [deposit](#deposit-account), [investment](#investment-account), [line of credit](#line-of-credit-account), [loan](#loan-account)
                 
@@ -1088,6 +1042,30 @@ components:
               minItems: 1
           required:
             - accounts
+
+    AccountPaymentNetworkList:
+      title: List payment networks for account
+      description: An optionally paginated array of payment networks supported by the account
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/PaginatedArray'
+        - type: object
+          properties:
+            paymentNetworks:
+              type: array
+              items:
+                $ref: '#/components/schemas/AccountPaymentNetwork'
+              minItems: 1
+              description: |
+                Array of payment networks. Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH.
+              example:
+                - bankId: '010088889'
+                  identifier: '1111222233335820'
+                  type: US_ACH
+                  transferIn: true
+                  transferOut: true
+          required:
+            - paymentNetworks
 
     Currency:
       title: Currency entity
@@ -1270,7 +1248,7 @@ components:
             - cashAccount
             - marketValue
 
-    InsuranceAccountDescriptor:
+    InsuranceAccount:
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1324,6 +1302,8 @@ components:
       description: |
         The type of investment account. For example, a 401K or IRA. Plaid consumes the same details for all investment accounts. The `accountType` field for investment accounts may be set to any of the [account types](#investment-account-types) listed below.
       type: object
+      required:
+        - investmentAccount
       properties:
         investmentAccount:
           allOf:
@@ -1337,7 +1317,7 @@ components:
                 balanceAsOf:
                   description: |
                     As-of date of balances.
-    
+
                     ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
                   $ref: '#/components/schemas/Timestamp'
                 currentValue:
@@ -1997,12 +1977,12 @@ components:
                       A transaction on an investment account.
                       In addition to the required fields in the base `Transaction` model, Plaid requires the following fields
                       for all transactions on an investment account:
-                      
+
                       * `fees`
                       * `transactionType`
-                      
+
                       If the transaction involves a security, Plaid additionally requires the following fields:
-                      
+
                       * `unitPrice`
                       * `units`
                       * Either of the following:
@@ -2856,7 +2836,7 @@ components:
       title: Loan Transaction Type
       description: |
         The type of a loan transaction. Plaid passes through all loan transaction types.
-        
+
         <ul>
           <li>`ADJUSTMENT`: Adjustment or correction.</li>
           <li>`FEE`: Fee charge. For example, a late payment fee.</li>
