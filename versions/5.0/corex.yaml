@@ -963,7 +963,7 @@ components:
       format: date
       maxLength: 10
       example: '2021-07-15'
-    
+
     Currency:
       title: Currency entity
       description: |
@@ -975,7 +975,7 @@ components:
           $ref: '#/components/schemas/Iso4217Code'
       required:
         - currencyCode
-    
+
     # Holding and Investment Transactions
     SecurityIdType:
       title: Security ID Type
@@ -1073,7 +1073,7 @@ components:
           required:
             - annuityAccount
           additionalProperties: false
-    
+
     AccountDescriptor:
       title: Account Descriptor entity
       description: |
@@ -1234,7 +1234,7 @@ components:
               $ref: '#/components/schemas/LocAccountType'
           required:
             - accountType
-    
+
     LocAccountType:
       description: |
         The type of an account.
@@ -1247,7 +1247,7 @@ components:
         - COMMERCIALLINEOFCREDIT
         - CREDITCARD
         - HOMELINEOFCREDIT
-    
+
     InvestmentAccountDescriptor:
       description: |
         An investment account. For example, a 401K or IRA.
@@ -1289,7 +1289,7 @@ components:
               $ref: '#/components/schemas/InvestmentAccountType'
           required:
             - accountType
-    
+
     InvestmentAccountType:
       description: |
         The type of an account.
@@ -1322,7 +1322,7 @@ components:
         - TERM
         - UGMA
         - UTMA
-    
+
     InsuranceAccountDescriptor:
       description: |
         An insurance account. For example, whole life insurance or short-term disability.
@@ -1343,7 +1343,7 @@ components:
               $ref: '#/components/schemas/InsuranceAccountType'
           required:
             - accountType
-    
+
     InsuranceAccountType:
       description: |
         The type of an account.
@@ -1355,7 +1355,7 @@ components:
         - SHORTTERMDISABILITY
         - UNIVERSALLIFE
         - WHOLELIFE
-    
+
     AnnuityAccountDescriptor:
       description: |
         An annuity account. For example, a fixed or variable annuity account.
@@ -1375,7 +1375,7 @@ components:
               $ref: '#/components/schemas/AnnuityAccountType'
           required:
             - accountType
-  
+
     AnnuityAccountType:
       description: |
         The type of an account.
@@ -1426,7 +1426,7 @@ components:
           required:
             - investmentAccount
           additionalProperties: false
-    
+
     DepositAccount:
       title: Deposit Account Details entity
       description: |
@@ -1670,7 +1670,7 @@ components:
                 Annual percentage rate for cash advances
           required:
             - currentBalance
-    
+
     InvestmentAccount:
       description: |
         Full details of an investment account. Plaid consumes all `InvestmentAccount` FDX fields for all types of investment accounts.
@@ -1714,7 +1714,7 @@ components:
       type: string
       enum:
         - FIXED
-        - VARIABLE 
+        - VARIABLE
 
     Holding:
       title: Holding entity
@@ -1827,7 +1827,7 @@ components:
         - OPTION
         - OTHER
         - STOCK
-    
+
     HoldingSubType:
       title: Holding SubType
       description: |
@@ -1851,7 +1851,7 @@ components:
           type: string
           description: |
             Value of the financial institution-specific attribute
-    
+
     # /accounts/{accountId}/contact
     AccountContact:
       title: Account Contact entity
@@ -1998,13 +1998,14 @@ components:
       required:
         - first
         - last
-    
+
     AccountHolderRelationship:
       title: Account Holder Relationship
       description: |
         Types of relationships between accounts and holders
       type: string
       enum:
+        - AUTHORIZED_USER
         - BUSINESS
         - FOR_BENEFIT_OF
         - FOR_BENEFIT_OF_PRIMARY
@@ -2072,7 +2073,7 @@ components:
         - line1
         - city
         - country
-    
+
     TelephoneNumber:
       title: Telephone Number
       description: |
@@ -2559,7 +2560,7 @@ components:
         - SRVCHG
         - TRANSFER
         - XFER
-    
+
     SecurityType:
       title: Security Type
       description: |

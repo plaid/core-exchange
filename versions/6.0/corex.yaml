@@ -132,42 +132,42 @@ paths:
                 page:
                   nextOffset: '25'
                 accounts:
-                  - depositAccount:
-                      accountId: depositAccount0000001
-                      accountType: CHECKING
-                      accountNumberDisplay: '5820'
-                      productName: Checking
-                      nickname: Main Checking
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
-                  - loanAccount:
-                      accountId: loanAccount0000001
-                      accountType: LOAN
-                      accountNumberDisplay: '4704'
-                      productName: Loan
-                      nickname: Primary Loan
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
-                  - locAccount:
-                      accountId: locAccount0000001
-                      accountType: LINEOFCREDIT
-                      accountNumberDisplay: '8200'
-                      productName: Line of Credit
-                      nickname: First plaidypus LOC
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
-                  - investmentAccount:
-                      accountId: investmentAccount0000001
-                      accountType: TAXABLE
-                      accountNumberDisplay: '1050'
-                      productName: Brokerage Account
-                      nickname: First plaidypus Brokerage
-                      status: OPEN
-                      currency:
-                        currencyCode: USD
+                  - accountCategory: 'DEPOSIT_ACCOUNT'
+                    accountId: depositAccount0000001
+                    accountType: CHECKING
+                    accountNumberDisplay: '5820'
+                    productName: Checking
+                    nickname: Main Checking
+                    status: OPEN
+                    currency:
+                      currencyCode: USD
+                  - accountCategory: 'LOAN_ACCOUNT'
+                    accountId: loanAccount0000001
+                    accountType: LOAN
+                    accountNumberDisplay: '4704'
+                    productName: Loan
+                    nickname: Primary Loan
+                    status: OPEN
+                    currency:
+                      currencyCode: USD
+                  - accountCategory: 'LOC_ACCOUNT'
+                    accountId: locAccount0000001
+                    accountType: LINEOFCREDIT
+                    accountNumberDisplay: '8200'
+                    productName: Line of Credit
+                    nickname: First plaidypus LOC
+                    status: OPEN
+                    currency:
+                      currencyCode: USD
+                  - accountCategory: 'INVESTMENT_ACCOUNT'
+                    accountId: investmentAccount0000001
+                    accountType: TAXABLE
+                    accountNumberDisplay: '1050'
+                    productName: Brokerage Account
+                    nickname: First plaidypus Brokerage
+                    status: OPEN
+                    currency:
+                      currencyCode: USD
 
   /accounts/{accountId}:
     get:
