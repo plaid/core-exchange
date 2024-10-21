@@ -92,6 +92,8 @@ tags:
     # the FDX tag 'money movement' is confusing given Core X doesn't actually move money. renaming in our docs to reflect its more limited scope.
   - name: Payment Networks Information
     description: Search and view account payment networks
+  - name: Asset Transfer Networks Information
+    description: Search and view asset transfer networks networks
 
 paths:
   ############################################################
@@ -254,6 +256,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
+              example:
+                page:
+                  nextOffset: 25
+                paymentNetworks:
+                  - bankId: '010088889'
+                    identifier: '1111222233335820'
+                    type: US_ACH
+                    transferIn: true
+                    transferOut: true
 
   /accounts/{accountId}/transactions:
     get:
@@ -295,39 +306,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transactions'
-                example:
-                  page:
-                    nextOffset: qwer123454q2f
-                  transactions:
-                    - depositTransaction:
-                        transactionType: CHECK
-                        checkNumber: 1234
-                        payee: ACME llc
-                        transactionId: depositTransaction000000001
-                        postedTimestamp: '2022-04-06T00:00:00.000Z'
-                        transactionTimestamp: '2022-04-05T00:00:00.000Z'
-                        description: 'check for latest ACME invoice'
-                        debitCreditMemo: DEBIT
-                        status: PENDING
-                        amount: 400.00
-                    - depositTransaction:
-                        transactionType: ADJUSTMENT
-                        transactionId: depositTransaction000000002
-                        postedTimestamp: '2022-04-07T00:00:00.000Z'
-                        transactionTimestamp: '2022-04-07T00:00:00.000Z'
-                        description: 'reconciliation/adjustment of bank statement error'
-                        debitCreditMemo: DEBIT
-                        status: POSTED
-                        amount: 0.80
-                    - depositTransaction:
-                        transactionType: ATMDEPOSIT
-                        transactionId: depositTransaction000000003
-                        postedTimestamp: '2022-04-08T00:00:00.000Z'
-                        transactionTimestamp: '2022-04-08T00:00:00.000Z'
-                        description: 'ATM cash deposit location #1234'
-                        debitCreditMemo: CREDIT
-                        status: POSTED
-                        amount: 101.80
+              example:
+                page:
+                  nextOffset: qwer123454q2f
+                transactions:
+                  - depositTransaction:
+                      transactionType: CHECK
+                      checkNumber: 1234
+                      payee: ACME llc
+                      transactionId: depositTransaction000000001
+                      postedTimestamp: '2022-04-06T00:00:00.000Z'
+                      transactionTimestamp: '2022-04-05T00:00:00.000Z'
+                      description: 'check for latest ACME invoice'
+                      debitCreditMemo: DEBIT
+                      status: PENDING
+                      amount: 400.00
+                  - depositTransaction:
+                      transactionType: ADJUSTMENT
+                      transactionId: depositTransaction000000002
+                      postedTimestamp: '2022-04-07T00:00:00.000Z'
+                      transactionTimestamp: '2022-04-07T00:00:00.000Z'
+                      description: 'reconciliation/adjustment of bank statement error'
+                      debitCreditMemo: DEBIT
+                      status: POSTED
+                      amount: 0.80
+                  - depositTransaction:
+                      transactionType: ATMDEPOSIT
+                      transactionId: depositTransaction000000003
+                      postedTimestamp: '2022-04-08T00:00:00.000Z'
+                      transactionTimestamp: '2022-04-08T00:00:00.000Z'
+                      description: 'ATM cash deposit location #1234'
+                      debitCreditMemo: CREDIT
+                      status: POSTED
+                      amount: 101.80
 
   /customers/current:
     get:
@@ -414,10 +425,10 @@ paths:
     get:
       operationId: getAccountAssetTransferNetworks
       tags:
-        - Payment Networks Information
+        -  Asset Transfer Networks Information
       description: |
-        Get asset transfer networks support by an account, for example ACATS (Automated Customer Account Transfer Service)
-        For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
+        Get asset transfer networks supported by an account. For example, Automated Customer Account Transfer Service (ACATS).
+        For more information about how Plaid uses this information, see the [Plaid Investments Move API](https://plaid.com/docs/api/products/investments-move/#investmentsauthget).
       summary: Get asset transfer details for this account
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -431,6 +442,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AssetTransferNetworkList'
+              example:
+                assetTransferNetworks:
+                  - identifier: '23348817826'
+                    identifierType: 'TOKENIZED_ACCOUNT_NUMBER'
+                    institutionName: 'First Plaidypus Bank'
+                    institutionId: 'FPB'
+                    type: 'US_ACATS'
+                    jointAccount: true
 
 components:
   ############################################################
@@ -1110,6 +1129,8 @@ components:
           properties:
             accounts:
               type: array
+              description: |
+                An optionally paginated array of accounts
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1570,8 +1591,6 @@ components:
           required:
             - currentBalance
             - availableBalance
-      required:
-        - depositAccount
 
     LoanAccount:
       title: Loan Account entity
@@ -1797,8 +1816,6 @@ components:
         In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information.
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`
       type: object
-      required:
-        - investmentAccount
       allOf:
         - $ref: '#/components/schemas/InvestmentAccountDescriptor'
         - type: object
@@ -1847,17 +1864,12 @@ components:
       allOf:
         - type: object
           properties:
-            securityId:
+            securityIds:
               description: |
-                If you return the `securityId` for a holding, Plaid uses it to look up the closing price from NYSE Group Security Master.
-                If you don't return `securityId` for a holding that uses security IDs (not recommended), Plaid uses the `unitPrice` as the closing price.
-                
-                This field, along with `securityIdType` are **required** unless `symbol` is provided.
-                
-                **Note:** If `securityId` is provided, `securityIdType` is required. 
-              type: string
-            securityIdType:
-              $ref: '#/components/schemas/SecurityIdType'
+                Array of security identifiers
+              type: array
+              items:
+                $ref: '#/components/schemas/SecurityId'
             holdingName:
               type: string
               description: |
@@ -1934,6 +1946,17 @@ components:
           required:
             - cashAccount
             - marketValue
+
+    SecurityId:
+      title: Security ID entity
+      description: |
+        Unique identifier for a security
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Identifier'
+        idType:
+          $ref: '#/components/schemas/SecurityIdType'
 
     HoldingType:
       title: Holding Type
@@ -2244,6 +2267,9 @@ components:
           properties:
             paymentNetworks:
               type: array
+              description: |
+                Array of payment networks.
+                Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH
               items:
                 $ref: '#/components/schemas/PaymentNetwork'
               minItems: 1
@@ -2354,6 +2380,8 @@ components:
           properties:
             transactions:
               type: array
+              description: |
+                An optionally paginated array of transactions
               items:
                 discriminator:
                   propertyName: accountCategory
@@ -2538,7 +2566,7 @@ components:
                 
                 This field, along with `securityIdType` are **required** unless `symbol` is provided.
                 
-                **Note:** If `securityId` is provided, `securityIdType` is required. 
+                **Note:** If `securityId` is provided, `securityIdType` is required.
             securityIdType:
               $ref: '#/components/schemas/SecurityIdType'
             securityType:
@@ -2934,6 +2962,8 @@ components:
       properties:
         assetTransferNetworks:
           type: array
+          description: |
+            A paginated array of asset transfer networks for the account
           items:
             $ref: '#/components/schemas/AssetTransferNetwork'
 

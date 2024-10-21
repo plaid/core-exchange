@@ -252,6 +252,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
+              example:
+                page:
+                  nextOffset: 25
+                paymentNetworks:
+                  - bankId: '010088889'
+                    identifier: '1111222233335820'
+                    type: US_ACH
+                    transferIn: true
+                    transferOut: true
 
   /accounts/{accountId}/transactions:
     get:
@@ -1081,6 +1090,8 @@ components:
           properties:
             accounts:
               type: array
+              description: |
+                An optionally paginated array of accounts
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1548,8 +1559,6 @@ components:
           required:
             - currentBalance
             - availableBalance
-      required:
-        - depositAccount
 
     LoanAccount:
       title: Loan Account entity
@@ -1775,8 +1784,6 @@ components:
         In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information.
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`
       type: object
-      required:
-        - investmentAccount
       allOf:
         - $ref: '#/components/schemas/InvestmentAccountDescriptor'
         - type: object
@@ -1832,7 +1839,7 @@ components:
                 
                 This field, along with `securityIdType` are **required** unless `symbol` is provided.
                 
-                **Note:** If `securityId` is provided, `securityIdType` is required. 
+                **Note:** If `securityId` is provided, `securityIdType` is required.
               type: string
             securityIdType:
               $ref: '#/components/schemas/SecurityIdType'
@@ -2222,6 +2229,9 @@ components:
           properties:
             paymentNetworks:
               type: array
+              description: |
+                Array of payment networks.
+                Not all deposit accounts support ACH transfers. For example, a prepaid debit card account doesn't support ACH
               items:
                 $ref: '#/components/schemas/PaymentNetwork'
               minItems: 1
@@ -2327,6 +2337,8 @@ components:
           properties:
             transactions:
               type: array
+              description: |
+                An optionally paginated array of transactions
               items:
                 minItems: 1
                 oneOf:
@@ -2519,7 +2531,7 @@ components:
                 
                 This field, along with `securityIdType` are **required** unless `symbol` is provided.
                 
-                **Note:** If `securityId` is provided, `securityIdType` is required. 
+                **Note:** If `securityId` is provided, `securityIdType` is required.
             securityIdType:
               $ref: '#/components/schemas/SecurityIdType'
             securityType:
