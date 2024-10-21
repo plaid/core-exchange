@@ -2966,6 +2966,8 @@ components:
             A paginated array of asset transfer networks for the account
           items:
             $ref: '#/components/schemas/AssetTransferNetwork'
+      required:
+        - assetTransferNetworks
 
     AssetTransferNetwork:
       title: Asset Transfer Network
