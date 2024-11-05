@@ -1071,7 +1071,7 @@ components:
       title: Date String
       description: |
         ISO 8601 full-date in format 'YYYY-MM-DD' according
-        to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+        to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
       type: string
       format: date
       maxLength: 10
@@ -1663,7 +1663,7 @@ components:
                 Date loan originated
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             loanTerm:
               type: integer
               example: 360
@@ -1680,7 +1680,7 @@ components:
                 Due date of next payment
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             lastPaymentAmount:
               type: number
               example: 2483.12
@@ -1692,14 +1692,14 @@ components:
                 Last payment date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             maturityDate:
               $ref: '#/components/schemas/DateString'
               description: |
                 Maturity date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             interestPaidYearToDate:
               type: number
               description: |
@@ -1760,7 +1760,7 @@ components:
                 Due date of next payment
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             principalBalance:
               type: number
               description: |
@@ -1783,7 +1783,7 @@ components:
                 Last payment date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             pastDueAmount:
               type: number
               description: |
@@ -1798,7 +1798,7 @@ components:
                 Last statement date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             purchasesApr:
               type: number
               description: |
@@ -1902,7 +1902,7 @@ components:
                 Current unit price as of date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://xml2rfc.tools.ietf.org/public/rfc/html/rfc3339.html#anchor14)
+                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             units:
               type: number
               description: |
@@ -2291,7 +2291,10 @@ components:
         bankId:
           type: string
           description: |
-            Bank identifier used by the payment network ie. Routing Number
+            Bank identifier used by the payment network. Typically the 9-digit
+            routing transit number (RTN) associated with the account number at a US institution,
+            or the 3-digit Institution (FID) and 5-digit Transit numbers for Canadian institutions,
+            including leading zeroes
         identifier:
           type: string
           description: |
