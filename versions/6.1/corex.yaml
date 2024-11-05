@@ -1198,6 +1198,7 @@ components:
           example: "4321"
         productName:
           type: string
+          example: "Premier Account"
           description: |
             Marketed product name for this account. Used in UIs to assist in account selection
         nickname:
@@ -1220,6 +1221,7 @@ components:
       description: |
         Account status
       type: string
+      example: OPEN
       enum:
         - CLOSED
         - DELINQUENT
@@ -1252,6 +1254,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: DEPOSIT_ACCOUNT
               enum:
                 - DEPOSIT_ACCOUNT
             accountType:
@@ -1299,6 +1302,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: LOAN_ACCOUNT
               enum:
                 - LOAN_ACCOUNT
             accountType:
@@ -1345,6 +1349,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: LOC_ACCOUNT
               enum:
                 - LOC_ACCOUNT
             accountType:
@@ -1404,6 +1409,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: INVESTMENT_ACCOUNT
               enum:
                 - INVESTMENT_ACCOUNT
             accountType:
@@ -1462,6 +1468,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: INSURANCE_ACCOUNT
               enum:
                 - INSURANCE_ACCOUNT
             accountType:
@@ -1499,6 +1506,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: ANNUITY_ACCOUNT
               enum:
                 - ANNUITY_ACCOUNT 
             accountType:
@@ -1527,6 +1535,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: COMMERCIAL_ACCOUNT
               enum:
                 - COMMERCIAL_ACCOUNT
             accountType:

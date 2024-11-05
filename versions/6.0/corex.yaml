@@ -1198,6 +1198,7 @@ components:
           example: "4321"
         productName:
           type: string
+          example: "Premier Account"
           description: |
             Marketed product name for this account. Used in UIs to assist in account selection
         nickname:
@@ -1220,6 +1221,7 @@ components:
       description: |
         Account status
       type: string
+      example: OPEN
       enum:
         - CLOSED
         - DELINQUENT
@@ -1252,6 +1254,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: "DEPOSIT_ACCOUNT"
               enum:
                 - DEPOSIT_ACCOUNT
             accountType:
@@ -1299,6 +1302,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: LOAN_ACCOUNT
               enum:
                 - LOAN_ACCOUNT
             accountType:
@@ -1345,6 +1349,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: LOC_ACCOUNT
               enum:
                 - LOC_ACCOUNT
             accountType:
@@ -1404,6 +1409,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: INVESTMENT_ACCOUNT
               enum:
                 - INVESTMENT_ACCOUNT
             accountType:
@@ -1462,6 +1468,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: INSURANCE_ACCOUNT
               enum:
                 - INSURANCE_ACCOUNT
             accountType:
@@ -1499,6 +1506,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: ANNUITY_ACCOUNT
               enum:
                 - ANNUITY_ACCOUNT 
             accountType:
@@ -1527,6 +1535,7 @@ components:
           properties:
             accountCategory:
               type: string
+              example: COMMERCIAL_ACCOUNT
               enum:
                 - COMMERCIAL_ACCOUNT
             accountType:
@@ -1580,11 +1589,13 @@ components:
           properties:
             currentBalance:
               type: number
+              example: 1832.11
               description: |
                 The total amount of money in the account (sum of all posted/cleared transactions, not including pending transactions).
                 For Plaid's full definition, see the [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-current)
             availableBalance:
               type: number
+              example: 1832.11
               description: |
                 The money in the account available to spend (sum of all transactions, plus or minus pending transactions).
                 For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available)
@@ -1702,6 +1713,7 @@ components:
                 to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             interestPaidYearToDate:
               type: number
+              example: 403.04
               description: |
                 Interest paid year to date
             interestRate:
@@ -1744,14 +1756,17 @@ components:
           properties:
             creditLine:
               type: number
+              example: 02
               description: |
                 Credit limit
             availableCredit:
               type: number
+              example: 8302.73
               description: |
                 Available credit. Required for all accountTypes except for `CHARGE`
             nextPaymentAmount:
               type: number
+              example: 1832.11
               description: |
                 Amount of next payment
             nextPaymentDate:
@@ -1763,18 +1778,22 @@ components:
                 to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             principalBalance:
               type: number
+              example: 132.28
               description: |
                 Principal balance
             currentBalance:
               type: number
+              example: 892.10
               description: |
                 Current balance of line of credit
             minimumPaymentAmount:
               type: number
+              example: 190.32
               description: |
                 Minimum payment amount
             lastPaymentAmount:
               type: number
+              example: 2852.91
               description: |
                 Amount of last payment
             lastPaymentDate:
@@ -1786,10 +1805,12 @@ components:
                 to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             pastDueAmount:
               type: number
+              example: 0
               description: |
                 Amount owed that the account holder failed to pay on the due date
             lastStmtBalance:
               type: number
+              example: 5393.81
               description: |
                 Last statement balance
             lastStmtDate:
@@ -1801,10 +1822,12 @@ components:
                 to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             purchasesApr:
               type: number
+              example: 0
               description: |
                 Annual percentage rate for purchases
             advancesApr:
               type: number
+              example: 0
               description: |
                 Annual percentage rate for cash advances
           required:
@@ -1822,6 +1845,7 @@ components:
           properties:
             availableCashBalance:
               type: number
+              example: 8302.18
               description: |
                 Cash balance across all sub-accounts. Plaid expects that this includes sweep funds
             balanceAsOf:
@@ -1833,6 +1857,7 @@ components:
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
+              example: 3702.19
               description: |
                 Total current value of all investments
             holdings:

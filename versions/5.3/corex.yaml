@@ -1178,9 +1178,10 @@ components:
             institution.
             Plaid expects that the last 4 digits of this masked number correspond to the last 4 digits of the account number.
           type: string
-          example: "4321"
+          example: "5921"
         productName:
           type: string
+          example: "Premier Account"
           description: |
             Marketed product name for this account. Used in UIs to assist in account selection
         nickname:
@@ -1202,6 +1203,7 @@ components:
       description: |
         Account status
       type: string
+      example: OPEN
       enum:
         - CLOSED
         - DELINQUENT

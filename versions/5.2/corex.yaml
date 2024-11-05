@@ -824,6 +824,7 @@ components:
       title: ISO 4217 Code
       description: ISO 4217 Currency codes
       type: string
+      example: CAD
       enum:
         - AED
         - AFN
@@ -1163,6 +1164,7 @@ components:
           example: "4321"
         productName:
           type: string
+          example: "Premier Account"
           description: |
             Marketed product name for this account. Used in UIs to assist in account selection
         nickname:
@@ -1184,6 +1186,7 @@ components:
       description: |
         Account status
       type: string
+      example: OPEN
       enum:
         - CLOSED
         - DELINQUENT
