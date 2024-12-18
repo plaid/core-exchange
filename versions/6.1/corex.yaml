@@ -130,7 +130,7 @@ paths:
                 $ref: '#/components/schemas/Accounts'
               example:
                 page:
-                  nextOffset: '25'
+                  nextOffset: 'B47D80MVP23T'
                 accounts:
                   - accountCategory: 'DEPOSIT_ACCOUNT'
                     accountId: depositAccount0000001
@@ -258,7 +258,7 @@ paths:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
               example:
                 page:
-                  nextOffset: 25
+                  nextOffset: 'B47D80MVP23T'
                 paymentNetworks:
                   - bankId: '010088889'
                     identifier: '1111222233335820'
@@ -308,37 +308,37 @@ paths:
                 $ref: '#/components/schemas/Transactions'
               example:
                 page:
-                  nextOffset: qwer123454q2f
+                  nextOffset: 'B47D80MVP23T'
                 transactions:
-                  - depositTransaction:
-                      transactionType: CHECK
-                      checkNumber: 1234
-                      payee: ACME llc
-                      transactionId: depositTransaction000000001
-                      postedTimestamp: '2022-04-06T00:00:00.000Z'
-                      transactionTimestamp: '2022-04-05T00:00:00.000Z'
-                      description: 'check for latest ACME invoice'
-                      debitCreditMemo: DEBIT
-                      status: PENDING
-                      amount: 400.00
-                  - depositTransaction:
-                      transactionType: ADJUSTMENT
-                      transactionId: depositTransaction000000002
-                      postedTimestamp: '2022-04-07T00:00:00.000Z'
-                      transactionTimestamp: '2022-04-07T00:00:00.000Z'
-                      description: 'reconciliation/adjustment of bank statement error'
-                      debitCreditMemo: DEBIT
-                      status: POSTED
-                      amount: 0.80
-                  - depositTransaction:
-                      transactionType: ATMDEPOSIT
-                      transactionId: depositTransaction000000003
-                      postedTimestamp: '2022-04-08T00:00:00.000Z'
-                      transactionTimestamp: '2022-04-08T00:00:00.000Z'
-                      description: 'ATM cash deposit location #1234'
-                      debitCreditMemo: CREDIT
-                      status: POSTED
-                      amount: 101.80
+                  - accountCategory: 'DEPOSIT_ACCOUNT'
+                    transactionType: 'CHECK'
+                    checkNumber: 1234
+                    payee: 'ACME LLC'
+                    transactionId: 'depositTransaction000000001'
+                    postedTimestamp: '2022-04-06T00:00:00.000Z'
+                    transactionTimestamp: '2022-04-05T00:00:00.000Z'
+                    description: 'check for latest ACME invoice'
+                    debitCreditMemo: 'DEBIT'
+                    status: 'PENDING'
+                    amount: 400.00
+                  - accountCategory: 'DEPOSIT_ACCOUNT'
+                    transactionType: 'ADJUSTMENT'
+                    transactionId: 'depositTransaction000000002'
+                    postedTimestamp: '2022-04-07T00:00:00.000Z'
+                    transactionTimestamp: '2022-04-07T00:00:00.000Z'
+                    description: 'reconciliation/adjustment of bank statement error'
+                    debitCreditMemo: 'DEBIT'
+                    status: 'POSTED'
+                    amount: 0.80
+                  - accountCategory: 'DEPOSIT_ACCOUNT'
+                    transactionType: 'ATMDEPOSIT'
+                    transactionId: 'depositTransaction000000003'
+                    postedTimestamp: '2022-04-08T00:00:00.000Z'
+                    transactionTimestamp: '2022-04-08T00:00:00.000Z'
+                    description: 'ATM cash deposit location #1234'
+                    debitCreditMemo: 'CREDIT'
+                    status: 'POSTED'
+                    amount: 101.80
 
   /customers/current:
     get:
@@ -393,7 +393,7 @@ paths:
                 $ref: '#/components/schemas/Statements'
               example:
                 page:
-                  nextOffset: "2"
+                  nextOffset: 'B47D80MVP23T'
                   total: 3
                 statements:
                   - accountId: '10001'
@@ -445,7 +445,7 @@ paths:
               example:
                 assetTransferNetworks:
                   - identifier: '23348817826'
-                    identifierType: 'TOKENIZED_ACCOUNT_NUMBER'
+                    identifierType: 'ACCOUNT_NUMBER'
                     institutionName: 'First Plaidypus Bank'
                     institutionId: 'FPB'
                     type: 'US_ACATS'
@@ -584,7 +584,7 @@ components:
       properties:
         nextOffset:
           type: string
-          example: qwer123454q2f
+          example: 'B47D80MVP23T'
           description: |
             Opaque offset identifier
 
@@ -862,6 +862,7 @@ components:
       description: |
         Currency, fund and precious metal codes as of Jan. 1, 2023 per [ISO 4217 Currency Code Maintenance](https://www.six-group.com/en/products-services/financial-information/data-standards.html)
       type: string
+      example: CAD
       enum:
         - AED
         - AFN
@@ -1083,6 +1084,9 @@ components:
         ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
         [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: object
+      example:
+        currencyCode:
+          CAD
       properties:
         currencyCode:
           $ref: '#/components/schemas/Iso4217Code'
@@ -1122,7 +1126,8 @@ components:
       title: Accounts entity
       type: object
       description: |
-        An optionally paginated array of accounts
+        An optionally paginated array of accounts.
+        May be any of the following account descriptors: [annuity account](#annuity-account-descriptor), [deposit account](#deposit-account-descriptor), [loan account](#loan-account-descriptor), [line of credit account](#line-of-credit-account-descriptor), [investment account](#investment-account-descriptor), [insurance account](#insurance-account-descriptor)
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
         - type: object
@@ -1130,7 +1135,8 @@ components:
             accounts:
               type: array
               description: |
-                An optionally paginated array of accounts
+                An optionally paginated array of accounts.
+                May be any of the following account descriptors: [annuity account](#annuity-account-descriptor), [commercial account](#commercial-account-descriptor), [deposit account](#deposit-account-descriptor), [loan account](#loan-account-descriptor), [line of credit account](#line-of-credit-account-descriptor), [investment account](#investment-account-descriptor), [insurance account](#insurance-account-descriptor)
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1589,11 +1595,13 @@ components:
           properties:
             currentBalance:
               type: number
+              example: 1399.02
               description: |
                 The total amount of money in the account (sum of all posted/cleared transactions, not including pending transactions).
                 For Plaid's full definition, see the [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-current)
             availableBalance:
               type: number
+              example: 1399.02
               description: |
                 The money in the account available to spend (sum of all transactions, plus or minus pending transactions).
                 For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available)
@@ -1776,6 +1784,7 @@ components:
                 Principal balance
             currentBalance:
               type: number
+              example: 1722.81
               description: |
                 Current balance of line of credit
             minimumPaymentAmount:
@@ -1831,6 +1840,7 @@ components:
           properties:
             availableCashBalance:
               type: number
+              example: 3209.54
               description: |
                 Cash balance across all sub-accounts. Plaid expects that this includes sweep funds
             balanceAsOf:
@@ -1842,6 +1852,7 @@ components:
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
+              example: 34938.20
               description: |
                 Total current value of all investments
             holdings:
@@ -2541,6 +2552,14 @@ components:
                 Check number. Plaid expects this solely if the transaction involves a check
           required:
             - accountCategory
+      example:
+        accountCategory: DEPOSIT_ACCOUNT
+        transactionId: '78RJ3311PLU34300E'
+        transactionTimestamp: '2024-07-15T14:46:41.375+02:00'
+        description: 'ATM deposit'
+        debitCreditMemo: DEBIT
+        status: PENDING
+        amount: 38.90
 
     InvestmentTransaction:
       title: Investment Transaction entity
@@ -2628,6 +2647,16 @@ components:
             - fees
             - transactionType
             - accountCategory
+      example:
+        accountCategory: INVESTMENT_ACCOUNT
+        transactionId: '78RJ3311PLU34300E'
+        transactionTimestamp: '2024-07-15T14:46:41.375+02:00'
+        description: 'Share purchase'
+        debitCreditMemo: DEBIT
+        status: PENDING
+        amount: 428.08
+        fees: 4.28
+        transactionType: PURCHASED
 
     InvestmentTransactionType:
       title: Investment Transaction Type
@@ -2763,6 +2792,14 @@ components:
               $ref: '#/components/schemas/LoanTransactionType'
           required:
             - accountCategory
+      example:
+        accountCategory: LOAN_ACCOUNT
+        transactionId: '78RJ3311PLU34300E'
+        transactionTimestamp: '2024-07-15T14:46:41.375+02:00'
+        description: 'Monthly loan payment-minimum due'
+        debitCreditMemo: CREDIT
+        status: POSTED
+        amount: 1638.83
 
     LoanTransactionType:
       title: Loan Transaction Type
@@ -2811,6 +2848,14 @@ components:
                 Check number. Plaid expects this solely if the transaction involves a check
           required:
             - accountCategory
+      example:
+        accountCategory: LOC_ACCOUNT
+        transactionId: '78RJ3311PLU34300E'
+        transactionTimestamp: '2024-07-15T14:46:41.375+02:00'
+        description: 'Recurring payment'
+        debitCreditMemo: CREDIT
+        status: AUTHORIZATION
+        amount: 38.90
 
     LineOfCreditTransactionType:
       title: Line-Of-Credit Transaction Type

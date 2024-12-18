@@ -92,7 +92,7 @@ paths:
                 $ref: '#/components/schemas/Accounts'
               example:
                 page:
-                  nextOffset: '25'
+                  nextOffset: 'B47D80MVP23T'
                 accounts:
                   - depositAccount:
                       accountId: depositAccount0000001
@@ -220,7 +220,7 @@ paths:
                 $ref: '#/components/schemas/AccountPaymentNetworkList'
               example:
                 page:
-                  nextOffset: 25
+                  nextOffset: 'B47D80MVP23T'
                 paymentNetworks:
                   - bankId: '010088889'
                     identifier: '1111222233335820'
@@ -270,7 +270,7 @@ paths:
                 $ref: '#/components/schemas/Transactions'
               example:
                 page:
-                  nextOffset: qwer123454q2f
+                  nextOffset: 'B47D80MVP23T'
                 transactions:
                   - depositTransaction:
                       transactionType: CHECK
@@ -455,7 +455,7 @@ components:
       properties:
         nextOffset:
           type: string
-          example: qwer123454q2f
+          example: 'B47D80MVP23T'
           description: |
             Opaque offset identifier
     ############################################################
@@ -940,6 +940,9 @@ components:
         ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
         [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: object
+      example:
+        currencyCode:
+          CAD
       properties:
         currencyCode:
           $ref: '#/components/schemas/Iso4217Code'
@@ -973,7 +976,8 @@ components:
     Accounts:
       title: Accounts entity
       description: |
-        An optionally paginated array of accounts
+        An optionally paginated array of accounts.
+        May be any of the following account descriptors: [annuity account](#annuity-account-descriptor), [deposit account](#deposit-account-descriptor), [loan account](#loan-account-descriptor), [line of credit account](#line-of-credit-account-descriptor), [investment account](#investment-account-descriptor), [insurance account](#insurance-account-descriptor)
       type: object
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
@@ -982,7 +986,8 @@ components:
             accounts:
               type: array
               description: |
-                An optionally paginated array of accounts
+                An optionally paginated array of accounts.
+                May be any of the following account descriptors: [annuity account](#annuity-account-descriptor), [deposit account](#deposit-account-descriptor), [loan account](#loan-account-descriptor), [line of credit account](#line-of-credit-account-descriptor), [investment account](#investment-account-descriptor), [insurance account](#insurance-account-descriptor)
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1413,11 +1418,13 @@ components:
           properties:
             currentBalance:
               type: number
+              example: 1399.02
               description: |
                 The total amount of money in the account (sum of all posted/cleared transactions, not including pending transactions).
                 For Plaid's full definition, see the [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-current)
             availableBalance:
               type: number
+              example: 1399.02
               description: |
                 The money in the account available to spend (sum of all transactions, plus or minus pending transactions).
                 For Plaid's full definition, see [Transactions](https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts-balances-available)
@@ -1600,6 +1607,7 @@ components:
                 Principal balance
             currentBalance:
               type: number
+              example: 1722.81
               description: |
                 Current balance of line of credit
             minimumPaymentAmount:
@@ -1655,6 +1663,7 @@ components:
           properties:
             availableCashBalance:
               type: number
+              example: 3209.54
               description: |
                 Cash balance across all sub-accounts. Plaid expects that this includes sweep funds
             balanceAsOf:
@@ -1666,6 +1675,7 @@ components:
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
+              example: 34938.20
               description: |
                 Total current value of all investments
             holdings:
@@ -1684,6 +1694,7 @@ components:
       description: |
         Specifies whether an interest rate is fixed or variable. This information is helpful for personal financial planning and advising. For example, it affects the potential benefits of refinancing, and informs whether a mortgage payment is expected to change in the future
       type: string
+      example: FIXED
       enum:
         - FIXED
         - VARIABLE 
