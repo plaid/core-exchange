@@ -1,0 +1,200 @@
+---
+title: Implementation checklist
+---
+
+# Implementation checklist
+
+## Scoping and implementation
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  Review the [Core Exchange API Reference documentation](https://plaid.github.io/core-exchange/api-versions)</li>
+  <li><input type="checkbox"/>  Try out our [Postman collection](https://plaid.github.io/core-exchange/example) to test requests and responses on a mock bank server</li>
+  <li><input type="checkbox"/>  Complete the <a href="https://forms.gle/SSJAfnrxLv7b1Em99" target="_blank">Intake Questionnaire</a>. The information provided allows us to best support you through your onboarding experience</li>
+  <li>
+    <div>
+      <input type="checkbox"/>  Get access to the Plaid Data Partner Dashboard.
+      <p style={{marginTop: '0.5rem'}}>To access Plaid's Data Partner Dashboard, you must create a new dashboard team and have your Plaid contact convert it into a Data Partner team.</p>
+    </div>
+    <ul style={{listStyleType:"inherit"}}>
+      <li>
+        <div><input type="checkbox" /> **If your organization already has access to the Plaid Dashboard as a Plaid customer**</div>
+        <ul style={{listStyleType:"inherit"}}>
+          <li><input type="checkbox" /> While logged in at <a href="https://dashboard.plaid.com" target="_blank" rel="noopener noreferrer">dashboard.plaid.com</a>, navigate to the button in the top left corner and click "Create a new team."</li>
+          <li><input type="checkbox" /> For "What best describes your organization," select "Business or developer."</li>
+          <li><input type="checkbox" /> For "What are you building," select "Personal finances."</li>
+        </ul>
+      </li>
+      <li>
+        <div><input type="checkbox" /> **If your organization does not have access to the Plaid dashboard**</div>
+        <ul style={{listStyleType:"inherit"}}>
+          <li><input type="checkbox" /> Sign up for a Plaid account at <a href="https://dashboard.plaid.com/signup" target="_blank" rel="noopener noreferrer">dashboard.plaid.com/signup</a>.</li>
+          <li><input type="checkbox" /> Under "Welcome! How can we help you get started?" select "Business or developer."</li>
+          <li><input type="checkbox" /> After completing the sign-up flow, verify your email to gain access to the dashboard.</li>
+        </ul>
+      </li>
+      <li>
+        <input type="checkbox"/> Copy your `client_id` on <a href="https://dashboard.plaid.com/developers/keys" target="_blank" rel="noopener noreferrer">dashboard.plaid.com/developers/keys</a> and share it with your Plaid contact to convert your team into a Data Partner team.
+      </li>
+    </ul>
+  </li>
+  <li><input type="checkbox"/>  Prepare one or more test accounts for each type of account you support (checking, savings, credit card, loan, 401k, etc.) Ensure that:</li>
+  <ul style={{listStyleType:"inherit"}}>
+    <li><input type="checkbox"/>  All accounts have balance data</li>
+    <li><input type="checkbox"/>  All accounts have contact data</li>
+    <li><input type="checkbox"/>  Depository, loan, and investment accounts have transaction data</li>
+    <li><input type="checkbox"/>  Depository accounts have payment networks data</li>
+  </ul>
+  <li><input type="checkbox"/>  Allowlist the following Plaid IPs:</li>
+  <ul style={{listStyleType:"inherit"}}>
+    <li><input type="checkbox"/>  18.214.218.91</li>
+    <li><input type="checkbox"/>  3.211.30.208</li>
+    <li><input type="checkbox"/>  3.214.25.67</li>
+    <li><input type="checkbox"/>  54.88.74.128</li>
+    <li><input type="checkbox"/>  54.208.59.10</li>
+    <li><input type="checkbox"/>  54.88.202.28</li>
+    <li><input type="checkbox"/>  34.199.37.46</li>
+    <li><input type="checkbox"/>  35.168.137.48</li>
+    <li><input type="checkbox"/>  3.215.49.214</li>
+    <li><input type="checkbox"/>  34.202.178.138</li>
+    <li><input type="checkbox"/>  52.0.205.192</li>
+    <li><input type="checkbox"/>  52.3.166.211</li>
+    <li><input type="checkbox"/>  35.174.147.86</li>
+    <li><input type="checkbox"/>  52.88.82.239</li>
+    <li><input type="checkbox"/>  52.41.247.19</li>
+    <li><input type="checkbox"/>  3.233.249.56</li>
+    <li><input type="checkbox"/>  35.153.85.253</li>
+    <li><input type="checkbox"/>  3.219.116.195</li>
+  </ul>
+</ul>
+
+## Building and testing
+
+### Develop and test authentication
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  Create an [OIDC-compliant server](https://plaid.github.io/core-exchange/authentication#oidc-compliant-server), including:</li>
+  <ul style={{listStyleType:"inherit"}}>
+    <li><input type="checkbox"/>  A server domain</li>
+    <li><input type="checkbox"/>  A [well-known configuration endpoint](https://plaid.github.io/core-exchange/authentication#well-known-configuration)</li>
+  </ul>
+  <li><input type="checkbox"/>  Issue Plaid a [client ID and client secret](https://plaid.github.io/core-exchange/authentication#client-id-and-client-secret)</li>
+  <li><input type="checkbox"/>  Make identity information available to Plaid (Choose one below):</li>
+  <ul style={{listStyleType:"inherit"}}>
+    <li><input type="checkbox"/>  OIDC-compliant:</li>
+      <ul style={{listStyleType:"inherit"}}>
+        <li><input type="checkbox"/>  <a href="https://openid.net/specs/openid-connect-core-1_0.html#IDToken" target="_blank">ID Token + JWKS URI Route</a></li>
+        <li><input type="checkbox"/>  <a href="https://openid.net/specs/openid-connect-core-1_0.html#UserInfo" target="_blank">UserInfo Endpoint</a></li>
+      </ul>
+    <li><input type="checkbox"/>  Non-OIDC compliant (not recommended):</li>
+      <ul style={{listStyleType:"inherit"}}>
+        <li><input type="checkbox"/>  [/customers/current](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Personal-Information/operation/getCustomerInfo) endpoint</li>
+      </ul>
+  </ul>
+  <li><input type="checkbox"/>  Create a [token exchange](https://plaid.github.io/core-exchange/authentication#3-plaid-requests-an-access-token) endpoint</li>
+</ul>
+
+### Develop and test FDX data subsets
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  [`/accounts`](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Account-Information/operation/searchForAccounts): Search and view customer accounts</li>
+  <li><input type="checkbox"/>  [`/accounts/{accountId}`](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Account-Information/operation/getAccount): Get account balances, liabilities, and other information</li>
+  <li><input type="checkbox"/>  [`/accounts/{accountId}/payment-networks`](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Payment-Networks-Information/operation/getAccountPaymentNetworks): Get payment networks supported by an account</li>
+  <li><input type="checkbox"/>  [`/accounts/{accountId}/contact`](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Personal-Information/operation/getAccountContact): Get account contact information</li>
+  <li><input type="checkbox"/>  [`/accounts/{accountId}/transactions`](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Account-Transactions/operation/searchForAccountTransactions): List all account transactions</li>
+  <li><input type="checkbox"/>  [`/customers/current`](https://plaid.github.io/core-exchange/api-versions/five-dot-two#tag/Personal-Information/operation/getCustomerInfo) (only if OpenID Connect compliance is not followed): Get the ID of the customer within the authorization scope</li>
+</ul>
+
+##  Go-live
+
+### Get ready for production
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  Confirm your organization's name, logo, and URL. Plaid uses this information to populate your organization's details in Plaid Link. Your logo file must be a 96x96 circular PNG and under 2MB</li>
+  <li><input type="checkbox"/>  If you would like to make an external launch announcement, reach out to our Plaid team to finalize plans</li>
+  <li><input type="checkbox"/>  Once you have validated your integration, request production access in the [Plaid dashboard](https://dashboard.plaid.com/) or reach out to your Plaid contact</li>
+</ul>
+
+### Pilot and migrate
+
+*(Note: This section only applies to existing Plaid partners)*
+
+If your institution is already supported in [Plaid Link](https://plaid.github.io/core-exchange/user-experience) or you are a [platform provider](#key-considerations-for-digital-banking-platforms) with numerous institutions, we will partner together to develop a pilot and migration plan.
+Migrations typically have 4 phases: 
+
+<br/>
+
+|     | Phase                      | Description                                                                                                                                    | Timeline*   |
+|-----|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| 1   | Friends and Family Testing | Limited access, internal user traffic                                                                                                          | ~ 2 weeks   |
+| 2   | Pilot Cohort               | Enable new connections in production for pilot cohort, monitor health and resolve issues                                                       | ~ 2 weeks   |
+| 3   | Remaining Cohorts          | Enable new connections for remaining cohorts* in production, monitor health and resolve issues <br/><br/> **# of cohorts is partner dependent* | ~ 2-3 weeks |
+| 4   | Existing User Migration    | After integration health is validated, Plaid will begin a process to migrate all existing items over to the OAuth + API connection.            | ~120 days   |
+
+*\*Timeline illustrative.
+Speed contingent on ability to validate institutional health, address any open issues etc.*
+
+## Ongoing management
+
+We will continue to partner together to ensure integration quality after you go live on API connectivity with Plaid.
+Key integration health metrics Plaid monitors include: conversion, data access success rate, data availability and accuracy.
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  Update the Plaid team with the correct point of contact to support ongoing integration health</li>
+  <li><input type="checkbox"/>  Log the variables below to help troubleshoot any potential issues with the integration:</li>
+  <ul style={{listStyleType:"inherit"}}>
+    <li><input type="checkbox"/>  OAuth flow: log the OAuth `state` variable</li>
+      <ul style={{listStyleType:"inherit"}}>
+        <li><input type="checkbox"/>  The `state` variable is sent in the URL from Plaid when an [OAuth login initiates](https://plaid.github.io/core-exchange/authentication#authorization-flow).</li>
+      </ul>
+    <li><input type="checkbox"/>  API connections: log `UserIdentifier`</li>
+      <ul style={{listStyleType:"inherit"}}>
+        <li><input type="checkbox"/>  Depending on your OAuth integration this value will be:</li>
+        <ul style={{listStyleType:"inherit"}}>
+          <li><input type="checkbox"/>  The value of `sub` from your [OIDC token](https://openid.net/specs/openid-connect-core-1_0.html#IDToken)</li>
+          <li><input type="checkbox"/>  The value of `sub` from your [OIDC UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo) endpoint</li>
+          <li><input type="checkbox"/>  If neither of the above options are available, implement the `/customers/current` endpoint and use the value of `customerId`</li>
+        </ul>
+      </ul>  
+  </ul>
+  <li><input type="checkbox"/>  Consider ways to take your integration to the next level:</li>
+  <ul style={{listStyleType:"inherit"}}>
+    <li><input type="checkbox"/>  Increase consumer throughput with [App2App functionality](https://plaid.github.io/core-exchange/user-experience#app2app)</li>
+    <li><input type="checkbox"/>  Show your customers their most up-to-date connections to Plaid-powered apps and enable them to make updates in real-time, automatically syncing permissions across the financial ecosystem via <a href="https://plaid.com/privacy-controls-permissions-manager/" target="_blank">Permissions Manager</a></li>
+  </ul>
+</ul>
+
+
+## Key considerations for Digital Banking Platforms
+
+Partnering with Digital Banking Platforms is essential to how Plaid leads the market in preparing for the open finance future.
+Over 30 platforms, representing 7000+ financial institutions are already live or in the process of going live with API-based data connectivity with Plaid.
+
+The Plaid team has made key investments to support rapid scaling of our API migrations.
+Our Data Partner Dashboard and internal tooling make it straightforward to migrate hundreds of financial institutions and millions of new and existing users to API in a matter of weeks.
+
+### 1. Execute an “opt-out migration”
+
+Financial institutions and their end users now expect highly reliable and secure data access.
+In order to deliver that experience as quickly as possible, we recommend an "opt-out" migration strategy for Digital Banking Platform institutions.
+
+#### How to execute:
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  Communicate with your financial institutions that Plaid API access is rolling out for all institutions</li>
+  <li><input type="checkbox"/>  Share with Plaid the number of institutions you support</li>
+  <li><input type="checkbox"/>  Determine if cohort-based ramping of institutions is needed (details to consider in [step 2](#step-2-consider-complexities))</li>
+  <li><input type="checkbox"/>  Dependent on the scale of your existing Plaid volume, we may encourage either:</li>
+    <ul style={{listStyleType:"inherit"}}>
+      <li><input type="checkbox"/>  **Friends and family pilot**: Set up 1-2 financial institutions for testing in production under a pseudonym only findable by active testers. Plaid will share a PDF checklist of tests to run to testers.</li>
+      <li><input type="checkbox"/>  **Production pilot**: Bring 1-5 financial institutions live in production to validate integration before bringing the rest of your institutions live.</li>
+    </ul>
+  <li><input type="checkbox"/>  Upload financial institutions into the [Data Partner dashboard](https://dashboard.plaid.com/)</li>
+  <li><input type="checkbox"/>  Plaid brings financial institutions live on API!</li>
+</ul>
+
+<h3 id="step-2-consider-complexities">2. Consider backend data complexities upfront:</h3>
+
+<ul style={{listStyleType:"none"}}>
+  <li><input type="checkbox"/>  **Pilot/testing plan**: Do you have different backend pods, product lines, or backend core groupings that might align to different backend data models? If so, we encourage representing each subgroup in a pilot cohort to uncover any variability or errors.</li>
+  <li><input type="checkbox"/>  **Account and routing numbers**: There is zero room for error when it comes to accuracy of account and routing numbers. We have found with platforms representing different backend cores there can be some edge-case discrepancy. Please validate that `/payment-network` data is accurate for all institutions before going live.</li>
+</ul>

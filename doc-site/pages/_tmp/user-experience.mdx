@@ -1,0 +1,64 @@
+---
+title: User experience
+---
+
+# User experience
+
+[Plaid Link](https://plaid.com/docs/link/) is the UI component users interact with to link their accounts to an app using Plaid.
+Your institution will show up in Plaid Link after you go live on Core Exchange.
+
+## Institution selection
+
+A user wants to connect their financial account to an app called WonderWallet.
+WonderWallet sends them to Plaid Link where they can select their financial institution.
+In this example, the financial institution is called First Platypus Bank.
+
+![OAuth Example](https://plaid.github.io/core-exchange/images/oauth-example-wonderwallet.png)
+
+## Authentication
+
+### OAuth
+
+The user is asked to authenticate with First Platypus.
+Plaid recommends you do this using the OAuth 2.0 protocol.
+
+You own the OAuth user experience and host it on your domain.
+We encourage you have two screens with your logo prominently featured: a login screen and two-step verification screen.
+
+![OAuth Authentication Example Login Page](https://plaid.github.io/core-exchange/images/oauth-authentication.png)
+
+### App2app
+
+[App2app](https://openid.net/tag/app2app/) is a mechanism that allows mobile apps performing OAuth2 or OpenID Connect based authentication to offer a much simpler faster flow if the user already has an app provided by the authorization server owner installed on their mobile device.
+The example below uses App2app.
+
+The user is brought to the First Platypus app to authenticate where they can use biometrics.
+
+![App2app Example Login Page](https://plaid.github.io/core-exchange/images/app2app-example-flow.gif)
+
+### WebAuthn
+
+We also recommend using [WebAuthn](https://webauthn.guide/) for web-based authentication.
+Users can enroll and then easily use biometrics to authenticate on any web browser.
+
+![WebAuthn Biometric Login Example](https://plaid.github.io/core-exchange/images/web-authn-example-flow.gif)
+
+## Account selection
+
+If the user has more than one financial account, the user returns to Plaid Link and is asked to select which accounts they’d like to link.
+The user then sees a success screen.
+Tapping the continue button will return them to WonderWallet.
+
+![Account Selection Example](https://plaid.github.io/core-exchange/images/oauth-example-account-selection.png)
+
+## Returning user experience
+
+Plaid’s returning user experience streamlines onboarding for users who have previously connected a financial account with Plaid via your institution’s OAuth and API integration.
+
+In [Link](https://plaid.com/docs/link/), a user can choose to be remembered by Plaid by entering their phone number and then verifying it using a one-time password.
+Next, the user connects their account through your OAuth flow, which would be associated with their phone number.
+When the same user wants to connect their account to another app, Plaid enables the user to do so using their phone number and secure authentication methods like one-time passcodes and passkeys.
+This streamlined experience has built-in security controls and advanced monitoring that automatically detect suspicious activity and help prevent fraud.
+
+As a data partner for Core Exchange, you’re automatically enabled for this streamlined experience with no integration work required.
+Your users can now opt-in and benefit from a faster way to securely connect their accounts to apps and services on the Plaid network.

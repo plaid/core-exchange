@@ -1,0 +1,35 @@
+---
+title: Overview
+---
+
+# Overview
+
+When your organization builds Core Exchange, you implement a Financial Data Exchange (FDX)-aligned API.
+This API handles GET HTTP requests that the Plaid network (or other data networks that you partner with) send.
+These requests are for information about your customers' financial accounts.
+Please note that this specification is subject to change as we make improvements to the product.
+If you have questions, please reach out to the [Plaid team](mailto:dataconnectivity@plaid.com).
+
+### Versions
+
+See the following API references for the Core Exchange versions that Plaid supports. Core Exchange uses the same version numbers as FDX.
+
+- [V6.0 Core Exchange API specification](/api-versions/six-dot-zero)
+- [V5.3 Core Exchange API specification](/api-versions/five-dot-three)
+- [V5.2 Core Exchange API specification](/api-versions/five-dot-two)
+- [V5.1 Core Exchange API specification](/api-versions/five-dot-one)
+- [V5.0 Core Exchange API specification](/api-versions/five-dot-zero)
+- [V4.6 Core Exchange API specification](/api-versions/four-dot-six)
+
+For version information, see the [changelist](/changelist).
+
+### Plaid integration and interoperability
+
+The Core Exchange specifications describe the subset of FDX endpoints required by Plaid, as well as the subset of FDX information Plaid consumes
+from each endpoint.  Plaid takes the following approach to documenting these subsets:
+
+- **ENUMS**: In cases where an endpoint describes FDX enums that Plaid doesn't consume, the specifications note the enums Plaid consumes, but refrains from removing unused enums.
+  This enables your organization to more easily integrate your Core Exchange implementation with other data networks.
+  For example, FDX defines many account type enums, so the specifications retain these enums but notes which account type enums Plaid consumes in the `GET \accounts\{id}` endpoint reference.
+
+- **SCHEMAS**: In cases where an endpoint describes FDX schemas that Plaid doesn't consume, the specification *omits* the schema.
