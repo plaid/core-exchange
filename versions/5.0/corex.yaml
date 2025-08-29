@@ -166,14 +166,9 @@ paths:
         - Account Information
       summary: Get detailed information for a specific account
       description: |
-        Get account balances, liabilities, and other information.
-        Plaid uses this endpoint to get balances for [deposit accounts](#deposit-account),
-        get liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` [loan accounts](#loan-account),
-        and get balances and holdings for investment accounts for [investment accounts](#investment-account).
-        
-        See [Plaid Balance API](https://plaid.com/docs/api/products/balance/),
-        [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/),
-        and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
+        Get account balances, liabilities, and other information. Plaid uses this endpoint to get balances for [deposit accounts](#deposit-account), get liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` [loan accounts](#loan-account), and get balances and holdings for investment accounts for [investment accounts](#investment-account).
+        See [Plaid Balance API](https://plaid.com/docs/api/products/balance/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
+        **Info**: Plaid does not use `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. However, these accounts are still included in the `/accounts` list, so that they are discoverable by users.
       security:
         - openIdConnect:
             - Account
@@ -198,10 +193,7 @@ paths:
       description: |
         Get contact information on the account.
         
-        
-        Plaid links contact information to accounts, rather than to users.
-        Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information.
-        For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
+        Plaid links contact information to accounts, rather than to users. Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information. For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
       summary: Get an account's contact information
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -225,8 +217,7 @@ paths:
       tags:
         - Payment Networks Information
       description: |
-        Get payment networks supported by an account, for example ACH (Automated Clearing House).
-        For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
+        Get payment networks supported by an account, for example ACH (Automated Clearing House). For more information about how Plaid uses this information, see the [Plaid Auth API](https://plaid.com/docs/api/products/auth/).
       summary: Get payment networks supported by the account
       security:
         - openIdConnect:
@@ -281,8 +272,7 @@ paths:
       responses:
         '200':
           description: |
-            Paginated collection of transactions. Plaid consumes the following transaction types:
-            InvestmentTransaction, DepositTransaction, LoanTransaction, or LocTransaction
+            Paginated collection of transactions. Plaid consumes the following transaction types: InvestmentTransaction, DepositTransaction, LoanTransaction, or LocTransaction
           content:
             application/json:
               schema:
@@ -292,7 +282,6 @@ paths:
                   nextOffset: 'B47D80MVP23T'
                 transactions:
                   - depositTransaction:
-                      transactionType: CHECK
                       checkNumber: 1234
                       payee: ACME llc
                       transactionId: depositTransaction000000001
@@ -303,7 +292,6 @@ paths:
                       status: PENDING
                       amount: 400.00
                   - depositTransaction:
-                      transactionType: ADJUSTMENT
                       transactionId: depositTransaction000000002
                       postedTimestamp: '2022-04-07T00:00:00.000Z'
                       transactionTimestamp: '2022-04-07T00:00:00.000Z'
@@ -312,7 +300,6 @@ paths:
                       status: POSTED
                       amount: 0.80
                   - depositTransaction:
-                      transactionType: ATMDEPOSIT
                       transactionId: depositTransaction000000003
                       postedTimestamp: '2022-04-08T00:00:00.000Z'
                       transactionTimestamp: '2022-04-08T00:00:00.000Z'
@@ -327,7 +314,7 @@ paths:
       tags:
         - Personal Information
       description: |
-        Get the ID of the customer within the authorization scope.  If you use [OIDC authentication](/core-exchange/docs/authentication/#create-an-oidc-compliant-server) (recommended) you *do not* need to implement this endpoint. Plaid will identify the customer using the OIDC [ID token](https://openid.net/specs/openid-connect-core-1_0.html#IDToken). If you use OAuth2 authentication, Plaid will use this endpoint as an alternate method of customer identification.
+        Get the ID of the customer within the authorization scope. If you use [OIDC authentication](/core-exchange/docs/authentication/#create-an-oidc-compliant-server) (recommended) you *do not* need to implement this endpoint. Plaid will identify the customer using the OIDC [ID token](https://openid.net/specs/openid-connect-core-1_0.html#IDToken). If you use OAuth2 authentication, Plaid will use this endpoint as an alternate method of customer identification.
       summary: Get current authenticated customer ID
       security:
         - openIdConnect: []
@@ -923,7 +910,7 @@ components:
       title: Timestamp
       description: |
         ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-        [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+        [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: string
       format: date-time
       example: '2021-07-15T14:46:41.375Z'
@@ -932,7 +919,7 @@ components:
       title: Date String
       description: |
         ISO 8601 full-date in format 'YYYY-MM-DD' according
-        to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+        to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
       type: string
       format: date
       maxLength: 10
@@ -942,7 +929,7 @@ components:
       title: Currency entity
       description: |
         ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-        [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+        [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: object
       example:
         currencyCode:
@@ -1149,16 +1136,16 @@ components:
         
         The `accountType` field for loan accounts may be set to any of the following:
         
-          - `AUTOLOAN</code>: A type of loan used to finance a car purchase.
-          - `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.
-          - `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.
-          - `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.
-          - `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.
-          - `MILITARYLOAN`: A military loan.
-          - `MORTGAGE`: A type of loan you can use to buy or refinance a home.
-          - `PERSONALLOAN`: A type of debt that is not protected by a guarantor, or collateralized by a lien on specific assets of the borrower.
-          - `SMBLOAN`: A small/medium business loan.
-          - `STUDENTLOAN`: A type of loan designed to help students pay for post-secondary education and the associated fees, such as tuition, books and supplies, and living expenses.
+        - `AUTOLOAN`: A type of loan used to finance a car purchase.
+        - `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.
+        - `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.
+        - `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.
+        - `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.
+        - `MILITARYLOAN`: A military loan.
+        - `MORTGAGE`: A type of loan you can use to buy or refinance a home.
+        - `PERSONALLOAN`: A type of debt that is not protected by a guarantor, or collateralized by a lien on specific assets of the borrower.
+        - `SMBLOAN`: A small/medium business loan.
+        - `STUDENTLOAN`: A type of loan designed to help students pay for post-secondary education and the associated fees, such as tuition, books and supplies, and living expenses.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1193,11 +1180,11 @@ components:
         
         The `accountType` field for line of credit accounts may be set to any of the following:
         
-          - `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.
-          - `CHARGE`: An account to which goods and services may be charged on credit.
-          - `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.
-          - `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.
-          - `HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.
+        - `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.
+        - `CHARGE`: An account to which goods and services may be charged on credit.
+        - `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.
+        - `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.
+        - `HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1228,30 +1215,30 @@ components:
         
         The `accountType` field for investment accounts may be set to any of the following:
         
-          - `401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.
-          - `401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.
-          - `403B`: A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States.
-          - `529`: A tax-advantaged savings plan designed to help pay for education.
-          - `BROKERAGEPRODUCT`: Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options.
-          - `COMMERCIALINVESTMENT`: Investment Account for Commercial Customers. e.g. Commercial Brokerage Account.
-          - `COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.
-          - `DIGITALASSET`: An account containing digital assets.
-          - `DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.
-          - `GUARDIAN`: An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent.
-          - `INSTITUTIONALTRUST`: An institutional trust account.
-          - `IRA`: An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement.
-          - `KEOGH`: A tax-deferred pension plan available to self-employed individuals or unincorporated businesses for retirement purposes.
-          - `NONQUALIFIEDPLAN`: A type of tax-deferred employer-sponsored retirement plan that falls outside of ERISA guidelines.
-          - `OTHERINVESTMENT`: Use when none of the listed enums apply.
-          - `ROLLOVER`: An account containing investments rolled over from an employee-sponsored account.
-          - `ROTH`: An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement.
-          - `SARSEP`: A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement.
-          - `TAXABLE`: A taxable investment account.
-          - `TDA`: TreasuryDirect Account.
-          - `TRUST`: A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms.
-          - `TERM`: Life insurance that provides coverage at a fixed rate of payments for a limited period of time.
-          - `UGMA`: Uniform Gifts to Minors Act account.
-          - `UTMA`: Uniform Transfers to Minors Act account.
+        - `401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.
+        - `401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.
+        - `403B`: A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States.
+        - `529`: A tax-advantaged savings plan designed to help pay for education.
+        - `BROKERAGEPRODUCT`: Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options.
+        - `COMMERCIALINVESTMENT`: Investment Account for Commercial Customers. e.g. Commercial Brokerage Account.
+        - `COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.
+        - `DIGITALASSET`: An account containing digital assets.
+        - `DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.
+        - `GUARDIAN`: An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent.
+        - `INSTITUTIONALTRUST`: An institutional trust account.
+        - `IRA`: An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement.
+        - `KEOGH`: A tax-deferred pension plan available to self-employed individuals or unincorporated businesses for retirement purposes.
+        - `NONQUALIFIEDPLAN`: A type of tax-deferred employer-sponsored retirement plan that falls outside of ERISA guidelines.
+        - `OTHERINVESTMENT`: Use when none of the listed enums apply.
+        - `ROLLOVER`: An account containing investments rolled over from an employee-sponsored account.
+        - `ROTH`: An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement.
+        - `SARSEP`: A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement.
+        - `TAXABLE`: A taxable investment account.
+        - `TDA`: TreasuryDirect Account.
+        - `TRUST`: A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms.
+        - `TERM`: Life insurance that provides coverage at a fixed rate of payments for a limited period of time.
+        - `UGMA`: Uniform Gifts to Minors Act account.
+        - `UTMA`: Uniform Transfers to Minors Act account.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1300,10 +1287,10 @@ components:
         
         The `accountType` field for insurance accounts may be set to any of the following:
         
-          - `LONGTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year.
-          - `SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.
-          - `UNIVERSALLIFE`: A type of a cash value life insurance where the excess of premium payments above the current cost of insurance is credited to the cash value of the policy, which in turn is credited each month with interest.
-          - `WHOLELIFE`: Life insurance which is guaranteed to remain in force for the insured's entire lifetime, provided required premiums are paid, or to the maturity date.
+        - `LONGTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for an extended period of time, usually more than a year.
+        - `SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.
+        - `UNIVERSALLIFE`: A type of a cash value life insurance where the excess of premium payments above the current cost of insurance is credited to the cash value of the policy, which in turn is credited each month with interest.
+        - `WHOLELIFE`: Life insurance which is guaranteed to remain in force for the insured's entire lifetime, provided required premiums are paid, or to the maturity date.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1331,9 +1318,9 @@ components:
         
         The `accountType` field for annuity accounts may be set to any of the following:
         
-          - `ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.
-          - `FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.
-          - `VARIABLEANNUITY`: A type of insurance contract that promises to pay back the buyer based on the performance of an underlying portfolio of mutual funds selected by the buyer.
+        - `ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.
+        - `FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.
+        - `VARIABLEANNUITY`: A type of insurance contract that promises to pay back the buyer based on the performance of an underlying portfolio of mutual funds selected by the buyer.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1493,7 +1480,7 @@ components:
                 Date loan originated
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             loanTerm:
               type: integer
               example: 360
@@ -1503,14 +1490,15 @@ components:
               type: number
               example: 2483.12
               description: |
-                Amount of next payment
+                Amount of next payment.
+                May differ from minimumPaymentAmount if the customer pays more than their minimum or out of cycle
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: |
-                Due date of next payment
-                
+                Due date of next payment.
+                May differ from statementAmountDueDate if the customer pays out of cycle
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             lastPaymentAmount:
               type: number
               example: 2483.12
@@ -1522,23 +1510,23 @@ components:
                 Last payment date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             maturityDate:
               $ref: '#/components/schemas/DateString'
               description: |
                 Maturity date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             interestPaidYearToDate:
               type: number
               description: |
                 Interest paid year to date
             interestRate:
               type: number
-              example: 0.075
+              example: 6.99
               description: |
-                The account's interest rate
+                The interest rate for the account, expressed as a number between 0 and 100. For example, `4` represents 4.00%, and `7.99` represents 7.99%.
             interestRateType:
               $ref: '#/components/schemas/InterestRateType'
           required:
@@ -1583,14 +1571,15 @@ components:
             nextPaymentAmount:
               type: number
               description: |
-                Amount of next payment
+                Amount of next payment.
+                May differ from minimumPaymentAmount if the customer pays more than their minimum or out of cycle
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: |
-                Due date of next payment
-                
+                Due date of next payment.
+                May differ from statementAmountDueDate if the customer pays out of cycle
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             principalBalance:
               type: number
               description: |
@@ -1603,7 +1592,7 @@ components:
             minimumPaymentAmount:
               type: number
               description: |
-                Minimum payment amount
+                Minimum payment amount, which is due at the date specified in `nextPaymentDate`
             lastPaymentAmount:
               type: number
               description: |
@@ -1614,7 +1603,7 @@ components:
                 Last payment date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             pastDueAmount:
               type: number
               description: |
@@ -1629,7 +1618,7 @@ components:
                 Last statement date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             purchasesApr:
               type: number
               description: |
@@ -1661,7 +1650,7 @@ components:
                 Date and time of the balance
                 
                 ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-                [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
@@ -1675,6 +1664,24 @@ components:
                 Plaid maps the `holding` and the `investmentAccount` FDX models to its securities models, which hold universal information like the ticker symbol, and to its holdings models, which hold account-specific information like balances. For more information, see [Plaid investments](https://plaid.com/docs/investments/#securities-and-holdings)
               items:
                 $ref: '#/components/schemas/Holding'
+              example:
+                - securityId: '123456789'
+                  securityIdType: CUSIP
+                  holdingName: 'Apple Inc.'
+                  holdingType: STOCK
+                  holdingSubType: CASH
+                  symbol: AAPL
+                  purchasedPrice: 150.00
+                  currentUnitPrice: 175.00
+                  currentUnitPriceDate: '2023-10-01'
+                  units: 1
+                  marketValue: 1750.00
+                  cashAccount: true
+                  currency:
+                    currencyCode: USD
+                  fiAttributes:
+                    - name: 'isCashEquivalent'
+                      value: 'false'
           required:
             - availableCashBalance
             - currentValue
@@ -1741,7 +1748,7 @@ components:
                 Current unit price as of date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             units:
               type: number
               description: |
@@ -1766,7 +1773,7 @@ components:
                 If true, indicates that this holding is used to maintain proceeds
                 from sales, dividends, and other cash postings to the investment account.
                 If you don't set a value for `isCashEquivalent` in the `fiAttributes` array,
-                then Plaid uses `cashAccount` in determining the [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
+                then Plaid uses `cashAccount` in determining the [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
                 status.
             currency:
               $ref: '#/components/schemas/Currency'
@@ -1776,7 +1783,7 @@ components:
               type: array
               description: |
                 Array of financial institution-specific attributes.
-                Plaid recommends including a value for [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
+                Plaid recommends including a value for [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
                 property in this array.
                 Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
                 If you return a value for `isCashEquivalent`, then return the same value for `cashAccount` as a boolean.
@@ -2059,7 +2066,9 @@ components:
           type: string
           maxLength: 3
           description: |
-            Country calling codes defined by ITU-T recommendations E.123 and E.164
+            Country calling codes defined by ITU-T recommendations E.123 and E.164,
+            such as '+1' for United States and Canada, see
+            [List_of_country_calling_codes](https://en.wikipedia.org/wiki/List_of_country_calling_codes)
         number:
           type: string
           maxLength: 15
@@ -2238,24 +2247,21 @@ components:
         postedTimestamp:
           description: |
             The date and time that the transaction was posted to the account.
-            
-            This property is **required** by Plaid when `status=POSTED`.
-            Plaid expects this property to be omitted when `status=PENDING`
-            
+            This property is **required** by Plaid when `status=POSTED`. Plaid expects this property to be omitted when `status=PENDING`
             ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-            [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: |
             The date and time that the transaction was added to the server backend systems
-            
             ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-            [IETF RFC3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
           $ref: '#/components/schemas/Timestamp'
         description:
           type: string
           description: |
-            Description of the transaction
+            Description of the transaction, such as information about a merchant's
+            name or place of business in a manner that is user friendly and accessible to the customer
         debitCreditMemo:
           $ref: '#/components/schemas/DebitCreditMemo'
         category:
@@ -2265,13 +2271,14 @@ components:
         subCategory:
           type: string
           description: |
-            Transaction category detail
+            Transaction category detail specifying the standard of the transaction category.
+            For example, "MCC"
         status:
           $ref: '#/components/schemas/TransactionStatus'
         amount:
           type: number
           description: |
-            The amount of money in the account currency. The amount is an absolute value. Use the `debitCreditMemo` field to indicate the direction (and sign) of the transaction
+            The amount of money in the account currency. The amount is an absolute value. Plaid relies on the `DebitCreditMemo` enum to determine the direction (and sign) of the transaction
         foreignAmount:
           type: number
           description: |
@@ -2385,10 +2392,7 @@ components:
             unitPrice:
               type: number
               description: |
-                Unit price. Plaid uses this as the [price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-investment-transactions-price).
-                Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-close-price)
-                if you don't return `securityId` for transactions involving securities.
-                
+                Unit price. Plaid uses this as the [price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-investment-transactions-price). Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-close-price) if you don't return `securityId` for transactions involving securities.
                 **Note:** This field is required if the transaction involves a security
             units:
               type: number
@@ -2404,10 +2408,7 @@ components:
             fiAttributes:
               type: array
               description: |
-                Array of financial institution-specific attributes.
-                Plaid recommends including a value for [is_cash_equivalent](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-is-cash-equivalent)
-                property in this array.
-                Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
+                Array of financial institution-specific attributes. Plaid recommends including a value for [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-is-cash-equivalent) property in this array. Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
               items:
                 $ref: '#/components/schemas/FiAttribute'
           required:
@@ -2592,9 +2593,6 @@ components:
         customerId:
           $ref: '#/components/schemas/Identifier'
           description: |
-            Long-term persistent identity of the customer.
-            This identity must be unique within your organization.
-            Plaid consumes this customer ID if your organization uses OAuth2 instead of OIDC to secure the API.
-            Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user
+            Long-term persistent identity of the customer. This identity must be unique within your organization. Plaid consumes this customer ID if your organization uses OAuth2 instead of OIDC to secure the API. Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user
       required:
         - customerId
