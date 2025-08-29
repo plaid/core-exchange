@@ -1,6 +1,0 @@
-extends: spectral:oas
-rules:
-  # no-$ref-siblings only applies to CoreX v4.6
-  # After 4.6, CoreX is on the openapi standard 3.1+
-  # https://meta.stoplight.io/docs/spectral/4dec24461f3af-open-api-rules#no-ref-siblings
-  no-$ref-siblings: off
