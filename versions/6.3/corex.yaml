@@ -176,7 +176,9 @@ paths:
       summary: Get detailed information for a specific account
       description: |
         Get account balances, liabilities, and other information. Plaid calls this endpoint for [deposit](#deposit-account), [investment](#investment-account), [loan](#loan-account), and [line of credit](#line-of-credit-account) accounts. Plaid uses this endpoint to get balances for deposit accounts, get liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` loan accounts, and get balances and holdings for investment accounts.
+        
         See [Plaid Balance API](https://plaid.com/docs/api/products/balance/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
+        
         **Info**: Plaid does not call `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
       security:
         - openIdConnect:
