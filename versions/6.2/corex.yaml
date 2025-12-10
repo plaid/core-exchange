@@ -109,7 +109,7 @@ paths:
         - Account Information
       summary: List all accounts
       description: |
-        Search and view customer accounts
+        Search and view customer accounts.
       security:
         - openIdConnect:
             - Account
@@ -174,9 +174,9 @@ paths:
         - Account Information
       summary: Get detailed information for a specific account
       description: |
-        Get account balances, liabilities, and other information. Plaid uses this endpoint to get balances for [deposit accounts](#deposit-account), get liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` [loan accounts](#loan-account), and get balances and holdings for investment accounts for [investment accounts](#investment-account).
+        Get account balances, liabilities, and other information. Plaid calls this endpoint for [deposit](#deposit-account), [investment](#investment-account), [loan](#loan-account), and [line of credit](#line-of-credit-account) accounts. Plaid uses this endpoint to get balances for deposit accounts, get liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` loan accounts, and get balances and holdings for investment accounts.
         See [Plaid Balance API](https://plaid.com/docs/api/products/balance/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
-        **Info**: Plaid does not use `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. However, these accounts are still included in the `/accounts` list, so that they are discoverable by users.
+        **Info**: Plaid does not call `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
       security:
         - openIdConnect:
             - Account
@@ -199,9 +199,7 @@ paths:
       tags:
         - Personal Information
       description: |
-        Get contact information on the account.
-        
-        Plaid links contact information to accounts, rather than to users. Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information. For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
+        Get contact information on the account. Plaid links contact information to accounts, rather than to users. Plaid consumes multiple holders and their contact information for the account, but doesn't attempt to correlate holders to their respective contact information. For more information about Plaid's identity model, see [Plaid Identity API](https://plaid.com/docs/api/products/identity/).
       summary: Get an account's contact information
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -213,7 +211,7 @@ paths:
       responses:
         '200':
           description: |
-            Details used to verify an account
+            Details used to verify an account.
           content:
             application/json:
               schema:
@@ -239,7 +237,7 @@ paths:
       responses:
         '200':
           description: |
-            Information required to execute a payment transaction against this account
+            Information required to execute a payment transaction against this account.
           content:
             application/json:
               schema:
@@ -260,9 +258,7 @@ paths:
       tags:
         - Account Transactions
       description: |
-        List all account transactions.
-        Plaid always queries this endpoint using a `startTime` and an `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`,
-        and expects the time filters to be based on the `postedTimestamp`.
+        List all account transactions. Plaid always queries this endpoint using a `startTime` and an `endTime`, for example, `/accounts/{accountId}/transactions?startTime=2022-01-30&endTime=2022-05-30`, and expects the time filters to be based on the `postedTimestamp`.
         
         Plaid consumes data from this endpoint only for [loan](#loan-account), [investment](#investment-account), [deposit](#deposit-account), and [line of credit](#line-of-credit-account) accounts.
       summary: Search for account transactions
@@ -280,7 +276,7 @@ paths:
       responses:
         '200':
           description: |
-            Paginated collection of transactions. Plaid consumes the following transaction types: InvestmentTransaction, DepositTransaction, LoanTransaction, or LocTransaction
+            Paginated collection of transactions. Plaid consumes the following transaction types: InvestmentTransaction, DepositTransaction, LoanTransaction, or LocTransaction.
           content:
             application/json:
               schema:
@@ -333,7 +329,7 @@ paths:
       responses:
         '200':
           description: |
-            Data describing current authenticated customer
+            Data describing current authenticated customer.
           content:
             application/json:
               schema:
@@ -358,7 +354,7 @@ paths:
       responses:
         '200':
           description: |
-            Paginated list of available statements
+            Paginated list of available statements.
           content:
             application/json:
               schema:
@@ -379,7 +375,7 @@ paths:
       tags:
         - Account Statements
       description: |
-        Get account statement PDF
+        Get account statement PDF.
       summary: Get account statement
       parameters:
         - $ref: '#/components/parameters/AccountIdPath'
@@ -387,7 +383,7 @@ paths:
       responses:
         '200':
           description: |
-            A pdf of an account statement
+            A pdf of an account statement.
           content:
             application/pdf:
               schema:
@@ -408,7 +404,7 @@ paths:
       responses:
         '200':
           description: |
-            Information required to execute an asset transfer transaction against this account
+            Information required to execute an asset transfer transaction against this account.
           content:
             application/json:
               schema:
@@ -1224,6 +1220,11 @@ components:
         - `ESCROW`: A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties.
         - `MONEYMARKET`: A deposit account that pays interest based on current interest rates in the money markets.
         - `OTHERDEPOSIT`: Use when none of the listed enums apply.
+        
+        **Consumption scope:**
+        - **Balances**: Plaid returns balances for all deposit account types.
+        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `HIGHINTERESTSAVINGSACCOUNT`, `FIRSTHOMESAVINGSACCOUNT`, `OTHERDEPOSIT`.
+        - **Transactions**: Plaid consumes transactions only for accounts mapped to `depository` (CHECKING, SAVINGS, CD, MONEYMARKET). Other deposit types mapped to `other/other` return balances only (no Auth, no transactions).
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1478,6 +1479,8 @@ components:
         - `SHORTTERMDISABILITY`: Insurance that replaces a portion of the policyholder's income due to a disability for a short period of time, usually less than a year.
         - `UNIVERSALLIFE`: A type of a cash value life insurance where the excess of premium payments above the current cost of insurance is credited to the cash value of the policy, which in turn is credited each month with interest.
         - `WHOLELIFE`: Life insurance which is guaranteed to remain in force for the insured's entire lifetime, provided required premiums are paid, or to the maturity date.
+        
+        **Note:** Insurance accounts are discoverable-only. Plaid does not consume downstream data (balances, transactions, Auth) for insurance accounts.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1514,6 +1517,8 @@ components:
         - `ANNUITY`: A form of insurance or investment entitling the investor to a series of annual sums.
         - `FIXEDANNUITY`: A type of insurance contract that promises to pay the buyer a specific, guaranteed interest rate on their contributions to the account.
         - `VARIABLEANNUITY`: A type of insurance contract that promises to pay back the buyer based on the performance of an underlying portfolio of mutual funds selected by the buyer.
+        
+        **Note:** Annuity accounts are discoverable-only. Plaid does not consume downstream data (balances, transactions, Auth) for annuity accounts.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1542,7 +1547,9 @@ components:
 
     CommercialAccountDescriptor:
       description: |
-        A commercial account. For example, a business deposit account. The `accountType` field for commercial accounts may be set to any of the [account types](#commercial-account-types) listed below
+        A commercial account. For example, a business deposit account. The `accountType` field for commercial accounts may be set to any of the [account types](#commercial-account-types) listed below.
+        
+        **Note:** Commercial accounts are discoverable-only. Plaid does not consume downstream data (balances, transactions, Auth) for commercial accounts.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
