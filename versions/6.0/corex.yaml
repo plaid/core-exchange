@@ -322,7 +322,7 @@ paths:
       tags:
         - Personal Information
       description: |
-        Get the ID of the customer within the authorization scope. If you use [OIDC authentication](/core-exchange/docs/authentication/#create-an-oidc-compliant-server) (recommended) you *do not* need to implement this endpoint. Plaid will identify the customer using the OIDC [ID token](https://openid.net/specs/openid-connect-core-1_0.html#IDToken). If you use OAuth2 authentication, Plaid will use this endpoint as an alternate method of customer identification.
+        Get the ID of the customer within the authorization scope. If you use [OIDC authentication](https://plaid.com/core-exchange/docs/authentication/oauth-server-setup) (recommended) you *do not* need to implement this endpoint. Plaid will identify the customer using the OIDC [ID token](https://openid.net/specs/openid-connect-core-1_0.html#IDToken). If you use OAuth2 authentication, Plaid will use this endpoint as an alternate method of customer identification.
       summary: Get current authenticated customer ID
       security:
         - openIdConnect: []
