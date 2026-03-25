@@ -59,7 +59,7 @@ info:
     - `message`: End user displayable information which might help the customer diagnose an error
     - `debugMessage`: Message used to debug the root cause of the error. Contents should not be used in consumer's business logic. Can change at any time and should only be used for consumer to communicate with the data provider about an issue. Provider can include an error GUID in message for their use
 
-    ### Example error
+    ### Example errors
 
     The following is an example response with an HTTP status code of 409.
 
@@ -68,6 +68,16 @@ info:
       "code": 705,
       "message": "Account is closed",
       "debugMessage": "Operation is not supported by the closed account"
+    }
+    ```
+
+    The following is an example response with an HTTP status code of 403.
+
+    ```
+    {
+      "code": 706,
+      "message": "Access forbidden",
+      "debugMessage": "Account is locked"
     }
     ```
 
@@ -1870,6 +1880,7 @@ components:
                 Credit limit
             availableCredit:
               type: number
+              example: 8302.73
               description: |
                 Available credit. Required for all accountTypes except for `CHARGE`
             nextPaymentAmount:

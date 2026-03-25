@@ -1573,6 +1573,7 @@ components:
                 Credit limit
             availableCredit:
               type: number
+              example: 8302.73
               description: |
                 Available credit. Required for all accountTypes except for `CHARGE`
             nextPaymentAmount:
