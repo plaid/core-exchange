@@ -63,7 +63,7 @@ info:
 
     The following is an example response with an HTTP status code of 409.
 
-    ```
+    ```json title="FDX 705 error example"
     {
       "code": 705,
       "message": "Account is closed",
@@ -73,7 +73,7 @@ info:
 
     The following is an example response with an HTTP status code of 403.
 
-    ```
+    ```json title="FDX 706 error example"
     {
       "code": 706,
       "message": "Access forbidden",
