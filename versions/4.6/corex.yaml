@@ -900,8 +900,7 @@ components:
     Currency:
       title: Currency entity
       description: |
-        ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-        [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+        A currency object containing an [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) currency code.
       type: object
       example:
         currencyCode:
@@ -1501,6 +1500,7 @@ components:
                 [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             interestPaidYearToDate:
               type: number
+              example: 403.04
               description: |
                 Interest paid year to date
             interestRate:

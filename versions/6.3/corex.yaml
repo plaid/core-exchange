@@ -635,6 +635,11 @@ components:
           description: |
             Opaque identifier. Does not need to be numeric or have any specific pattern.
             Implementation specific
+        totalElements:
+          type: integer
+          example: 3
+          description: |
+            Total number of elements
 
 
     ############################################################
@@ -1134,8 +1139,7 @@ components:
     Currency:
       title: Currency entity
       description: |
-        ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
-        [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+        A currency object containing an [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) currency code.
       type: object
       example:
         currencyCode:
@@ -1826,6 +1830,7 @@ components:
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             interestPaidYearToDate:
               type: number
+              example: 403.04
               description: |
                 Interest paid year to date
             interestRate:
@@ -1837,10 +1842,12 @@ components:
               $ref: '#/components/schemas/InterestRateType'
             currentSchool:
               type: string
+              example: 'University of California'
               description: |
                 Current school the student loan is connected to
             loanProviderName:
               type: string
+              example: 'Great Lakes'
               description: |
                 Name of the institution providing the loan
           required:
@@ -1876,6 +1883,7 @@ components:
           properties:
             creditLine:
               type: number
+              example: 10000.00
               description: |
                 Credit limit
             availableCredit:
@@ -1885,6 +1893,7 @@ components:
                 Available credit. Required for all accountTypes except for `CHARGE`
             nextPaymentAmount:
               type: number
+              example: 1832.11
               description: |
                 Amount of next payment.
                 May differ from minimumPaymentAmount if the customer pays more than their minimum or out of cycle
@@ -1897,6 +1906,7 @@ components:
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             principalBalance:
               type: number
+              example: 132.28
               description: |
                 Principal balance
             currentBalance:
@@ -1906,11 +1916,13 @@ components:
                 Current balance of line of credit
             minimumPaymentAmount:
               type: number
+              example: 190.32
               description: |
                 Minimum payment amount from last statement balance,
                 which is due at `statementAmountDueDate`
             lastPaymentAmount:
               type: number
+              example: 2852.91
               description: |
                 Amount of last payment
             lastPaymentDate:
@@ -1922,10 +1934,12 @@ components:
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             pastDueAmount:
               type: number
+              example: 0
               description: |
                 Amount owed that the account holder failed to pay on the due date
             lastStmtBalance:
               type: number
+              example: 5393.81
               description: |
                 Final balance amount at end of last statement
             lastStmtDate:
@@ -1937,10 +1951,12 @@ components:
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
             purchasesApr:
               type: number
+              example: 0
               description: |
                 Annual percentage rate for purchases
             advancesApr:
               type: number
+              example: 0
               description: |
                 Annual percentage rate for cash advances
           required:
@@ -1980,6 +1996,25 @@ components:
                 Plaid maps the `holding` and the `investmentAccount` FDX models to its securities models, which hold universal information like the ticker symbol, and to its holdings models, which hold account-specific information like balances. For more information, see [Plaid investments](https://plaid.com/docs/investments/#securities-and-holdings)
               items:
                 $ref: '#/components/schemas/Holding'
+              example:
+                - securityIds:
+                  - id: '123456789'
+                    idType: CUSIP
+                  holdingName: 'Apple Inc.'
+                  holdingType: STOCK
+                  holdingSubType: CASH
+                  symbol: AAPL
+                  purchasedPrice: 150.00
+                  currentUnitPrice: 175.00
+                  currentUnitPriceDate: '2023-10-01'
+                  units: 1
+                  marketValue: 1750.00
+                  cashAccount: true
+                  currency:
+                    currencyCode: USD
+                  fiAttributes:
+                    - name: 'isCashEquivalent'
+                      value: 'false'
           required:
             - availableCashBalance
             - currentValue
@@ -1989,6 +2024,7 @@ components:
       description: |
         Specifies whether an interest rate is fixed or variable. This information is helpful for personal financial planning and advising. For example, it affects the potential benefits of refinancing, and informs whether a mortgage payment is expected to change in the future
       type: string
+      example: FIXED
       enum:
         - FIXED
         - VARIABLE
