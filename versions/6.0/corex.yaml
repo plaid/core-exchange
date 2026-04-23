@@ -2390,8 +2390,8 @@ components:
         * US&#95;ACH: Automated Clearing House, also called Fed ACH network (mostly small banks)
         * US&#95;CHIPS: Clearinghouse Interbank Payments System. Also called Clearing House ACH network (primarily big banks)
         * US&#95;FEDNOW: Federal Reserve Instant Payment System
-        * US&#95;FEDWIRE: Fedwire Funds Service
-        * US&#95;RTP: US Real Time Payments System
+        
+        **NOTE**: `US&#95;FEDWIRE` and `US&#95;RTP` are not supported payment network types.
       type: string
       enum:
         - CA_ACSS

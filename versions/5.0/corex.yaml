@@ -2173,10 +2173,11 @@ components:
         Possible values:
         
         * US&#95;ACH: Automated Clearing House, also called Fed ACH network (mostly small banks)
-        * US&#95;FEDWIRE: Fedwire Funds Service
         * US&#95;CHIPS: Clearinghouse Interbank Payments System. Also called Clearing House ACH network (primarily big banks)
         * CA&#95;ACSS: Automated Clearing House Settlement System
         * CA&#95;LVTS: Large-Value Transfer System
+        
+        **NOTE**: `US&#95;FEDWIRE` is not a supported payment network type.
       type: string
       enum:
         - US_ACH
