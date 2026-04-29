@@ -186,6 +186,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountWithDetails'
+              examples:
+                Deposit Account:
+                  value:
+                    depositAccount:
+                      accountId: depositAccount0000001
+                      accountType: CHECKING
+                      accountNumberDisplay: '5820'
+                      productName: Checking
+                      nickname: Main Checking
+                      status: OPEN
+                      currency:
+                        currencyCode: USD
+                      currentBalance: 1399.02
+                      availableBalance: 1399.02
+                Loan Account:
+                  value:
+                    loanAccount:
+                      accountId: loanAccount0000001
+                      accountType: MORTGAGE
+                      accountNumberDisplay: '4704'
+                      productName: Mortgage
+                      nickname: Primary Loan
+                      status: OPEN
+                      currency:
+                        currencyCode: USD
+                      accountNumber: loanAccount0000001
+                      principalBalance: 580303.95
+                      escrowBalance: 3400.61
+                      originalPrincipal: 650400.00
+                      originatingDate: '2020-07-15'
+                      loanTerm: 360
+                      nextPaymentAmount: 2483.12
+                      nextPaymentDate: '2021-08-15'
+                      lastPaymentAmount: 2483.12
+                      lastPaymentDate: '2021-07-15'
+                      maturityDate: '2050-07-15'
+                      interestPaidYearToDate: 403.04
+                      interestRate: 6.99
+                      interestRateType: FIXED
+                Line of Credit Account:
+                  value:
+                    locAccount:
+                      accountId: locAccount0000001
+                      accountType: CREDITCARD
+                      accountNumberDisplay: '4321'
+                      productName: Premier Account
+                      status: OPEN
+                      currency:
+                        currencyCode: USD
+                      availableCredit: 8302.73
+                      currentBalance: 1722.81
+                      nextPaymentDate: '2021-07-15'
+                      lastPaymentDate: '2021-07-15'
+                      lastStmtDate: '2021-07-15'
+                Investment Account:
+                  value:
+                    investmentAccount:
+                      accountId: investmentAccount0000001
+                      accountType: TAXABLE
+                      accountNumberDisplay: '1050'
+                      productName: Brokerage Account
+                      nickname: First plaidypus Brokerage
+                      status: OPEN
+                      currency:
+                        currencyCode: USD
+                      availableCashBalance: 3209.54
+                      currentValue: 34938.20
 
   /accounts/{accountId}/contact:
     get:
@@ -1395,6 +1462,20 @@ components:
         
         The `accountType` field for deposit accounts may be set to any of the [account types](#deposit-account-types) listed below.
       type: object
+      x-examples:
+        example-1:
+          value:
+            depositAccount:
+              accountId: depositAccount0000001
+              accountType: CHECKING
+              accountNumberDisplay: '5820'
+              productName: Checking
+              nickname: Main Checking
+              status: OPEN
+              currency:
+                currencyCode: USD
+              currentBalance: 1399.02
+              availableBalance: 1399.02
       allOf:
         - $ref: '#/components/schemas/DepositAccountDescriptor'
         - type: object
@@ -1454,6 +1535,32 @@ components:
         * `originatingDate`
         
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"escrowBalance": 192.00`
+      x-examples:
+        example-1:
+          value:
+            loanAccount:
+              accountId: loanAccount0000001
+              accountType: MORTGAGE
+              accountNumberDisplay: '4704'
+              productName: Mortgage
+              nickname: Primary Loan
+              status: OPEN
+              currency:
+                currencyCode: USD
+              accountNumber: loanAccount0000001
+              principalBalance: 580303.95
+              escrowBalance: 3400.61
+              originalPrincipal: 650400.00
+              originatingDate: '2020-07-15'
+              loanTerm: 360
+              nextPaymentAmount: 2483.12
+              nextPaymentDate: '2021-08-15'
+              lastPaymentAmount: 2483.12
+              lastPaymentDate: '2021-07-15'
+              maturityDate: '2050-07-15'
+              interestPaidYearToDate: 403.04
+              interestRate: 6.99
+              interestRateType: FIXED
       allOf:
         - $ref: '#/components/schemas/LoanAccountDescriptor'
         - type: object
@@ -1563,6 +1670,22 @@ components:
         * `nextPaymentDate`
         * `purchasesApr`
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`
+      x-examples:
+        example-1:
+          value:
+            locAccount:
+              accountId: locAccount0000001
+              accountType: CREDITCARD
+              accountNumberDisplay: '4321'
+              productName: Premier Account
+              status: OPEN
+              currency:
+                currencyCode: USD
+              availableCredit: 8302.73
+              currentBalance: 1722.81
+              nextPaymentDate: '2021-07-15'
+              lastPaymentDate: '2021-07-15'
+              lastStmtDate: '2021-07-15'
       allOf:
         - $ref: '#/components/schemas/LocAccountDescriptor'
         - type: object
@@ -1644,6 +1767,20 @@ components:
         In the holdings array, Plaid consumes fields depending on their relevancy to the holding type. See the `holdings` array for more information.
         Plaid expects a decimal amount with two places (to represent fractional values of the base currency) for all monetary amounts. For example, `"currentBalance": 192.00`
       type: object
+      x-examples:
+        example-1:
+          value:
+            investmentAccount:
+              accountId: investmentAccount0000001
+              accountType: TAXABLE
+              accountNumberDisplay: '1050'
+              productName: Brokerage Account
+              nickname: First plaidypus Brokerage
+              status: OPEN
+              currency:
+                currencyCode: USD
+              availableCashBalance: 3209.54
+              currentValue: 34938.20
       allOf:
         - $ref: '#/components/schemas/InvestmentAccountDescriptor'
         - type: object
