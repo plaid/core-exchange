@@ -509,20 +509,13 @@ components:
       description: |
         Start date for use in retrieval of elements (ISO 8601 format).
         Provider to define the date ranges and behaviors they will support.
+        
         Example of defined behavior:
-          - Recipients need to either specify both start date and end date or neither.
-            If both start date and end date are not specified; default provided.
-            Default range: 7 Days of past data. (Today's date - 6 days both dates are inclusive)
-          - Recipient can specify the same start date and end date.
-            The returned data will reflect transactions from that date
-          - If start date and end date both are specified and if start date is later than end date,
-            return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec
-          - If start Date and end date both are specified and if start date is older than what the Data Provider supports,
-            then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
-            Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer;
-            it should not be 5/13/2022 or older
-          - If start date is specified but end date is not specified or vice versa;
-            Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec
+        - Recipients need to either specify both start date and end date or neither. If both start date and end date are not specified; default provided. Default range: 7 Days of past data. (Today's date - 6 days both dates are inclusive)
+        - Recipient can specify the same start date and end date. The returned data will reflect transactions from that date.
+        - If start date and end date both are specified and if start date is later than end date, return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
+        - If start Date and end date both are specified and if start date is older than what the Data Provider supports, then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec. Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer; it should not be 5/13/2022 or older.
+        - If start date is specified but end date is not specified or vice versa; Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -532,20 +525,14 @@ components:
       description: |
         End date for use in retrieval of elements (ISO 8601 format).
         Provider to define the date ranges and behaviors they will support.
+        
         Example of defined behavior:
-          - Recipients need to either specify both start date and end date or neither.
-            If both start date and end date are not specified; default provided.
-            Default range: 7 Days of past data. (Today's date - 6 days both dates are inclusive)
-          - Recipient can specify the same start date and end date. The returned data will reflect transactions from that date
-          - If start date and end date both are specified and if start date is later than end date,
-            return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec
-          - If start Date and end date both are specified and if start date is older than what the Data Provider supports,
-            then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
-            Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer;
-            it should not be 5/13/2022 or older
-          - If start date is specified but end date is not specified or vice versa;
-            Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec
-          - If end date is today's date, the most recent transactions from the time the request is received will be returned
+        - Recipients need to either specify both start date and end date or neither. If both start date and end date are not specified; default provided. Default range: 7 Days of past data. (Today's date - 6 days both dates are inclusive)
+        - Recipient can specify the same start date and end date. The returned data will reflect transactions from that date.
+        - If start date and end date both are specified and if start date is later than end date, return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
+        - If start Date and end date both are specified and if start date is older than what the Data Provider supports, then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec. Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer; it should not be 5/13/2022 or older.
+        - If start date is specified but end date is not specified or vice versa; Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
+        - If end date is today's date, the most recent transactions from the time the request is received will be returned.
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -554,7 +541,7 @@ components:
       in: query
       description: |
         Start time for use in retrieval of elements (ISO 8601).
-        For transactions, Plaid expects this to filter by the `postedTimestamp`
+        When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
         Will support filtering by time in a future major release.
         To support filtering by date only, see StartDateQuery
       schema:
@@ -565,7 +552,7 @@ components:
       in: query
       description: |
         End time for use in retrieval of elements (ISO 8601).
-        For transactions, Plaid expects this to filter by the `postedTimestamp`
+        When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
         Will support filtering by time in a future major release.
         To support filtering by date only, see EndDateQuery
       schema:
@@ -1185,7 +1172,7 @@ components:
       description: |
         An optionally paginated array of account descriptors.
         Each account descriptor is sent as a key-value pair, with the account descriptor object as the value and the account type as the key.
-        Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), [investment account](#investment-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
+        Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
         - type: object
@@ -1195,7 +1182,7 @@ components:
               description: |
                 An optionally paginated array of account descriptors.
                 Each account descriptor is sent as a key-value pair, with the account descriptor object as the value and the account type as the key.
-                Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), [investment account](#investment-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
+                Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -3223,7 +3210,7 @@ components:
           type: string
         institutionId:
           description: |
-            Institution identifier used by the asset transfer network ie. the Depository Trust and Clearing Corporation code for the institution holding the account
+            Institution identifier used by the asset transfer network, e.g., the Depository Trust and Clearing Corporation code for the institution holding the account
           type: string
         type:
           $ref: '#/components/schemas/AssetTransferType'

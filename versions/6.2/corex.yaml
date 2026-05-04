@@ -505,7 +505,7 @@ components:
       name: endTime
       in: query
       description: |
-        End time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`
+        End time for use in retrieval of elements (ISO 8601). When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -513,7 +513,7 @@ components:
       name: startTime
       in: query
       description: |
-        Start time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`
+        Start time for use in retrieval of elements (ISO 8601). When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -1097,7 +1097,7 @@ components:
       description: |
         An optionally paginated array of account descriptors.
         Each account descriptor is sent as a key-value pair, with the account descriptor object as the value and the account type as the key.
-        Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), [investment account](#investment-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
+        Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
         - type: object
@@ -1107,7 +1107,7 @@ components:
               description: |
                 An optionally paginated array of account descriptors.
                 Each account descriptor is sent as a key-value pair, with the account descriptor object as the value and the account type as the key.
-                Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), [investment account](#investment-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
+                Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`digitalWallet`](#digital-wallet-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -3050,7 +3050,7 @@ components:
           type: string
         institutionId:
           description: |
-            Institution identifier used by the asset transfer network ie. the Depository Trust and Clearing Corporation code for the institution holding the account
+            Institution identifier used by the asset transfer network, e.g., the Depository Trust and Clearing Corporation code for the institution holding the account
           type: string
         type:
           $ref: '#/components/schemas/AssetTransferType'

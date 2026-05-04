@@ -440,7 +440,7 @@ components:
       name: endTime
       in: query
       description: |
-        End time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`
+        End time for use in retrieval of elements (ISO 8601). When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -448,7 +448,7 @@ components:
       name: startTime
       in: query
       description: |
-        Start time for use in retrieval of elements (ISO 8601). For transactions, Plaid expects this to filter by the `postedTimestamp`
+        Start time for use in retrieval of elements (ISO 8601). When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
       schema:
         $ref: '#/components/schemas/DateString'
 
