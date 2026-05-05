@@ -514,7 +514,7 @@ components:
         - Recipients need to either specify both start date and end date or neither. If both start date and end date are not specified; default provided. Default range: 7 Days of past data. (Today's date - 6 days both dates are inclusive)
         - Recipient can specify the same start date and end date. The returned data will reflect transactions from that date.
         - If start date and end date both are specified and if start date is later than end date, return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
-        - If start Date and end date both are specified and if start date is older than what the Data Provider supports, then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec. Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer; it should not be 5/13/2022 or older.
+        - If start date and end date both are specified and if start date is older than what the Data Provider supports, then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec. Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer; it should not be 5/13/2022 or older.
         - If start date is specified but end date is not specified or vice versa; Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
       schema:
         $ref: '#/components/schemas/DateString'
@@ -530,7 +530,7 @@ components:
         - Recipients need to either specify both start date and end date or neither. If both start date and end date are not specified; default provided. Default range: 7 Days of past data. (Today's date - 6 days both dates are inclusive)
         - Recipient can specify the same start date and end date. The returned data will reflect transactions from that date.
         - If start date and end date both are specified and if start date is later than end date, return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
-        - If start Date and end date both are specified and if start date is older than what the Data Provider supports, then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec. Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer; it should not be 5/13/2022 or older.
+        - If start date and end date both are specified and if start date is older than what the Data Provider supports, then the Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec. Example: If today is 5/14/2024 and the DP supports 24 months, the start date should be 5/14/2022 and newer; it should not be 5/13/2022 or older.
         - If start date is specified but end date is not specified or vice versa; Data Provider should return 'invalid date range' error code: 703, HTTPS 400 per the FDX spec.
         - If end date is today's date, the most recent transactions from the time the request is received will be returned.
       schema:
