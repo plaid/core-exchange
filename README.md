@@ -6,7 +6,7 @@ This repository contains the OpenAPI specification files for Plaid's Core Exchan
 
 Core Exchange is Plaid's implementation based on the Financial Data Exchange (FDX) API specification. It provides a secure, standardized way to access financial data while maintaining compliance with industry standards.
 
-To learn more about Core Exchange, including detailed documentation, integration guides, and API references, visit: **https://plaid.com/core-exchange/docs/**
+To learn more about Core Exchange, including detailed documentation, integration guides, and API references, visit <https://plaid.com/core-exchange/docs/>.
 
 ## Repository Structure
 
