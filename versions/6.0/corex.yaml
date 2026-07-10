@@ -24,7 +24,7 @@ info:
     
     ## Download the specification
     
-    To view this specification and documentation as an OpenAPI YAML file, see [the public Core Exchange Github repository](https://github.com/plaid/core-exchange/tree/main/versions).
+    To view this specification and documentation as an OpenAPI YAML file, see [the public Core Exchange GitHub repository](https://github.com/plaid/core-exchange/tree/main/versions).
 
     ## Endpoints
 
@@ -93,7 +93,7 @@ tags:
   - name: Payment Networks Information
     description: Search and view account payment networks
   - name: Asset Transfer Networks Information
-    description: Search and view asset transfer networks networks
+    description: Search and view asset transfer networks
 
 paths:
   ############################################################
@@ -242,6 +242,8 @@ paths:
         '200':
           description: |
             Information required to execute a payment transaction against this account.
+            
+            **Note:** If the status of the `accountId` provided is `RESTRICTED`, you can send a 200 response with an empty body to indicate that no payment networks are available at this time.
           content:
             application/json:
               schema:
@@ -363,7 +365,6 @@ paths:
               example:
                 page:
                   nextOffset: 'B47D80MVP23T'
-                  total: 3
                 statements:
                   - accountId: '10001'
                     statementId: '20001'
@@ -407,7 +408,7 @@ paths:
       responses:
         '200':
           description: |
-            A pdf of an account statement.
+            A PDF of an account statement.
           content:
             application/pdf:
               schema:
@@ -452,12 +453,12 @@ components:
     openIdConnect:
       type: openIdConnect
       description: |
-        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/authentication) and accepts the resulting [access token](/core-exchange/authentication#response-parameters) as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN|'`.
+        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/docs/authentication) and accepts the resulting [access token](/core-exchange/docs/authentication) as a bearer token. For example, `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       openIdConnectUrl: https://www.your-organization.com/.well-known/openid-configuration
     oauth2:
       type: oauth2
       description: |
-        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example,  `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN|'`.
+        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example, `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       flows:
         authorizationCode:
           authorizationUrl: https://www.your-organization.com/authorize
@@ -507,8 +508,6 @@ components:
       description: |
         Account identifier, found in the `GET /accounts` endpoint response.
         Plaid expects the ID to be a different value from the account number
-        
-        **Note:** If the status of the `accountId` provided is `RESTRICTED`, you can send a 200 response with an empty body to indicate that no payment networks are available at this time.
       required: true
       schema:
         $ref: '#/components/schemas/Identifier'
@@ -591,7 +590,7 @@ components:
     Iso3166CountryCode:
       title: ISO 3166 Country Code
       description: |
-        ISO 3166-1 alpha-2 codes as of April 5, 2023, from officially assigned Country Codes on [ISO Online Browsing Platform](https://www.iso.org/obp/ui/). Change log is at [ISO 3166 Maintenance Agency](https://www.iso.org/fr/committee/48750.html?t=3V3rukDb61p05Wd6ojyTRvE0S3Yg_fZgUjrLjHWcd9-mDmTKHOGjbX3nEJ3SqHar&view=documents#section-isodocuments-top)
+        ISO 3166-1 alpha-2 codes as of April 5, 2023, from officially assigned Country Codes on [ISO Online Browsing Platform](https://www.iso.org/obp/ui/). Change log is at [ISO 3166 Maintenance Agency](https://www.iso.org/committee/48750.html)
       type: string
       enum:
         - AD
@@ -1059,7 +1058,7 @@ components:
       title: Date String
       description: |
         ISO 8601 full-date in format 'YYYY-MM-DD' according
-        to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+        to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
       type: string
       format: date
       maxLength: 10
@@ -1278,7 +1277,7 @@ components:
         The `accountType` field for loan accounts may be set to any of the following:
         
         - `AUTOLOAN`: A type of loan used to finance a car purchase.
-        - `COMMERCIALLOAN`: A preset borrowing limit that can be used at any time.
+        - `COMMERCIALLOAN`: A loan used for business or commercial purposes.
         - `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.
         - `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.
         - `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.
@@ -1375,6 +1374,7 @@ components:
         - `COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.
         - `DIGITALASSET`: An account containing digital assets.
         - `DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.
+        - `ESOP`: An employee stock ownership plan that gives employees an ownership interest in the company.
         - `GUARDIAN`: An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent.
         - `INSTITUTIONALTRUST`: An institutional trust account.
         - `IRA`: An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement.
@@ -1660,7 +1660,7 @@ components:
               description: |
                 Full account number for the end user's handle for the account at the owning institution
                 
-                Required for accountType 'MORTGAGE'
+                Required for `accountType` `MORTGAGE`
             principalBalance:
               type: number
               example: 580303.95
@@ -1682,7 +1682,7 @@ components:
                 Date loan originated
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             loanTerm:
               type: integer
               example: 360
@@ -1693,14 +1693,14 @@ components:
               example: 2483.12
               description: |
                 Amount of next payment.
-                May differ from minimumPaymentAmount if the customer pays more than their minimum or out of cycle
+                May differ from `minimumPaymentAmount` if the customer pays more than their minimum or out of cycle
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: |
                 Due date of next payment.
-                May differ from statementAmountDueDate if the customer pays out of cycle
+                May differ from `statementAmountDueDate` if the customer pays out of cycle
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             lastPaymentAmount:
               type: number
               example: 2483.12
@@ -1712,14 +1712,14 @@ components:
                 Last payment date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             maturityDate:
               $ref: '#/components/schemas/DateString'
               description: |
                 Maturity date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             interestPaidYearToDate:
               type: number
               example: 403.04
@@ -1772,20 +1772,20 @@ components:
               type: number
               example: 8302.73
               description: |
-                Available credit. Required for all accountTypes except for `CHARGE`
+                Available credit. Required for all `accountTypes` except for `CHARGE`
             nextPaymentAmount:
               type: number
               example: 1832.11
               description: |
                 Amount of next payment.
-                May differ from minimumPaymentAmount if the customer pays more than their minimum or out of cycle
+                May differ from `minimumPaymentAmount` if the customer pays more than their minimum or out of cycle
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: |
                 Due date of next payment.
-                May differ from statementAmountDueDate if the customer pays out of cycle
+                May differ from `statementAmountDueDate` if the customer pays out of cycle
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             principalBalance:
               type: number
               example: 132.28
@@ -1812,7 +1812,7 @@ components:
                 Last payment date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             pastDueAmount:
               type: number
               example: 0
@@ -1829,7 +1829,7 @@ components:
                 Last statement date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             purchasesApr:
               type: number
               example: 0
@@ -1957,7 +1957,7 @@ components:
                 Current unit price as of date
                 
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
-                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339.html#section-5.6)
+                to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             units:
               type: number
               description: |
@@ -1970,12 +1970,12 @@ components:
             marketValue:
               type: number
               description: |
-                Market value at the time of data retrieved
+                Market value at the time the data was retrieved
             faceValue:
               type: number
               description: |
-                Required for bonds. Face value at the time of data retrieved. If this isn't present,
-                Plaid assumes the holding  isn't a bond and falls back to `marketValue`.
+                Required for bonds. Face value at the time the data was retrieved. If this isn't present,
+                Plaid assumes the holding isn't a bond and falls back to `marketValue`.
             cashAccount:
               type: boolean
               description: |
@@ -1998,6 +1998,12 @@ components:
                 If you return a value for `isCashEquivalent`, then return the same value for `cashAccount` as a boolean.
               items:
                 $ref: '#/components/schemas/FiAttribute'
+            taxLots:
+              type: array
+              description: |
+                Array of tax lots
+              items:
+                $ref: "#/components/schemas/TaxLot"
           required:
             - cashAccount
             - marketValue
@@ -2017,7 +2023,7 @@ components:
       title: Holding Type
       description: |
         Plaid maps the holding type to the Plaid [security type](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-type).
-        Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (CASH, MONEYMARKET).
+        Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (`CASH`, `MONEYMARKET`).
       type: string
       enum:
         - ANNUITY
@@ -2032,7 +2038,7 @@ components:
     HoldingSubType:
       title: Holding SubType
       description: |
-        The subtype of an investment holding. Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (CASH, MONEYMARKET).
+        The subtype of an investment holding. Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (`CASH`, `MONEYMARKET`).
       type: string
       enum:
         - CASH
@@ -2052,7 +2058,50 @@ components:
           type: string
           description: |
             Value of the financial institution-specific attribute
-    
+
+    TaxLot:
+      title: Tax Lot entity
+      description: |
+        Block of securities receiving the same tax treatment
+      type: object
+      properties:
+        originalPurchaseDate:
+          $ref: "#/components/schemas/DateString"
+          description: |
+            Lot acquired date
+            
+            ISO 8601 full-date in format 'YYYY-MM-DD' according
+            to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+        quantity:
+          type: number
+          description: |
+            Lot quantity
+        purchasedPrice:
+          type: number
+          description: |
+            Original purchase price
+        costBasis:
+          type: number
+          description: |
+            Total amount of money spent acquiring this lot including any fees or commission expenses incurred
+        currentValue:
+          type: number
+          description: |
+            Lot market value
+        positionType:
+          $ref: "#/components/schemas/PositionType"
+          description: |
+            LONG, SHORT
+
+    PositionType:
+      title: Position Type
+      description: |
+        The type of an investment position
+      type: string
+      enum:
+        - LONG
+        - SHORT
+
     # /accounts/{accountId}/contact
     AccountContact:
       title: Account Contact entity
@@ -2140,7 +2189,7 @@ components:
       title: Account Holder entity
       type: object
       allOf:
-        - $ref: '#/components/schemas/CustomerWithName'
+        - $ref: '#/components/schemas/CustomerWithoutId'
         - type: object
           properties:
             relationship:
@@ -2148,16 +2197,42 @@ components:
               description: |
                 Customer's relationship to the account
 
-    CustomerWithName:
-      title: Customer entity
+    BusinessOrConsumer:
+      title: Business or Consumer Type
       description: |
-        Represents a customer. Plaid-specific schema created to hold one property, the `name` property of the FDX `Customer` schema
+        Indicates whether the customer is a consumer (individual) or a business entity
+      type: string
+      enum:
+        - BUSINESS
+        - CONSUMER
+
+    BusinessCustomer:
+      title: Business Customer entity
+      description: |
+        When the account holder is a business customer, provides business-specific customer information
       type: object
       properties:
         name:
+          type: string
+          description: |
+            Name of the business customer
+
+    CustomerWithoutId:
+      title: Customer entity
+      description: |
+        Represents a customer. Plaid-specific schema created to exclude the `customerId` property of the FDX `Customer` schema
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/BusinessOrConsumer'
+          description: |
+            Whether this customer is a consumer (individual) or a business customer
+        name:
           $ref: '#/components/schemas/CustomerName'
-      required:
-        - name
+        businessCustomer:
+          $ref: '#/components/schemas/BusinessCustomer'
+          description: |
+            When customer `type` is `BUSINESS`, business-specific customer information, such as business name
 
     CustomerName:
       title: Customer Name entity
@@ -2175,7 +2250,7 @@ components:
               type: string
 
     IndividualName:
-      title: Individual name
+      title: Individual Name
       description: |
         First name, middle initial, last name, suffix fields
       type: object
@@ -2361,14 +2436,14 @@ components:
         transferIn:
           type: boolean
           description: |
-            Can transfer funds to the account using this information. Plaid expect that this value represents the account's current ability to be credited through a payment network.
+            Can transfer funds to the account using this information. Plaid expects that this value represents the account's current ability to be credited through a payment network.
             Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
             
             **Note:** Both `transferIn` and `transferOut` must be `true` in order for the account to support ACH
         transferOut:
           type: boolean
           description: |
-            Can transfer funds from the account using this information. Plaid expect that this value represents the account's current ability to be debited through a payment network.
+            Can transfer funds from the account using this information. Plaid expects that this value represents the account's current ability to be debited through a payment network.
             Plaid recommends dynamically updating this value, for example to represent if the account is locked or not.
             
             **Note:** Both `transferIn` and `transferOut` must be `true` in order for the account to support ACH
@@ -2387,8 +2462,8 @@ components:
         
         * CA&#95;ACSS: Automated Clearing House Settlement System
         * CA&#95;LVTS: Large-Value Transfer System
-        * US&#95;ACH: Automated Clearing House, also called Fed ACH network (mostly small banks)
-        * US&#95;CHIPS: Clearinghouse Interbank Payments System. Also called Clearing House ACH network (primarily big banks)
+        * US&#95;ACH: Automated Clearing House (mostly small banks)
+        * US&#95;CHIPS: Clearinghouse Interbank Payments System (primarily big banks)
         * US&#95;FEDNOW: Federal Reserve Instant Payment System
         
         **NOTE**: `US&#95;FEDWIRE` and `US&#95;RTP` are not supported payment network types.
@@ -2558,7 +2633,7 @@ components:
         transactionId: '78RJ3311PLU34300E'
         transactionTimestamp: '2024-07-15T14:46:41.375+02:00'
         description: 'ATM deposit'
-        debitCreditMemo: DEBIT
+        debitCreditMemo: CREDIT
         status: PENDING
         amount: 38.90
 
@@ -2864,7 +2939,7 @@ components:
 
     # /customers/current
     Customer:
-      title: Customer entity.
+      title: Customer entity
       description: |
         Represents a customer. Plaid-specific schema created to hold one property, the `customerId` property of the FDX `Customer` schema
       type: object
@@ -2875,7 +2950,7 @@ components:
             Long-term persistent identity of the customer. This identity must be unique within your organization. Plaid consumes this customer ID if your organization uses OAuth2 instead of OIDC to secure the API. Plaid expects your organization to issue the ID as a consistent, static, opaque, unique identifier for the user
       required:
         - customerId
-    
+
     # /accounts/{accountId}/statements
     Statements:
       title: Statements entity
@@ -2953,14 +3028,14 @@ components:
           format: uri-reference
           description: |
             The resource URL
-          example: "https://api.fi.com/fdx/v4/accounts/12345"
+          example: "https://api.fi.com/fdx/v6/accounts/12345"
         action:
           description: |
             The HTTP method to use for the request
           $ref: '#/components/schemas/HttpAction'
         rel:
           description: |
-            The relation of this link to its containing entity, as defined by the [IETF RFC5988](https://datatracker.ietf.org/doc/html/rfc5988)
+            The relation of this link to its containing entity, as defined by the [IETF RFC8288](https://datatracker.ietf.org/doc/html/rfc8288)
           type: string
         types:
           type: array
@@ -3026,7 +3101,7 @@ components:
         identifier:
           type: string
           description: |
-            The number used to identify the account within the asset transfer network. If identifierType is ACCOUNT_NUMBER, this is the account number; if identifierType is TOKENIZED_ACCOUNT_NUMBER, this is a tokenized account number
+            The number used to identify the account within the asset transfer network. If `identifierType` is `ACCOUNT_NUMBER`, this is the account number; if `identifierType` is `TOKENIZED_ACCOUNT_NUMBER`, this is a tokenized account number
         identifierType:
           $ref: '#/components/schemas/PaymentNetworkIdentifierType'
         institutionName:
