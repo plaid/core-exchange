@@ -30,6 +30,8 @@ versions/
     corex.yaml
   6.3/
     corex.yaml
+  6.4/
+    corex.yaml
 ```
 
 Each version directory contains:
@@ -46,7 +48,7 @@ The OpenAPI specifications in this repository define the complete Core Exchange 
 
 ## Version Information
 
-- **Latest Version**: 6.3
+- **Latest Version**: 6.4
 - **Specification Format**: OpenAPI 3.0.3
 - **Based on**: FDX (Financial Data Exchange) API specification
 
