@@ -1789,14 +1789,13 @@ components:
                   securityIdType: CUSIP
                   holdingName: 'Apple Inc.'
                   holdingType: STOCK
-                  holdingSubType: CASH
                   symbol: AAPL
                   purchasedPrice: 150.00
                   currentUnitPrice: 175.00
                   currentUnitPriceDate: '2023-10-01T14:46:41.000Z'
                   units: 1
                   marketValue: 1750.00
-                  cashAccount: true
+                  cashAccount: false
                   currency:
                     currencyCode: USD
                   fiAttributes:
@@ -1903,9 +1902,8 @@ components:
               type: array
               description: |
                 Array of financial institution-specific attributes.
-                Plaid recommends including a value for [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
-                property in this array.
-                Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
+                Plaid recommends including a value for the `isCashEquivalent` attribute in this array, sent as a string value of `true` or `false`.
+                This populates the [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent) field in Plaid's customer-facing API.
                 If you return a value for `isCashEquivalent`, then return the same value for `cashAccount` as a boolean.
               items:
                 $ref: '#/components/schemas/FiAttribute'
@@ -1922,7 +1920,7 @@ components:
     HoldingType:
       title: Holding Type
       description: |
-        Plaid maps the holding type to the Plaid [security type](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-type).
+        Plaid maps the holding type to the Plaid [security type](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-type).
         Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (`CASH`, `MONEYMARKET`).
       type: string
       enum:
@@ -2577,7 +2575,7 @@ components:
             fiAttributes:
               type: array
               description: |
-                Array of financial institution-specific attributes. Plaid recommends including a value for [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-is-cash-equivalent) property in this array. Plaid accepts `isCashEquivalent` as the attribute name and a string value of `true` or `false`.
+                Array of financial institution-specific attributes. Plaid recommends including a value for the `isCashEquivalent` attribute in this array, sent as a string value of `true` or `false`. This populates the [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-transactions-get-response-securities-is-cash-equivalent) field in Plaid's customer-facing API.
               items:
                 $ref: '#/components/schemas/FiAttribute'
           required:
