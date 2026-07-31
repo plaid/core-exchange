@@ -132,7 +132,9 @@ paths:
       responses:
         '200':
           description: |
-            An array of accounts. Each account is sent as a key-value pair, with the account details as the value and the account type as the key. Accepted keys include: [`depositAccount`](#deposit-account), [`investmentAccount`](#investment-account), [`locAccount`](#line-of-credit-account), and [`loanAccount`](#loan-account).
+            An array of accounts. May include accounts of any of the following types: [deposit](#deposit-account), [investment](#investment-account), [line of credit](#line-of-credit-account), [loan](#loan-account)
+            
+            **Note:** Each object in the accounts array is expected to contain at least one account type.
           content:
             application/json:
               schema:
@@ -164,7 +166,7 @@ paths:
                     accountType: LINEOFCREDIT
                     accountNumberDisplay: '8200'
                     productName: Line of Credit
-                    nickname: First plaidypus LOC
+                    nickname: First Plaidypus LOC
                     status: OPEN
                     currency:
                       currencyCode: USD
@@ -173,7 +175,7 @@ paths:
                     accountType: TAXABLE
                     accountNumberDisplay: '1050'
                     productName: Brokerage Account
-                    nickname: First plaidypus Brokerage
+                    nickname: First Plaidypus Brokerage
                     status: OPEN
                     currency:
                       currencyCode: USD
@@ -187,7 +189,7 @@ paths:
       description: |
         Get account balances, liabilities, and other information. Plaid calls this endpoint for [deposit](#deposit-account), [investment](#investment-account), [loan](#loan-account), and [line of credit](#line-of-credit-account) accounts. Plaid uses this endpoint to get balances for deposit accounts, get liabilities for `STUDENTLOAN`, `MORTGAGE`, and `CREDITCARD` loan accounts, and get balances and holdings for investment accounts.
         
-        See [Plaid Balance API](https://plaid.com/docs/api/products/balance/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
+        See [Plaid Balance API](https://plaid.com/docs/api/products/signal/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
         
         **Info**: Plaid does not call `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
       security:
@@ -411,7 +413,7 @@ paths:
     get:
       operationId: getAccountAssetTransferNetworks
       tags:
-        -  Asset Transfer Networks Information
+        - Asset Transfer Networks Information
       description: |
         Get asset transfer networks supported by an account. For example, Automated Customer Account Transfer Service (ACATS). For more information about how Plaid uses this information, see the [Plaid Investments Move API](https://plaid.com/docs/api/products/investments-move/#investmentsauthget).
       summary: Get asset transfer details for this account
@@ -447,12 +449,12 @@ components:
     openIdConnect:
       type: openIdConnect
       description: |
-        This API uses an [OpenID Connect (OIDC) authentication flow](/core-exchange/docs/authentication) and accepts the resulting [access token](/core-exchange/docs/authentication) as a bearer token. For example, `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
+        This API uses an [OpenID Connect (OIDC) authentication flow](https://plaid.com/core-exchange/docs/authentication) and accepts the resulting [access token](https://plaid.com/core-exchange/docs/authentication) as a bearer token. For example, `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       openIdConnectUrl: https://www.your-organization.com/.well-known/openid-configuration
     oauth2:
       type: oauth2
       description: |
-        This API uses an [OAuth2.0 authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) and accepts the resulting access token as a bearer token. For example, `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
+        This API uses an [OAuth 2.0 authorization code flow](https://plaid.com/core-exchange/docs/authentication/oauth-flow) and accepts the resulting access token as a bearer token. For example, `curl -H 'Authorization: Bearer <ACCESS&#95;TOKEN>'`.
       flows:
         authorizationCode:
           authorizationUrl: https://www.your-organization.com/authorize
