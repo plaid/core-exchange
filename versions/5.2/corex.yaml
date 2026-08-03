@@ -1268,7 +1268,7 @@ components:
         
         **Consumption scope:**
         - **Balances**: Plaid returns balances for all deposit account types.
-        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `HIGHINTERESTSAVINGSACCOUNT`, `FIRSTHOMESAVINGSACCOUNT`, `OTHERDEPOSIT`.
+        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `OTHERDEPOSIT`.
         - **Transactions**: Plaid consumes transactions only for accounts mapped to `depository` (CHECKING, SAVINGS, CD, MONEYMARKET). Other deposit types mapped to `other/other` return balances only (no Auth, no transactions).
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1720,7 +1720,7 @@ components:
               example: 2483.12
               description: |
                 Amount of next payment.
-                May differ from `minimumPaymentAmount` if the customer pays more than their minimum or out of cycle
+                May differ from the scheduled payment amount if the customer pays more than required or out of cycle
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: |
@@ -1968,7 +1968,7 @@ components:
             securityId:
               description: |
                 If you return the `securityId` for a holding, Plaid uses it to look up the closing price from NYSE Group Security Master.
-                If you don't return `securityId` for a holding that uses security IDs (not recommended), Plaid uses the `unitPrice` as the closing price.
+                If you don't return `securityId` for a holding that uses security IDs (not recommended), Plaid uses the `currentUnitPrice` as the closing price.
                 
                 This field, along with `securityIdType` are **required** unless `symbol` is provided.
                 
@@ -1999,7 +1999,7 @@ components:
             currentUnitPrice:
               type: number
               description: |
-                Current unit price. Plaid uses this as the [institution_price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-institution-price).
+                Current unit price. Plaid uses this as the [`institution_price`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-institution-price).
                 Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-close-price)
                 if you don't return `securityId` for holdings involving securities.
             currentUnitPriceDate:
@@ -2077,7 +2077,7 @@ components:
     HoldingSubType:
       title: Holding SubType
       description: |
-        The subtype of an investment holding. Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (`CASH`, `MONEYMARKET`).
+        The subtype of an investment holding. Set this to `CASH` or `MONEYMARKET` to indicate a cash-type holding, with `holdingType` set to `OTHER`.
       type: string
       enum:
         - CASH
@@ -2226,6 +2226,8 @@ components:
 
     AccountHolder:
       title: Account Holder entity
+      description: |
+        A customer's relationship to a given account, extending their base customer information.
       type: object
       allOf:
         - $ref: '#/components/schemas/CustomerWithoutId'
@@ -2403,7 +2405,7 @@ components:
           description: |
             Country calling codes defined by ITU-T recommendations E.123 and E.164,
             such as '+1' for United States and Canada, see
-            [List_of_country_calling_codes](https://en.wikipedia.org/wiki/List_of_country_calling_codes)
+            [list of country calling codes](https://en.wikipedia.org/wiki/List_of_country_calling_codes)
         number:
           type: string
           maxLength: 15
@@ -2517,6 +2519,8 @@ components:
     # /accounts/{accountId}/transactions
     Transactions:
       title: Transactions entity
+      description: |
+        A page of transactions for an account, spanning deposit, investment, loan, and line-of-credit transaction types.
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
         - type: object
