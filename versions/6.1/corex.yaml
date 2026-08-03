@@ -1111,7 +1111,7 @@ components:
       title: Accounts entity
       type: object
       description: |
-        An optionally paginated array of account descriptors. Each account descriptor is sent as a key-value pair, with the account descriptor object as the value and the account type as the key. Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
+        An optionally paginated array of account descriptors. Each account descriptor carries a required `accountCategory` field identifying its type; see the `AccountCategory` schema for the full list of values.
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
         - type: object
@@ -1119,7 +1119,7 @@ components:
             accounts:
               type: array
               description: |
-                An optionally paginated array of account descriptors. Each account descriptor is sent as a key-value pair, with the account descriptor object as the value and the account type as the key. Accepted keys include: [`annuityAccount`](#annuity-account-descriptor), [`commercialAccount`](#commercial-account-descriptor), [`depositAccount`](#deposit-account-descriptor), [`investmentAccount`](#investment-account-descriptor), [`locAccount`](#line-of-credit-account-descriptor), [`loanAccount`](#loan-account-descriptor), and [`insuranceAccount`](#insurance-account-descriptor).
+                An optionally paginated array of account descriptors. Each account descriptor carries a required `accountCategory` field identifying its type; see the `AccountCategory` schema for the full list of values.
               items:
                 $ref: '#/components/schemas/AccountWithDescriptor'
               minItems: 1
@@ -1231,14 +1231,13 @@ components:
         - `CHECKING`: A deposit account held at a financial institution that allows withdrawals and deposits.
         - `SAVINGS`: An interest-bearing deposit account held at a bank or other financial institution.
         - `CD`: A certificate of deposit (CD) is a product offered by banks and credit unions that provides an interest rate premium in exchange for the customer agreeing to leave a lump-sum deposit untouched for a predetermined period of time.
-        - `COMMERCIALDEPOSIT`: A deposit account for commercial customers, for example a business trust account.
         - `ESCROW`: A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties.
         - `MONEYMARKET`: A deposit account that pays interest based on current interest rates in the money markets.
         - `OTHERDEPOSIT`: Use when none of the listed enums apply.
         
         **Consumption scope:**
         - **Balances**: Plaid returns balances for all deposit account types.
-        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `HIGHINTERESTSAVINGSACCOUNT`, `FIRSTHOMESAVINGSACCOUNT`, `OTHERDEPOSIT`.
+        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `OTHERDEPOSIT`.
         - **Transactions**: Plaid consumes transactions only for accounts mapped to `depository` (CHECKING, SAVINGS, CD, MONEYMARKET). Other deposit types mapped to `other/other` return balances only (no Auth, no transactions).
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
@@ -1693,7 +1692,7 @@ components:
               example: 2483.12
               description: >
                 Amount of next payment.
-                May differ from `minimumPaymentAmount` if the customer pays more than their minimum or out of cycle
+                May differ from the scheduled payment amount if the customer pays more than required or out of cycle
             nextPaymentDate:
               $ref: '#/components/schemas/DateString'
               description: >
@@ -1936,7 +1935,7 @@ components:
               type: string
               description: >
                 Ticker / Market symbol
-                This field is **required** unless both `securityId` and `securityIdType` are provided
+                This field is **required** unless `securityIds` is provided
             purchasedPrice:
               type: number
               description: >
@@ -1947,9 +1946,9 @@ components:
             currentUnitPrice:
               type: number
               description: >
-                Current unit price. Plaid uses this as the [institution_price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-institution-price).
+                Current unit price. Plaid uses this as the [`institution_price`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-holdings-institution-price).
                 Plaid falls back to using this as the [close price](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-close-price)
-                if you don't return `securityId` for holdings involving securities.
+                if you don't return `securityIds` for holdings involving securities.
             currentUnitPriceDate:
               $ref: '#/components/schemas/DateString'
               description: >
@@ -2036,7 +2035,7 @@ components:
     HoldingSubType:
       title: Holding SubType
       description: >
-        The subtype of an investment holding. Plaid expects you to return `OTHER` and set the `holdingSubType` to indicate cash-type holdings (`CASH`, `MONEYMARKET`).
+        The subtype of an investment holding. Set this to `CASH` or `MONEYMARKET` to indicate a cash-type holding, with `holdingType` set to `OTHER`.
       type: string
       enum:
         - CASH
@@ -2185,6 +2184,8 @@ components:
 
     AccountHolder:
       title: Account Holder entity
+      description: |
+        A customer's relationship to a given account, extending their base customer information.
       type: object
       allOf:
         - $ref: '#/components/schemas/CustomerWithoutId'
@@ -2362,7 +2363,7 @@ components:
           description: >
             Country calling codes defined by ITU-T recommendations E.123 and E.164,
             such as '+1' for United States and Canada, see
-            [List_of_country_calling_codes](https://en.wikipedia.org/wiki/List_of_country_calling_codes)
+            [list of country calling codes](https://en.wikipedia.org/wiki/List_of_country_calling_codes)
         number:
           type: string
           maxLength: 15
@@ -2478,6 +2479,8 @@ components:
     # /accounts/{accountId}/transactions
     Transactions:
       title: Transactions entity
+      description: |
+        A page of transactions for an account, spanning deposit, investment, loan, and line-of-credit transaction types.
       allOf:
         - $ref: '#/components/schemas/PaginatedArray'
         - type: object
