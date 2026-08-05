@@ -1237,8 +1237,8 @@ components:
         
         **Consumption scope:**
         - **Balances**: Plaid returns balances for all deposit account types.
-        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `OTHERDEPOSIT`.
-        - **Transactions**: Plaid consumes transactions only for accounts mapped to `depository` (CHECKING, SAVINGS, CD, MONEYMARKET). Other deposit types mapped to `other/other` return balances only (no Auth, no transactions).
+        - **Auth**: Plaid maps each account's `accountType` to an internal subtype, and the mapping can vary by institution. By default, `CHECKING` and `SAVINGS` resolve to Auth-eligible subtypes (`checking`, `savings`, or `cash management`); other types require Plaid to enable Auth for your institution before they return Auth data.
+        - **Transactions**: Plaid consumes transactions for deposit accounts that resolve to Plaid's internal `depository` account type. By default this includes `CHECKING`, `SAVINGS`, `CD`, and `MONEYMARKET`, though the mapping can vary by institution. Accounts that don't resolve to `depository` return balances only (no Auth, no transactions).
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1276,7 +1276,6 @@ components:
         The `accountType` field for loan accounts may be set to any of the following:
         
         - `AUTOLOAN`: A type of loan used to finance a car purchase.
-        - `COMMERCIALLOAN`: A loan used for business or commercial purposes.
         - `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.
         - `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.
         - `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.
@@ -1326,7 +1325,6 @@ components:
         
         - `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.
         - `CHARGE`: An account to which goods and services may be charged on credit.
-        - `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.
         - `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.
         - `HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.
       type: object
@@ -1362,33 +1360,7 @@ components:
         An investment account. For example, a 401K or IRA.
         Plaid consumes the same details for all investment accounts.
         
-        The `accountType` field for investment accounts may be set to any of the following:
-        
-        - `401A`: An employer-sponsored money-purchase retirement plan that allows dollar or percentage-based contributions from the employer, the employee, or both.
-        - `401K`: An employer-sponsored defined-contribution pension account defined in subsection 401(k) of the Internal Revenue Code.
-        - `403B`: A U.S. tax-advantaged retirement savings plan available for public education organizations, some non-profit employers (only Internal Revenue Code 501(c)(3) organizations), cooperative hospital service organizations, and self-employed ministers in the United States.
-        - `529`: A tax-advantaged savings plan designed to help pay for education.
-        - `BROKERAGEPRODUCT`: Investment management offered by a licensed brokerage firm that places trades on behalf of the customer, utilizing any number of investment options.
-        - `COMMERCIALINVESTMENT`: Investment Account for Commercial Customers. e.g. Commercial Brokerage Account.
-        - `COVERDELL`: A trust or custodial account set up in the United States solely for paying qualified education expenses for the designated beneficiary of the account.
-        - `DIGITALASSET`: An account containing digital assets.
-        - `DEFINEDBENEFIT`: An employer-sponsored retirement plan where employee benefits are computed using a formula that considers several factors, such as length of employment and salary history.
-        - `ESOP`: An employee stock ownership plan that gives employees an ownership interest in the company.
-        - `GUARDIAN`: An account of a child in the parent's name, with legal title to the assets in the account, as well as all capital gains and tax liabilities produced from the account belonging to the parent.
-        - `INSTITUTIONALTRUST`: An institutional trust account.
-        - `IRA`: An individual retirement account (IRA) is a tax-advantaged account that individuals use to save and invest for retirement.
-        - `KEOGH`: A tax-deferred pension plan available to self-employed individuals or unincorporated businesses for retirement purposes.
-        - `NONQUALIFIEDPLAN`: A type of tax-deferred employer-sponsored retirement plan that falls outside of ERISA guidelines.
-        - `OTHERINVESTMENT`: Use when none of the listed enums apply.
-        - `ROLLOVER`: An account containing investments rolled over from an employee-sponsored account.
-        - `ROTH`: An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement.
-        - `SARSEP`: A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement.
-        - `TAXABLE`: A taxable investment account.
-        - `TDA`: TreasuryDirect Account.
-        - `TRUST`: A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms.
-        - `TERM`: Life insurance that provides coverage at a fixed rate of payments for a limited period of time.
-        - `UGMA`: Uniform Gifts to Minors Act account.
-        - `UTMA`: Uniform Transfers to Minors Act account.
+        The `accountType` field for investment accounts may be set to any of the [account types](#investment-account-types) listed below.
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1698,6 +1670,7 @@ components:
               description: |
                 Due date of next payment.
                 May differ from the payment due date listed on the customer's most recent statement if the customer pays out of cycle
+                
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             lastPaymentAmount:
@@ -1783,6 +1756,7 @@ components:
               description: |
                 Due date of next payment.
                 May differ from the payment due date listed on the customer's most recent statement if the customer pays out of cycle
+                
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             principalBalance:
@@ -1799,7 +1773,8 @@ components:
               type: number
               example: 190.32
               description: |
-                Minimum payment amount, which is due at the date specified in `nextPaymentDate`
+                Minimum payment amount from last statement balance,
+                which is due at the payment due date listed on that statement
             lastPaymentAmount:
               type: number
               example: 2852.91
