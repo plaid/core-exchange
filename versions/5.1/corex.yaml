@@ -1177,8 +1177,8 @@ components:
         
         **Consumption scope:**
         - **Balances**: Plaid returns balances for all deposit account types.
-        - **Auth**: Plaid only consumes `CHECKING` and `SAVINGS` by default for Auth. The following types are not Auth-eligible unless allowlisted: `CD`, `MONEYMARKET`, `ESCROW`, `OTHERDEPOSIT`.
-        - **Transactions**: Plaid consumes transactions only for accounts mapped to `depository` (CHECKING, SAVINGS, CD, MONEYMARKET). Other deposit types mapped to `other/other` return balances only (no Auth, no transactions).
+        - **Auth**: Plaid maps each account's `accountType` to an internal subtype, and the mapping can vary by institution. By default, `CHECKING` and `SAVINGS` resolve to Auth-eligible subtypes (`checking`, `savings`, or `cash management`); other types require Plaid to enable Auth for your institution before they return Auth data.
+        - **Transactions**: Plaid consumes transactions for deposit accounts that resolve to Plaid's internal `depository` account type. By default this includes `CHECKING`, `SAVINGS`, `CD`, and `MONEYMARKET`, though the mapping can vary by institution. Accounts that don't resolve to `depository` return balances only (no Auth, no transactions).
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
         - type: object
@@ -1309,7 +1309,7 @@ components:
         - `ROTH`: An individual retirement account that offers tax-free growth and tax-free withdrawals in retirement.
         - `SARSEP`: A simplified employee pension (SEP) plan set up before 1997 that includes a salary reduction arrangement.
         - `TAXABLE`: A taxable investment account.
-        - `TDA`: TreasuryDirect Account.
+        - `TDA`: A tax-deferred annuity, a type of retirement plan similar to a 403(b). Plaid maps this to the same account subtype as `403B`.
         - `TRUST`: A type of financial account that is opened by an individual and managed by a designated trustee for the benefit of a third party in accordance with agreed-upon terms.
         - `TERM`: Life insurance that provides coverage at a fixed rate of payments for a limited period of time.
         - `UGMA`: Uniform Gifts to Minors Act account.
@@ -1616,6 +1616,7 @@ components:
               description: |
                 Due date of next payment.
                 May differ from the payment due date listed on the customer's most recent statement if the customer pays out of cycle
+                
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             lastPaymentAmount:
@@ -1715,6 +1716,7 @@ components:
               description: |
                 Due date of next payment.
                 May differ from the payment due date listed on the customer's most recent statement if the customer pays out of cycle
+                
                 ISO 8601 full-date in format 'YYYY-MM-DD' according
                 to [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
             principalBalance:
@@ -1729,7 +1731,8 @@ components:
             minimumPaymentAmount:
               type: number
               description: |
-                Minimum payment amount, which is due at the date specified in `nextPaymentDate`
+                Minimum payment amount from last statement balance,
+                which is due at the payment due date listed on that statement
             lastPaymentAmount:
               type: number
               description: |
