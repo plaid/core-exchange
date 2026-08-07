@@ -479,6 +479,8 @@ components:
       in: query
       description: |
         Start time for use in retrieval of elements (ISO 8601). When used with the `/transactions` endpoint, Plaid filters by the `postedTimestamp`.
+        
+        Return everything you hold in the requested range. A fixed lookback of your own is indistinguishable from an account with little history.
       schema:
         $ref: '#/components/schemas/DateString'
 
@@ -981,6 +983,8 @@ components:
       description: |
         ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
         [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+        
+        Send UTC or a local time with its correct offset. Plaid doesn't normalize timestamps, so a local time labeled `Z` is read as UTC.
       type: string
       format: date-time
       example: '2021-07-15T14:46:41.375Z'
@@ -1117,12 +1121,15 @@ components:
           description: |
             Long-term persistent identity of the account, though not an account number.
             This identity must be unique within your organization.
+            
+            This value must never change, including when the account number changes, and must not be derived from an account number.
           $ref: '#/components/schemas/Identifier'
         accountNumberDisplay:
           description: |
             Account display number for the end user's handle at the owning financial
             institution.
             Plaid expects that the last 4 digits of this masked number correspond to the last 4 digits of the account number.
+            Send at most 4 letters or digits, for example `5820` — not `****5820` or `xxxx-5820`.
           type: string
           example: "4321"
         productName:
@@ -1147,7 +1154,9 @@ components:
     AccountStatus:
       title: Account Status
       description: |
-        Account status
+        Account status.
+        
+        Use `RESTRICTED`, with a normal 200, for a locked or limited account that's still open — not FDX error 705, which means closed.
       type: string
       example: OPEN
       enum:
@@ -1205,7 +1214,7 @@ components:
 
     LoanAccountDescriptor:
       description: |
-        A loan account. For example, mortgage, student loan or auto loan.
+        A loan account. For example, mortgage, student loan or auto loan. Revolving debt, where the balance can be drawn on again after it is paid down, belongs under `LOC_ACCOUNT` instead.
         Plaid consumes more detailed information for `MORTGAGE` and `STUDENTLOAN` accounts.
         
         The `accountType` field for loan accounts may be set to any of the following:
@@ -1214,7 +1223,7 @@ components:
         - `COMMERCIALLOAN`: A loan used for business or commercial purposes.
         - `HOMEEQUITYLOAN`: A type of loan in which the borrower uses the equity of his or her home as collateral.
         - `INSTALLMENT`: A type of agreement or contract involving a loan that is repaid over time with a set number of scheduled payments.
-        - `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc.
+        - `LOAN`: The lending of money by one or more individuals, organizations, or other entities to other individuals, organizations etc. Use when none of the other loan enums apply.
         - `MILITARYLOAN`: A military loan.
         - `MORTGAGE`: A type of loan you can use to buy or refinance a home.
         - `PERSONALLOAN`: A type of debt that is not protected by a guarantor, or collateralized by a lien on specific assets of the borrower.
@@ -1249,15 +1258,15 @@ components:
 
     LocAccountDescriptor:
       description: |
-        A line-of-credit account. For example, a credit card or home equity line of credit.
+        A line-of-credit account. For example, a credit card or home equity line of credit. This category covers revolving debt, where the balance can be drawn on again after it is paid down; non-revolving debt belongs under `LOAN_ACCOUNT`.
         Plaid consumes more detailed information for `CREDITCARD` accounts.
         
         The `accountType` field for line of credit accounts may be set to any of the following:
         
-        - `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds.
+        - `LINEOFCREDIT`: A credit facility extended by a bank or other financial institution to a government, business or individual customer that enables the customer to draw on the facility when the customer needs funds. Use when none of the other line of credit enums apply.
         - `CHARGE`: An account to which goods and services may be charged on credit.
         - `COMMERCIALLINEOFCREDIT`: An account with a preset borrowing limit that can be used at any time.
-        - `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment.
+        - `CREDITCARD`: Allows cardholders to borrow funds with which to pay for goods and services with merchants that accept cards for payment. Send credit cards as this type, not as a loan account.
         - `HOMELINEOFCREDIT`: A loan in which the lender agrees to lend a maximum amount within an agreed period, where the collateral is the borrower's equity in their house.
       type: object
       allOf:
@@ -1506,7 +1515,7 @@ components:
       title: Loan Account entity
       type: object
       description: |
-        Full details of a loan account. The `accountType` field for loan accounts may be set to any of the [account types](#loan-account-types) listed below.
+        Full details of a loan account. The `accountType` field for loan accounts may be set to any of the [account types](#loan-account-types) listed below. Revolving debt, where the balance can be drawn on again after it is paid down, belongs under `LOC_ACCOUNT` instead.
         
         Plaid only consumes the `MORTGAGE` and `STUDENTLOAN` types for its [Liabilities API](https://plaid.com/docs/api/products/liabilities/). For other loan account types Plaid consumes account details and transactions.
         Plaid consumes all loan account information as returned in the `GET /accounts` endpoint, as well as the additional information listed below:
@@ -1515,6 +1524,8 @@ components:
         * `principalBalance`
         * `interestRate`
         * `interestRateType`
+        
+        Plaid can exempt specific institutions and platforms from `interestRate` and `interestRateType`. To request this behavior, contact Plaid during your onboarding process. `principalBalance` is always required.
         
         Optional fields for `STUDENTLOAN` accounts:
         * `interestPaidYearToDate`
@@ -1577,7 +1588,7 @@ components:
               description: |
                 Full account number for the end user's handle for the account at the owning institution
                 
-                Required for `accountType` `MORTGAGE`
+                For `accountType` `MORTGAGE`, at least one of this field or `accountNumberDisplay` is required; if both are sent, this one takes precedence.
             principalBalance:
               type: number
               example: 580303.95
@@ -1658,11 +1669,11 @@ components:
     LocAccount:
       type: object
       description: |
-        Full details of a line of credit account. The `accountType` field for line of credit accounts may be set to any of the [account types](#line-of-credit-account-types) listed below.
+        Full details of a line of credit account. The `accountType` field for line of credit accounts may be set to any of the [account types](#line-of-credit-account-types) listed below. This category covers revolving debt, where the balance can be drawn on again after it is paid down; non-revolving debt belongs under `LOAN_ACCOUNT`.
         
-        Plaid may consume all the parameters returned by the `GET /accounts` endpoint:
+        Plaid consumes the following parameters returned by the `GET /accounts` endpoint:
         
-        * `availableCredit`
+        * `availableCredit` — required for every `accountType` except `CHARGE`.
         * `creditLine`
         * `currentBalance`
         
@@ -1705,7 +1716,9 @@ components:
               type: number
               example: 8302.73
               description: |
-                Available credit. Required for all `accountTypes` except for `CHARGE`
+                Available credit.
+                
+                Required for every line of credit `accountType` except `CHARGE`.
             nextPaymentAmount:
               type: number
               description: |
@@ -1805,6 +1818,8 @@ components:
                 
                 ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
                 [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+                
+                Send UTC or a local time with its correct offset. Plaid doesn't normalize timestamps, so a local time labeled `Z` is read as UTC.
               $ref: '#/components/schemas/Timestamp'
             currentValue:
               type: number
@@ -1863,7 +1878,7 @@ components:
                 If you return the `securityId` for a holding, Plaid uses it to look up the closing price from NYSE Group Security Master.
                 If you don't return `securityId` for a holding that uses security IDs (not recommended), Plaid uses the `currentUnitPrice` as the closing price.
                 
-                This field, along with `securityIdType` are **required** unless `symbol` is provided.
+                Send this field and `securityIdType` together or not at all. A holding carrying only one of the pair is rejected.
                 
                 **Note:** If `securityId` is provided, `securityIdType` is required.
               type: string
@@ -1873,6 +1888,10 @@ components:
               type: string
               description: |
                 Holding name or security name
+                
+                Send a name specific to the security, whether or not you also send a ticker, CUSIP, ISIN, or SEDOL. Plaid treats this name as unique on its own, so a generic value such as `Money Market Fund` can collide with a same-named security from another institution and fail to resolve.
+                
+                When the security has none of those identifiers, this name is the only thing identifying it, so send the same string every time — with nothing else to match on, a change of spacing, casing, or punctuation reads as a different security and splits the holding's history. When one of those identifiers is present it carries the identity instead, and the name can safely change.
             holdingType:
               $ref: '#/components/schemas/HoldingType'
             holdingSubType:
@@ -1881,7 +1900,8 @@ components:
               type: string
               description: |
                 Ticker / Market symbol
-                This field is **required** unless both `securityId` and `securityIdType` are provided
+                
+                Every holding must carry at least one identifying value: this field, a `securityId`/`securityIdType` pair, or `holdingName`. A holding with none of them fails validation for the whole holdings response, not just that holding. For a security with no public identifier, send `holdingName` alone rather than putting a proprietary code in this field.
             purchasedPrice:
               type: number
               description: |
@@ -1928,6 +1948,8 @@ components:
                 If you don't set a value for `isCashEquivalent` in the `fiAttributes` array,
                 then Plaid uses `cashAccount` in determining the [`is_cash_equivalent`](https://plaid.com/docs/api/products/investments/#investments-holdings-get-response-securities-is-cash-equivalent)
                 status.
+                
+                Must agree with `holdingSubType`. If this field is `false` and `holdingSubType` is `CASH` or `MONEYMARKET`, the holding will be rejected.
             currency:
               $ref: '#/components/schemas/Currency'
               description: |
@@ -1980,6 +2002,8 @@ components:
       title: FI Attribute entity
       description: |
         Financial institution-specific attribute.
+        
+        Sent as an array of name/value pairs, not a keyed object, with string values: `[{"name": "isCashEquivalent", "value": "false"}]`, not `{"isCashEquivalent": false}`. `isCashEquivalent` must be `"true"` or `"false"`.
       type: object
       properties:
         name:
@@ -2121,6 +2145,8 @@ components:
       title: Account Holder entity
       description: |
         A customer's relationship to a given account, extending their base customer information.
+        
+        Mark business holders by setting `type` or `relationship` to `BUSINESS`, with the legal entity name on `businessCustomer`. Unmarked holders are treated as individuals and must supply `name.first` and `name.last`.
       type: object
       allOf:
         - $ref: '#/components/schemas/CustomerWithName'
@@ -2252,7 +2278,7 @@ components:
         country:
           $ref: '#/components/schemas/Iso3166CountryCode'
           description: |
-            Country code
+            ISO 3166-1 alpha-2 code, upper case, for example `US` — three-letter codes, full names, and lower case are rejected. Plaid also checks against its own supported-country list, so a valid code can still fail.
       required:
         - line1
         - city
@@ -2339,6 +2365,7 @@ components:
           type: string
           description: |
             The number used to identify the account within the payment network.
+            Send 4 to 17 digits with no separators, even if displayed to customers formatted. A value with separators is rejected and that account's Auth data will be discarded, though the response still succeeds and the account still appears.
         type:
           $ref: '#/components/schemas/PaymentNetworkType'
         transferIn:
@@ -2443,7 +2470,7 @@ components:
       properties:
         transactionId:
           description: |
-            Long term persistent identity of the transaction (unique to account). Plaid expects that `status: PENDING` and `status: POSTED` transactions have different IDs
+            Long term persistent unique identifier of the transaction. Each ID must be unique within the scope of the account, as a duplicate ID will cause the transaction to be overwritten. The pending and posted versions of a transaction must have different IDs; you can associate them by sharing a `referenceTransactionId` instead of this field. This identifier's value must not be based on a counter that resets, such as at the end of a day or a statement cycle.
           $ref: '#/components/schemas/Identifier'
         referenceTransactionId:
           description: |
@@ -2458,12 +2485,16 @@ components:
             This property is **required** by Plaid when `status=POSTED`. Plaid expects this property to be omitted when `status=PENDING`
             ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
             [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            
+            Send UTC or a local time with its correct offset. Plaid doesn't normalize timestamps, so a local time labeled `Z` is read as UTC.
           $ref: '#/components/schemas/Timestamp'
         transactionTimestamp:
           description: |
             The date and time that the transaction was added to the server backend systems
             ISO 8601 date-time in format `YYYY-MM-DDThh:mm:ss.nnn[Z|[+|-]hh:mm]` according to
             [IETF RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339#section-5.6)
+            
+            Send UTC or a local time with its correct offset. Plaid doesn't normalize timestamps, so a local time labeled `Z` is read as UTC.
           $ref: '#/components/schemas/Timestamp'
         description:
           type: string
