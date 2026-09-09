@@ -178,7 +178,7 @@ paths:
         
         See [Plaid Balance API](https://plaid.com/docs/api/products/signal/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
         
-        **Info**: Plaid does not call `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
+        **Note:** Plaid does not call `/accounts/{accountId}` for annuity accounts or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
       security:
         - openIdConnect:
             - Account
