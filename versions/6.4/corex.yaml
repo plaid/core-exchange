@@ -191,7 +191,7 @@ paths:
         
         See [Plaid Balance API](https://plaid.com/docs/api/products/signal/), [Plaid Liabilities API](https://plaid.com/docs/api/products/liabilities/), and [Plaid Investments API](https://plaid.com/docs/investments/) for more information on how Plaid uses this information.
         
-        **Info**: Plaid does not call `/accounts/{accountId}` for annuity accounts, commercial accounts, or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
+        **Note:** Plaid does not call `/accounts/{accountId}` for annuity accounts, commercial accounts, digital wallet accounts, or insurance accounts. These account categories are discoverable-only. The accounts appear in `GET /accounts`, but Plaid does not consume downstream data (balances, transactions, Auth) for these categories.
       security:
         - openIdConnect:
             - Account
@@ -1351,6 +1351,8 @@ components:
     DigitalWalletDescriptor:
       description: |
         Information for a digital wallet account
+        
+        **Note:** Digital wallet accounts are discoverable-only. Plaid does not consume downstream data (balances, transactions, Auth) for digital wallet accounts.
       type: object
       allOf:
         - $ref: '#/components/schemas/AccountDescriptor'
