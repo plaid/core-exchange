@@ -1307,7 +1307,7 @@ components:
         - `ESCROW`: A contractual arrangement in which a third party (the stakeholder or escrow agent) receives and disburses money or property for the primary transacting parties, with the disbursement dependent on conditions agreed to by the transacting parties.
         - `MONEYMARKET`: A deposit account that pays interest based on current interest rates in the money markets.
         - `HIGHINTERESTSAVINGSACCOUNT`: A savings account that offers a higher interest rate than a standard savings account.
-        - `FIRSTHOMESAVINGSACCOUNT`: A tax-advantaged savings account for a first home purchase.
+        - `FIRSTHOMESAVINGSACCOUNT`: A tax-advantaged savings account for a first home purchase, held as cash. Send an FHSA that holds investments under `INVESTMENT_ACCOUNT`.
         - `OTHERDEPOSIT`: Use when none of the listed enums apply.
         
         **Consumption scope:**
@@ -1480,6 +1480,7 @@ components:
         - `DEFINEDBENEFIT`: An employer-sponsored retirement plan where benefits are computed using a formula considering factors such as length of employment and salary history.
         - `DEFERREDPROFITSHARINGPLAN`: A Canadian employer-sponsored plan (DPSP) that distributes a share of company profits to employees.
         - `ESOP`: An employee stock ownership plan that gives employees an ownership interest in the company.
+        - `FIRSTHOMESAVINGSACCOUNT`: A Canadian first home savings account (FHSA) that holds investments. Added in v6.3. An FHSA held as cash is a deposit account; send it under `DEPOSIT_ACCOUNT`.
         - `GUARDIAN`: An account of a child in the parent’s name, with legal title to the assets, capital gains, and tax liabilities belonging to the parent.
         - `INDIVIDUALPENSIONPLAN`: A Canadian defined-benefit pension plan (IPP) covering a single participant, typically an owner-manager.
         - `INSTITUTIONALTRUST`: An institutional trust account.
@@ -1546,6 +1547,7 @@ components:
         - DEFINEDBENEFIT
         - DEFERREDPROFITSHARINGPLAN
         - ESOP
+        - FIRSTHOMESAVINGSACCOUNT
         - GUARDIAN
         - INDIVIDUALPENSIONPLAN
         - INSTITUTIONALTRUST
@@ -2973,6 +2975,7 @@ components:
         Plaid maps these enums as follows:
         
         * ADJUSTMENT - fee
+        * AIRDROP - transfer
         * ATM - cash
         * CASH - cash
         * CHECK - cash
@@ -2988,12 +2991,14 @@ components:
         * DIVIDENDREINVEST - buy
         * EXPENSE - cash
         * FEE - fee
+        * FORKED - transfer
         * INCOME - cash
         * INTEREST - cash
         * INVEXPENSE - cash
         * JRNLFUND - transfer
         * JRNLSEC - transfer
         * MARGININTEREST - cash
+        * MINED - transfer
         * OPTIONEXERCISE - transfer
         * OPTIONEXPIRATION - transfer
         * OTHER - cash - (unclassified)
@@ -3011,11 +3016,14 @@ components:
         * SOLDTOOPEN - sell
         * SPLIT - transfer
         * SRVCHG - fee
+        * STAKED - transfer
         * TRANSFER - transfer
+        * WITHDRAWAL - cash
         * XFER - transfer
       type: string
       enum:
         - ADJUSTMENT
+        - AIRDROP
         - ATM
         - CASH
         - CHECK
@@ -3031,12 +3039,14 @@ components:
         - DIVIDENDREINVEST
         - EXPENSE
         - FEE
+        - FORKED
         - INCOME
         - INTEREST
         - INVEXPENSE
         - JRNLFUND
         - JRNLSEC
         - MARGININTEREST
+        - MINED
         - OPTIONEXERCISE
         - OPTIONEXPIRATION
         - OTHER
@@ -3054,7 +3064,9 @@ components:
         - SOLDTOOPEN
         - SPLIT
         - SRVCHG
+        - STAKED
         - TRANSFER
+        - WITHDRAWAL
         - XFER
 
     SecurityType:

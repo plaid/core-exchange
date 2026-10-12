@@ -2793,6 +2793,7 @@ components:
         Plaid maps these enums as follows:
         
         * ADJUSTMENT - fee
+        * AIRDROP - transfer
         * ATM - cash
         * CASH - cash
         * CHECK - cash
@@ -2808,12 +2809,14 @@ components:
         * DIVIDENDREINVEST - buy
         * EXPENSE - cash
         * FEE - fee
+        * FORKED - transfer
         * INCOME - cash
         * INTEREST - cash
         * INVEXPENSE - cash
         * JRNLFUND - transfer
         * JRNLSEC - transfer
         * MARGININTEREST - cash
+        * MINED - transfer
         * OPTIONEXERCISE - transfer
         * OPTIONEXPIRATION - transfer
         * OTHER - cash - (unclassified)
@@ -2831,11 +2834,14 @@ components:
         * SOLDTOOPEN - sell
         * SPLIT - transfer
         * SRVCHG - fee
+        * STAKED - transfer
         * TRANSFER - transfer
+        * WITHDRAWAL - cash
         * XFER - transfer
       type: string
       enum:
         - ADJUSTMENT
+        - AIRDROP
         - ATM
         - CASH
         - CHECK
@@ -2851,12 +2857,14 @@ components:
         - DIVIDENDREINVEST
         - EXPENSE
         - FEE
+        - FORKED
         - INCOME
         - INTEREST
         - INVEXPENSE
         - JRNLFUND
         - JRNLSEC
         - MARGININTEREST
+        - MINED
         - OPTIONEXERCISE
         - OPTIONEXPIRATION
         - OTHER
@@ -2874,7 +2882,9 @@ components:
         - SOLDTOOPEN
         - SPLIT
         - SRVCHG
+        - STAKED
         - TRANSFER
+        - WITHDRAWAL
         - XFER
     
     SecurityType:
