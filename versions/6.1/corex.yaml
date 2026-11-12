@@ -2673,6 +2673,8 @@ components:
               type: string
               enum:
                 - DEPOSIT_ACCOUNT
+            transactionType:
+              $ref: '#/components/schemas/DepositTransactionType'
             payee:
               $ref: '#/components/schemas/String255'
               description: >
@@ -2691,6 +2693,27 @@ components:
         debitCreditMemo: CREDIT
         status: PENDING
         amount: 38.90
+        transactionType: ATMDEPOSIT
+
+    DepositTransactionType:
+      title: Deposit Transaction Type
+      description: |
+        The type of a deposit transaction.
+      type: string
+      enum:
+        - ADJUSTMENT
+        - ATMDEPOSIT
+        - ATMWITHDRAWAL
+        - BILLPAYMENT
+        - CHECK
+        - DEPOSIT
+        - DIRECTDEPOSIT
+        - FEE
+        - INTEREST
+        - POSCREDIT
+        - POSDEBIT
+        - TRANSFER
+        - WITHDRAWAL
 
     InvestmentTransaction:
       title: Investment Transaction entity
@@ -2793,6 +2816,7 @@ components:
         Plaid maps these enums as follows:
         
         * ADJUSTMENT - fee
+        * AIRDROP - transfer
         * ATM - cash
         * CASH - cash
         * CHECK - cash
@@ -2808,12 +2832,14 @@ components:
         * DIVIDENDREINVEST - buy
         * EXPENSE - cash
         * FEE - fee
+        * FORKED - transfer
         * INCOME - cash
         * INTEREST - cash
         * INVEXPENSE - cash
         * JRNLFUND - transfer
         * JRNLSEC - transfer
         * MARGININTEREST - cash
+        * MINED - transfer
         * OPTIONEXERCISE - transfer
         * OPTIONEXPIRATION - transfer
         * OTHER - cash - (unclassified)
@@ -2831,11 +2857,14 @@ components:
         * SOLDTOOPEN - sell
         * SPLIT - transfer
         * SRVCHG - fee
+        * STAKED - transfer
         * TRANSFER - transfer
+        * WITHDRAWAL - cash
         * XFER - transfer
       type: string
       enum:
         - ADJUSTMENT
+        - AIRDROP
         - ATM
         - CASH
         - CHECK
@@ -2851,12 +2880,14 @@ components:
         - DIVIDENDREINVEST
         - EXPENSE
         - FEE
+        - FORKED
         - INCOME
         - INTEREST
         - INVEXPENSE
         - JRNLFUND
         - JRNLSEC
         - MARGININTEREST
+        - MINED
         - OPTIONEXERCISE
         - OPTIONEXPIRATION
         - OTHER
@@ -2874,7 +2905,9 @@ components:
         - SOLDTOOPEN
         - SPLIT
         - SRVCHG
+        - STAKED
         - TRANSFER
+        - WITHDRAWAL
         - XFER
     
     SecurityType:
